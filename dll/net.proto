@@ -1,0 +1,235 @@
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+message Announce {
+    enum Types {
+        PING = 0;
+        PONG = 1;
+    }
+
+    Types type = 1;
+    repeated uint64 ids = 2;
+
+    message Other_Peers {
+        uint64 id = 1;
+        uint32 ip = 2;
+        uint32 udp_port = 3;
+        uint32 appid = 4;
+    }
+
+    uint32 tcp_port = 3;
+    repeated Other_Peers peers = 4;
+    uint32 appid = 5;
+}
+
+message Lobby {
+    uint64 room_id = 1;
+    uint64 owner = 2;
+
+    map<string, bytes> values = 3;
+
+    message Member {
+        uint64 id = 1;
+        map<string, bytes> values = 2;
+    }
+
+    repeated Member members = 4;
+
+    message Gameserver {
+        uint64 id = 1;
+        uint32 ip = 2;
+        uint32 port = 3;
+    }
+
+    Gameserver gameserver = 5;
+
+    uint32 member_limit = 6;
+    uint32 type = 7; //ELobbyType
+    bool joinable = 8;
+    uint32 appid = 9;
+    bool deleted = 32;
+    uint64 time_deleted = 33;
+}
+
+message Lobby_Messages {
+    uint64 id = 1;
+
+    enum Types {
+        JOIN = 0;
+        LEAVE = 1;
+        CHANGE_OWNER = 2;
+        MEMBER_DATA = 3;
+        CHAT_MESSAGE = 4;
+    }
+
+    Types type = 2;
+    uint64 idata = 3;
+    bytes bdata = 4;
+    map<string, bytes> map = 5;
+}
+
+message Low_Level {
+    enum Types {
+        HEARTBEAT = 0;
+        CONNECT = 1;
+        DISCONNECT = 2;
+    }
+
+    Types type = 1;
+}
+
+message Network_pb {
+    uint32 channel = 1;
+    bytes data = 2;
+
+    enum Types {
+        DATA = 0;
+        NEW_CONNECTION = 1;
+    }
+
+    Types type = 3;
+
+    bool processed = 128;
+    uint64 time_processed = 129;
+}
+
+message Network_Old {
+    enum Types {
+        CONNECTION_REQUEST_IP = 0;
+        CONNECTION_REQUEST_STEAMID = 1;
+        CONNECTION_ACCEPTED = 2;
+        CONNECTION_END = 3;
+        DATA = 4;
+    }
+
+    Types type = 1;
+    uint64 connection_id = 2;
+    uint64 connection_id_from = 3;
+    uint32 port = 4;
+    bytes data = 5;
+}
+
+message Networking_Sockets {
+    enum Types {
+        CONNECTION_REQUEST = 0;
+        CONNECTION_ACCEPTED = 2;
+        CONNECTION_END = 3;
+        DATA = 4;
+    }
+
+    Types type = 1;
+    int32 virtual_port = 2;
+    int32 real_port = 6;
+    uint64 connection_id = 3;
+    uint64 connection_id_from = 4;
+    bytes data = 5;
+}
+
+message Networking_Messages {
+    enum Types {
+        CONNECTION_NEW = 0;
+        CONNECTION_ACCEPT = 1;
+        CONNECTION_END = 2;
+        DATA = 3;
+    }
+
+    Types type = 1;
+    uint32 channel = 2;
+    uint32 id_from = 3;
+    bytes data = 5;
+}
+
+message Gameserver {
+    uint64 id = 1;
+    bytes game_description = 2;
+    bytes mod_dir = 3;
+    bool dedicated_server = 4;
+    uint32 max_player_count = 5;
+    uint32 bot_player_count = 6;
+    bytes server_name = 7;
+    bytes map_name = 8;
+    bool password_protected = 9;
+    uint32 spectator_port = 10;
+    bytes spectator_server_name = 11;
+    map<string, bytes> values = 12;
+    bytes tags = 13;
+    bytes gamedata = 14;
+    bytes region = 15;
+    bytes product = 16;
+    bool secure = 17;
+    uint32 num_players = 18;
+    uint32 version = 19;
+
+    uint32 ip = 32;
+    uint32 port = 33;
+    uint32 query_port = 34;
+    uint32 appid = 35;
+
+    bool offline = 48;
+}
+
+message Friend {
+    uint64 id = 1;
+    bytes name = 2;
+    map<string, bytes> rich_presence = 3;
+    uint32 appid = 4;
+    uint64 lobby_id = 5;
+}
+
+message Auth_Ticket {
+    uint32 number = 1;
+
+    enum Types {
+        CANCEL = 0;
+    }
+
+    Types type = 2;
+}
+
+message Friend_Messages {
+    enum Types {
+        LOBBY_INVITE = 0;
+        GAME_INVITE = 1;
+    }
+
+    Types type = 1;
+    oneof invite_data {
+        uint64 lobby_id = 2;
+        bytes connect_str = 3;
+    }
+}
+
+message Steam_Messages {
+	enum Types {
+		FRIEND_CHAT = 0;
+	}
+
+	Types type = 1;
+	oneof message_data {
+		bytes message = 2;
+	}
+}
+
+message Common_Message {
+    uint64 source_id = 1;
+    uint64 dest_id = 2;
+    oneof messages {
+        Announce announce = 3;
+        Low_Level low_level = 4;
+        Lobby lobby = 5;
+        Lobby_Messages lobby_messages = 6;
+        Network_pb network = 7;
+        Gameserver gameserver = 8;
+        Friend friend = 9;
+        Auth_Ticket auth_ticket = 10;
+        Friend_Messages friend_messages = 11;
+        Network_Old network_old = 12;
+        Networking_Sockets networking_sockets = 13;
+        Steam_Messages steam_messages = 14;
+        Networking_Messages networking_messages = 15;
+    }
+
+    uint32 source_ip = 128;
+    uint32 source_port = 129;
+}
