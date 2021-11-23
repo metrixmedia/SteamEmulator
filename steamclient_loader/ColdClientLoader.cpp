@@ -10,13 +10,13 @@
 #include <tchar.h>
 #include <stdio.h>
 
-bool IsNotRelativePathOrRemoveFileName(CHAR* output, bool Remove)
+bool IsNotRelativePathOrRemoveFileName(WCHAR* output, bool Remove)
 {
-	int LG = lstrlenA(output);
+	int LG = lstrlenW(output);
 	for (int i = LG; i > 0; i--) {
 		if (output[i] == '\\') {
 			if(Remove)
-				RtlFillMemory(&output[i], LG - i, NULL);
+				RtlFillMemory(&output[i], (LG - i) * sizeof(WCHAR), NULL);
 			return true;
 		}
 	}
@@ -25,81 +25,84 @@ bool IsNotRelativePathOrRemoveFileName(CHAR* output, bool Remove)
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
-	CHAR CurrentDirectory[MAX_PATH] = { 0 };
-	CHAR Client64Path[MAX_PATH] = { 0 };
-	CHAR ClientPath[MAX_PATH] = { 0 };
-	CHAR ExeFile[MAX_PATH] = { 0 };
-	CHAR ExeRunDir[MAX_PATH] = { 0 };
-	CHAR ExeCommandLine[4096] = { 0 };
-	CHAR AppId[128] = { 0 };
+	WCHAR CurrentDirectory[MAX_PATH] = { 0 };
+	WCHAR Client64Path[MAX_PATH] = { 0 };
+	WCHAR ClientPath[MAX_PATH] = { 0 };
+	WCHAR ExeFile[MAX_PATH] = { 0 };
+	WCHAR ExeRunDir[MAX_PATH] = { 0 };
+	WCHAR ExeCommandLine[4096] = { 0 };
+	WCHAR AppId[128] = { 0 };
 
-	STARTUPINFOA info = { sizeof(info) };
+	STARTUPINFOW info = { sizeof(info) };
 	PROCESS_INFORMATION processInfo;
 
-	int Length = GetModuleFileNameA(GetModuleHandleA(NULL), CurrentDirectory, sizeof(CurrentDirectory)) + 1;
+	int Length = GetModuleFileNameW(GetModuleHandleW(NULL), CurrentDirectory, sizeof(CurrentDirectory)) + 1;
 	for (int i = Length; i > 0; i--) {
 		if (CurrentDirectory[i] == '\\') {
-			lstrcpyA(&CurrentDirectory[i + 1], "ColdClientLoader.ini");
+			lstrcpyW(&CurrentDirectory[i + 1], L"ColdClientLoader.ini");
 			break;
 		}
 	}
-	if (GetFileAttributesA(CurrentDirectory) == INVALID_FILE_ATTRIBUTES) {
+	if (GetFileAttributesW(CurrentDirectory) == INVALID_FILE_ATTRIBUTES) {
 		MessageBoxA(NULL, "Couldn't find the configuration file(ColdClientLoader.ini).", "ColdClientLoader", MB_ICONERROR);
 		return 0;
 	}
 
-	GetPrivateProfileStringA("SteamClient", "SteamClient64Dll", "", Client64Path, MAX_PATH, CurrentDirectory);
-	GetPrivateProfileStringA("SteamClient", "SteamClientDll", "", ClientPath, MAX_PATH, CurrentDirectory);
-	GetPrivateProfileStringA("SteamClient", "Exe", NULL, ExeFile, MAX_PATH, CurrentDirectory);
-	GetPrivateProfileStringA("SteamClient", "ExeRunDir", NULL, ExeRunDir, MAX_PATH, CurrentDirectory);
-	GetPrivateProfileStringA("SteamClient", "ExeCommandLine", NULL, ExeCommandLine, 4096, CurrentDirectory);
-	GetPrivateProfileStringA("SteamClient", "AppId", NULL, AppId, sizeof(AppId), CurrentDirectory);
+	GetPrivateProfileStringW(L"SteamClient", L"SteamClient64Dll", L"", Client64Path, MAX_PATH, CurrentDirectory);
+	GetPrivateProfileStringW(L"SteamClient", L"SteamClientDll", L"", ClientPath, MAX_PATH, CurrentDirectory);
+	GetPrivateProfileStringW(L"SteamClient", L"Exe", NULL, ExeFile, MAX_PATH, CurrentDirectory);
+	GetPrivateProfileStringW(L"SteamClient", L"ExeRunDir", NULL, ExeRunDir, MAX_PATH, CurrentDirectory);
+	GetPrivateProfileStringW(L"SteamClient", L"ExeCommandLine", NULL, ExeCommandLine, 4096, CurrentDirectory);
+	GetPrivateProfileStringW(L"SteamClient", L"AppId", NULL, AppId, sizeof(AppId), CurrentDirectory);
 
 	if (AppId[0]) {
-		SetEnvironmentVariableA("SteamAppId", AppId);
-		SetEnvironmentVariableA("SteamGameId", AppId);
+		SetEnvironmentVariableW(L"SteamAppId", AppId);
+		SetEnvironmentVariableW(L"SteamGameId", AppId);
+	} else {
+		MessageBoxA(NULL, "You forgot to set the AppId.", "ColdClientLoader", MB_ICONERROR);
+		return 0;
 	}
 
-	CHAR TMP[MAX_PATH] = {};
+	WCHAR TMP[MAX_PATH] = {};
 	if (!IsNotRelativePathOrRemoveFileName(Client64Path, false)) {
-		lstrcpyA(TMP, Client64Path);
+		lstrcpyW(TMP, Client64Path);
 		ZeroMemory(Client64Path, sizeof(Client64Path));
-		GetFullPathNameA(TMP, MAX_PATH, Client64Path, NULL);
+		GetFullPathNameW(TMP, MAX_PATH, Client64Path, NULL);
 	}
 	if (!IsNotRelativePathOrRemoveFileName(ClientPath, false)) {
-		lstrcpyA(TMP, ClientPath);
+		lstrcpyW(TMP, ClientPath);
 		ZeroMemory(ClientPath, sizeof(ClientPath));
-		GetFullPathNameA(TMP, MAX_PATH, ClientPath, NULL);
+		GetFullPathNameW(TMP, MAX_PATH, ClientPath, NULL);
 	}
 	if (!IsNotRelativePathOrRemoveFileName(ExeFile, false)) {
-		lstrcpyA(TMP, ExeFile);
+		lstrcpyW(TMP, ExeFile);
 		ZeroMemory(ExeFile, sizeof(ExeFile));
-		GetFullPathNameA(TMP, MAX_PATH, ExeFile, NULL);
+		GetFullPathNameW(TMP, MAX_PATH, ExeFile, NULL);
 	}
 	if (!IsNotRelativePathOrRemoveFileName(ExeRunDir, false)) {
-		lstrcpyA(TMP, ExeRunDir);
+		lstrcpyW(TMP, ExeRunDir);
 		ZeroMemory(ExeRunDir, sizeof(ExeRunDir));
-		GetFullPathNameA(TMP, MAX_PATH, ExeRunDir, NULL);
+		GetFullPathNameW(TMP, MAX_PATH, ExeRunDir, NULL);
 	}
 
-	if (GetFileAttributesA(Client64Path) == INVALID_FILE_ATTRIBUTES) {
+	if (GetFileAttributesW(Client64Path) == INVALID_FILE_ATTRIBUTES) {
 		MessageBoxA(NULL, "Couldn't find the requested SteamClient64Dll.", "ColdClientLoader", MB_ICONERROR);
 		return 0;
 	}
 
-	if (GetFileAttributesA(ClientPath) == INVALID_FILE_ATTRIBUTES) {
+	if (GetFileAttributesW(ClientPath) == INVALID_FILE_ATTRIBUTES) {
 		MessageBoxA(NULL, "Couldn't find the requested SteamClientDll.", "ColdClientLoader", MB_ICONERROR);
 		return 0;
 	}
 
-	if (GetFileAttributesA(ExeFile) == INVALID_FILE_ATTRIBUTES) {
+	if (GetFileAttributesW(ExeFile) == INVALID_FILE_ATTRIBUTES) {
 		MessageBoxA(NULL, "Couldn't find the requested Exe file.", "ColdClientLoader", MB_ICONERROR);
 		return 0;
 	}
 
-	CHAR CommandLine[8192];
-	snprintf(CommandLine, sizeof(CommandLine), "\"%s\" %s", ExeFile, ExeCommandLine);
-	if (!ExeFile[0] || !CreateProcessA(ExeFile, CommandLine, NULL, NULL, TRUE, CREATE_SUSPENDED, NULL, ExeRunDir, &info, &processInfo))
+	WCHAR CommandLine[8192];
+	_snwprintf(CommandLine, _countof(CommandLine), L"\"%ls\" %ls", ExeFile, ExeCommandLine);
+	if (!ExeFile[0] || !CreateProcessW(ExeFile, CommandLine, NULL, NULL, TRUE, CREATE_SUSPENDED, NULL, ExeRunDir, &info, &processInfo))
 	{
 		MessageBoxA(NULL, "Unable to load the requested EXE file.", "ColdClientLoader", MB_ICONERROR);
 		return 0;
@@ -111,18 +114,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 	bool orig_steam = false;
 	DWORD keyType = REG_SZ;
-	CHAR OrgSteamCDir[MAX_PATH] = { 0 };
-	CHAR OrgSteamCDir64[MAX_PATH] = { 0 };
+	WCHAR OrgSteamCDir[MAX_PATH] = { 0 };
+	WCHAR OrgSteamCDir64[MAX_PATH] = { 0 };
 	DWORD Size1 = MAX_PATH;
 	DWORD Size2 = MAX_PATH;
-	if (RegOpenKeyExA(HKEY_CURRENT_USER, "Software\\Valve\\Steam\\ActiveProcess", 0, KEY_ALL_ACCESS, &Registrykey) == ERROR_SUCCESS)
+	if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam\\ActiveProcess", 0, KEY_ALL_ACCESS, &Registrykey) == ERROR_SUCCESS)
 	{
 		orig_steam = true;
 		// Get original values to restore later.
-		RegQueryValueExA(Registrykey, "SteamClientDll", 0, &keyType, (LPBYTE)& OrgSteamCDir, &Size1);
-		RegQueryValueExA(Registrykey, "SteamClientDll64", 0, &keyType, (LPBYTE)& OrgSteamCDir64, &Size2);
+		RegQueryValueExW(Registrykey, L"SteamClientDll", 0, &keyType, (LPBYTE)& OrgSteamCDir, &Size1);
+		RegQueryValueExW(Registrykey, L"SteamClientDll64", 0, &keyType, (LPBYTE)& OrgSteamCDir64, &Size2);
 	} else {
-		if (RegCreateKeyExA(HKEY_CURRENT_USER, "Software\\Valve\\Steam\\ActiveProcess", 0, 0, REG_OPTION_NON_VOLATILE,
+		if (RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam\\ActiveProcess", 0, 0, REG_OPTION_NON_VOLATILE,
 			KEY_ALL_ACCESS, NULL, &Registrykey, NULL) != ERROR_SUCCESS)
 		{
 			MessageBoxA(NULL, "Unable to patch Steam process informations on the Windows registry.", "ColdClientLoader", MB_ICONERROR);
@@ -137,17 +140,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 	{
 		// Before saving to the registry check again if the path was valid and if the file exist
-		if (GetFileAttributesA(ClientPath) != INVALID_FILE_ATTRIBUTES) {
-			RegSetValueExA(Registrykey, "SteamClientDll", NULL, REG_SZ, (LPBYTE)ClientPath, (DWORD)lstrlenA(ClientPath) + 1);
+		if (GetFileAttributesW(ClientPath) != INVALID_FILE_ATTRIBUTES) {
+			RegSetValueExW(Registrykey, L"SteamClientDll", NULL, REG_SZ, (LPBYTE)ClientPath, (DWORD)(lstrlenW(ClientPath) * sizeof(WCHAR)) + 1);
 		}
 		else {
-			RegSetValueExA(Registrykey, "SteamClientDll", NULL, REG_SZ, (LPBYTE)"", 0);
+			RegSetValueExW(Registrykey, L"SteamClientDll", NULL, REG_SZ, (LPBYTE)"", 0);
 		}
-		if (GetFileAttributesA(Client64Path) != INVALID_FILE_ATTRIBUTES) {
-			RegSetValueExA(Registrykey, "SteamClientDll64", NULL, REG_SZ, (LPBYTE)Client64Path, (DWORD)lstrlenA(Client64Path) + 1);
+		if (GetFileAttributesW(Client64Path) != INVALID_FILE_ATTRIBUTES) {
+			RegSetValueExW(Registrykey, L"SteamClientDll64", NULL, REG_SZ, (LPBYTE)Client64Path, (DWORD)(lstrlenW(Client64Path) * sizeof(WCHAR)) + 1);
 		}
 		else {
-			RegSetValueExA(Registrykey, "SteamClientDll64", NULL, REG_SZ, (LPBYTE)"", 0);
+			RegSetValueExW(Registrykey, L"SteamClientDll64", NULL, REG_SZ, (LPBYTE)"", 0);
 		}
 	}
 	RegSetValueExA(Registrykey, "Universe", NULL, REG_SZ, (LPBYTE)"Public", (DWORD)lstrlenA("Public") + 1);
@@ -161,11 +164,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	CloseHandle(processInfo.hThread);
 
 	if (orig_steam) {
-		if (RegOpenKeyExA(HKEY_CURRENT_USER, "Software\\Valve\\Steam\\ActiveProcess", 0, KEY_ALL_ACCESS, &Registrykey) == ERROR_SUCCESS)
+		if (RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Valve\\Steam\\ActiveProcess", 0, KEY_ALL_ACCESS, &Registrykey) == ERROR_SUCCESS)
 		{
 			// Restore the values.
-			RegSetValueExA(Registrykey, "SteamClientDll", NULL, REG_SZ, (LPBYTE)OrgSteamCDir, (DWORD)lstrlenA(OrgSteamCDir) + 1);
-			RegSetValueExA(Registrykey, "SteamClientDll64", NULL, REG_SZ, (LPBYTE)OrgSteamCDir64, (DWORD)lstrlenA(OrgSteamCDir64) + 1);
+			RegSetValueExW(Registrykey, L"SteamClientDll", NULL, REG_SZ, (LPBYTE)OrgSteamCDir, Size1);
+			RegSetValueExW(Registrykey, L"SteamClientDll64", NULL, REG_SZ, (LPBYTE)OrgSteamCDir64, Size2);
 
 			// Close the HKEY Handle.
 			RegCloseKey(Registrykey);

@@ -128,6 +128,8 @@
 #include "isteammusic.h"
 #include "isteammusicremote.h"
 #include "isteamhttp.h"
+#include "isteamhttp001.h"
+#include "isteamhttp002.h"
 #include "isteamcontroller.h"
 #include "isteamcontroller001.h"
 #include "isteamcontroller003.h"

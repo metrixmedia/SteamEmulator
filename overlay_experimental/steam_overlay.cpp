@@ -657,22 +657,24 @@ void Steam_Overlay::OverlayProc()
             std::lock_guard<std::recursive_mutex> lock(overlay_mutex);
             if (!friends.empty())
             {
-                ImGui::ListBoxHeader("##label", friends.size());
-                std::for_each(friends.begin(), friends.end(), [this](std::pair<Friend const, friend_window_state> &i)
+                if (ImGui::ListBoxHeader("##label", friends.size()))
                 {
-                    ImGui::PushID(i.second.id-base_friend_window_id+base_friend_item_id);
-
-                    ImGui::Selectable(i.second.window_title.c_str(), false, ImGuiSelectableFlags_AllowDoubleClick);
-                    BuildContextMenu(i.first, i.second);
-                    if (ImGui::IsItemClicked() && ImGui::IsMouseDoubleClicked(0))
+                    std::for_each(friends.begin(), friends.end(), [this](std::pair<Friend const, friend_window_state> &i)
                     {
-                        i.second.window_state |= window_state_show;
-                    }
-                    ImGui::PopID();
+                        ImGui::PushID(i.second.id-base_friend_window_id+base_friend_item_id);
 
-                    BuildFriendWindow(i.first, i.second);
-                });
-                ImGui::ListBoxFooter();
+                        ImGui::Selectable(i.second.window_title.c_str(), false, ImGuiSelectableFlags_AllowDoubleClick);
+                        BuildContextMenu(i.first, i.second);
+                        if (ImGui::IsItemClicked() && ImGui::IsMouseDoubleClicked(0))
+                        {
+                            i.second.window_state |= window_state_show;
+                        }
+                        ImGui::PopID();
+
+                        BuildFriendWindow(i.first, i.second);
+                    });
+                    ImGui::ListBoxFooter();
+                }
             }
         }
         ImGui::End();
@@ -698,7 +700,7 @@ void Steam_Overlay::Callback(Common_Message *msg)
         {
             Steam_Messages const& steam_message = msg->steam_messages();
             // Change color to cyan for friend
-            friend_info->second.chat_history.append("\x1""00FFFFFF", 9).append(steam_message.message()).append("\n", 1);
+            friend_info->second.chat_history.append(steam_message.message()).append("\n", 1);
             if (!(friend_info->second.window_state & window_state_show))
             {
                 friend_info->second.window_state |= window_state_need_attention;
@@ -758,7 +760,7 @@ void Steam_Overlay::RunCallbacks()
                     msg.set_dest_id(friend_id);
                     network->sendTo(&msg, true);
 
-                    friend_info->second.chat_history.append("\x1""00FF00FF", 9).append(input).append("\n", 1);
+                    friend_info->second.chat_history.append(input).append("\n", 1);
                 }
                 *input = 0; // Reset the input field
                 friend_info->second.window_state &= ~window_state_send_message;
