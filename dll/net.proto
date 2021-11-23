@@ -40,6 +40,7 @@ message Lobby {
         uint64 id = 1;
         uint32 ip = 2;
         uint32 port = 3;
+        uint32 num_update = 4;
     }
 
     Gameserver gameserver = 5;

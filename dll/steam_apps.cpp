@@ -16,6 +16,7 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include "steam_apps.h"
+#include "../sha/sha1.hpp"
 
 Steam_Apps::Steam_Apps(Settings *settings, class SteamCallResults *callback_results)
 {
@@ -57,7 +58,7 @@ const char *Steam_Apps::GetAvailableGameLanguages()
 {
     PRINT_DEBUG("GetAvailableGameLanguages\n");
     //TODO?
-    return "";
+    return settings->get_language();
 }
 
 
@@ -201,6 +202,7 @@ uint32 Steam_Apps::GetInstalledDepots( DepotId_t *pvecDepots, uint32 cMaxDepots 
 uint32 Steam_Apps::GetAppInstallDir( AppId_t appID, char *pchFolder, uint32 cchFolderBufferSize )
 {
     PRINT_DEBUG("GetAppInstallDir %u %p %u\n", appID, pchFolder, cchFolderBufferSize);
+    std::lock_guard<std::recursive_mutex> lock(global_mutex);
     //TODO return real path instead of dll path
     std::string installed_path = settings->getAppInstallPath(appID);
 
@@ -262,7 +264,7 @@ bool Steam_Apps::GetDlcDownloadProgress( AppId_t nAppID, uint64 *punBytesDownloa
 int Steam_Apps::GetAppBuildId()
 {
     PRINT_DEBUG("GetAppBuildId\n");
-    return 10;
+    return this->settings->build_id;
 }
 
 
@@ -279,8 +281,23 @@ void Steam_Apps::RequestAllProofOfPurchaseKeys()
 STEAM_CALL_RESULT( FileDetailsResult_t )
 SteamAPICall_t Steam_Apps::GetFileDetails( const char* pszFileName )
 {
-    PRINT_DEBUG("GetFileDetails\n");
-    return 0;
+    PRINT_DEBUG("GetFileDetails %s\n", pszFileName);
+    FileDetailsResult_t data = {};
+    //TODO? this function should only return found if file is actually part of the steam depots
+    if (file_exists_(pszFileName)) {
+        data.m_eResult = k_EResultOK; //
+        std::ifstream stream(utf8_decode(pszFileName), std::ios::binary);
+        SHA1 checksum;
+        checksum.update(stream);
+        checksum.final().copy((char *)data.m_FileSHA, sizeof(data.m_FileSHA));
+        data.m_ulFileSize = file_size_(pszFileName);
+        //TODO data.m_unFlags; 0 is file //TODO: check if 64 is folder
+    } else {
+        data.m_eResult = k_EResultFileNotFound;
+    }
+
+    std::lock_guard<std::recursive_mutex> lock(global_mutex);
+    return callback_results->addCallResult(data.k_iCallback, &data, sizeof(data));
 }
 
 // Get command line if game was launched via Steam URL, e.g. steam://run/<appid>//<command line>/.

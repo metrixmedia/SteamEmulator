@@ -21,6 +21,9 @@
 #define STB_IMAGE_STATIC
 #define STBI_ONLY_PNG
 #define STBI_ONLY_JPEG
+#if defined(__WINDOWS__)
+#define STBI_WINDOWS_UTF8
+#endif
 #include "../stb/stb_image.h"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -166,49 +169,93 @@ bool Local_Storage::save_screenshot(std::string const& image_path, uint8_t* img_
 #else
 #if defined(__WINDOWS__)
 
-static BOOL DirectoryExists(LPCSTR szPath)
+static BOOL DirectoryExists(LPCWSTR szPath)
 {
-  DWORD dwAttrib = GetFileAttributesA(szPath);
+  DWORD dwAttrib = GetFileAttributesW(szPath);
 
   return (dwAttrib != INVALID_FILE_ATTRIBUTES &&
     (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 }
 
-static void createDirectoryRecursively(std::string path)
+static void createDirectoryRecursively(std::wstring path)
 {
   unsigned long long pos = 0;
   do
   {
-    pos = path.find_first_of("\\/", pos + 1);
-    CreateDirectoryA(path.substr(0, pos).c_str(), NULL);
+    pos = path.find_first_of(L"\\/", pos + 1);
+    CreateDirectoryW(path.substr(0, pos).c_str(), NULL);
   } while (pos != std::string::npos);
 }
 
-static void create_directory(std::string strPath)
+static void create_directory(std::string in_path)
 {
+    std::wstring strPath = utf8_decode(in_path);
     if (DirectoryExists(strPath.c_str()) == FALSE)
         createDirectoryRecursively(strPath);
 }
 
-static std::vector<struct File_Data> get_filenames(std::string strPath)
+static std::vector<struct File_Data> get_filenames(std::string in_path)
 {
     std::vector<struct File_Data> output;
-    strPath = strPath.append("\\*");
-    WIN32_FIND_DATAA ffd;
+    in_path = in_path.append("\\*");
+    WIN32_FIND_DATAW ffd;
     HANDLE hFind = INVALID_HANDLE_VALUE;
 
+    std::wstring strPath = utf8_decode(in_path);
     // Start iterating over the files in the path directory.
-    hFind = ::FindFirstFileA (strPath.c_str(), &ffd);
+    hFind = ::FindFirstFileW (strPath.c_str(), &ffd);
     if (hFind != INVALID_HANDLE_VALUE)
     {
         do // Managed to locate and create an handle to that folder.
         {
-            if (strcmp(".", ffd.cFileName) == 0) continue;
-            if (strcmp("..", ffd.cFileName) == 0) continue;
+            if (wcscmp(L".", ffd.cFileName) == 0) continue;
+            if (wcscmp(L"..", ffd.cFileName) == 0) continue;
             struct File_Data f_data;
-            f_data.name = ffd.cFileName;
+            f_data.name = utf8_encode(ffd.cFileName);
             output.push_back(f_data);
-        } while (::FindNextFileA(hFind, &ffd) == TRUE);
+        } while (::FindNextFileW(hFind, &ffd) == TRUE);
+        ::FindClose(hFind);
+    } else {
+        //printf("Failed to find path: %s", strPath.c_str());
+    }
+
+    return output;
+}
+
+static std::vector<struct File_Data> get_filenames_recursive_w(std::wstring base_path)
+{
+    if (base_path.back() == *L"\\")
+        base_path.pop_back();
+    std::vector<struct File_Data> output;
+    std::wstring strPath = base_path;
+    strPath = strPath.append(L"\\*");
+    WIN32_FIND_DATAW ffd;
+    HANDLE hFind = INVALID_HANDLE_VALUE;
+
+    // Start iterating over the files in the path directory.
+    hFind = ::FindFirstFileW (strPath.c_str(), &ffd);
+    if (hFind != INVALID_HANDLE_VALUE)
+    {
+        do // Managed to locate and create an handle to that folder.
+        {
+            if (wcscmp(L".", ffd.cFileName) == 0) continue;
+            if (wcscmp(L"..", ffd.cFileName) == 0) continue;
+            if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+                // Construct new path from our base path
+                std::wstring dir_name = ffd.cFileName;
+
+                std::wstring path = base_path;
+                path += L"\\";
+                path += dir_name;
+
+                std::vector<struct File_Data> lower = get_filenames_recursive_w(path);
+                std::transform(lower.begin(), lower.end(), std::back_inserter(output), [&dir_name](File_Data f) {f.name = utf8_encode(dir_name) + "\\" + f.name; return f;});
+            } else {
+                File_Data f;
+                f.name = utf8_encode(ffd.cFileName);
+                output.push_back(f);
+            }
+        } while (::FindNextFileW(hFind, &ffd) == TRUE);
         ::FindClose(hFind);
     } else {
         //printf("Failed to find path: %s", strPath.c_str());
@@ -219,44 +266,7 @@ static std::vector<struct File_Data> get_filenames(std::string strPath)
 
 static std::vector<struct File_Data> get_filenames_recursive(std::string base_path)
 {
-    if (base_path.back() == *PATH_SEPARATOR)
-        base_path.pop_back();
-    std::vector<struct File_Data> output;
-    std::string strPath = base_path;
-    strPath = strPath.append("\\*");
-    WIN32_FIND_DATAA ffd;
-    HANDLE hFind = INVALID_HANDLE_VALUE;
-
-    // Start iterating over the files in the path directory.
-    hFind = ::FindFirstFileA (strPath.c_str(), &ffd);
-    if (hFind != INVALID_HANDLE_VALUE)
-    {
-        do // Managed to locate and create an handle to that folder.
-        {
-            if (strcmp(".", ffd.cFileName) == 0) continue;
-            if (strcmp("..", ffd.cFileName) == 0) continue;
-            if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-                // Construct new path from our base path
-                std::string dir_name = ffd.cFileName;
-
-                std::string path = base_path;
-                path += PATH_SEPARATOR;
-                path += dir_name;
-
-                std::vector<struct File_Data> lower = get_filenames_recursive(path);
-                std::transform(lower.begin(), lower.end(), std::back_inserter(output), [&dir_name](File_Data f) {f.name = dir_name + "\\" + f.name; return f;});
-            } else {
-                File_Data f;
-                f.name = ffd.cFileName;
-                output.push_back(f);
-            }
-        } while (::FindNextFileA(hFind, &ffd) == TRUE);
-        ::FindClose(hFind);
-    } else {
-        //printf("Failed to find path: %s", strPath.c_str());
-    }
-
-    return output;
+    return get_filenames_recursive_w(utf8_decode(base_path));
 }
 
 #else
@@ -403,12 +413,12 @@ std::string Local_Storage::get_user_appdata_path()
 {
     std::string user_appdata_path = "SAVE";
 #if defined(STEAM_WIN32)
-    CHAR szPath[MAX_PATH] = {};
+    WCHAR szPath[MAX_PATH] = {};
 
-    HRESULT hr = SHGetFolderPathA(NULL, CSIDL_APPDATA, NULL, 0, szPath);
+    HRESULT hr = SHGetFolderPathW(NULL, CSIDL_APPDATA, NULL, 0, szPath);
 
     if (SUCCEEDED(hr)) {
-        user_appdata_path = szPath;
+        user_appdata_path = utf8_encode(szPath);
     }
 
 #else
@@ -504,7 +514,7 @@ int Local_Storage::store_file_data(std::string folder, std::string file, char *d
 
     create_directory(folder + file_folder);
     std::ofstream myfile;
-    myfile.open(folder + file, std::ios::binary | std::ios::out);
+    myfile.open(utf8_decode(folder + file), std::ios::binary | std::ios::out);
     if (!myfile.is_open()) return -1;
     myfile.write(data, length);
     int position = myfile.tellp();
@@ -553,7 +563,7 @@ int Local_Storage::store_data_settings(std::string file, char *data, unsigned in
 int Local_Storage::get_file_data(std::string full_path, char *data, unsigned int max_length, unsigned int offset)
 {
     std::ifstream myfile;
-    myfile.open(full_path, std::ios::binary | std::ios::in);
+    myfile.open(utf8_decode(full_path), std::ios::binary | std::ios::in);
     if (!myfile.is_open()) return -1;
 
     myfile.seekg (offset, std::ios::beg);
@@ -597,20 +607,7 @@ bool Local_Storage::file_exists(std::string folder, std::string file)
     }
 
     std::string full_path = save_directory + appid + folder + file;
-    struct stat buffer;   
-
-    if (stat(full_path.c_str(), &buffer) != 0)
-        return false;
-
-#if defined(STEAM_WIN32)
-    if ( buffer.st_mode & _S_IFDIR)
-        return false;
-#else
-    if (S_ISDIR(buffer.st_mode))
-        return false;
-#endif
-
-    return true;
+    return file_exists_(full_path);
 }
 
 unsigned int Local_Storage::file_size(std::string folder, std::string file)
@@ -621,9 +618,7 @@ unsigned int Local_Storage::file_size(std::string folder, std::string file)
     }
 
     std::string full_path = save_directory + appid + folder + file;
-    struct stat buffer = {};   
-    if (stat (full_path.c_str(), &buffer) != 0) return 0;
-    return buffer.st_size;
+    return file_size_(full_path);
 }
 
 bool Local_Storage::file_delete(std::string folder, std::string file)
@@ -634,7 +629,11 @@ bool Local_Storage::file_delete(std::string folder, std::string file)
     }
 
     std::string full_path = save_directory + appid + folder + file;
+#if defined(STEAM_WIN32)
+    return _wremove(utf8_decode(full_path).c_str()) == 0;
+#else
     return remove(full_path.c_str()) == 0;
+#endif
 }
 
 uint64_t Local_Storage::file_timestamp(std::string folder, std::string file)
@@ -645,8 +644,14 @@ uint64_t Local_Storage::file_timestamp(std::string folder, std::string file)
     }
 
     std::string full_path = save_directory + appid + folder + file;
+
+#if defined(STEAM_WIN32)
+    struct _stat buffer = {};
+    if (_wstat(utf8_decode(full_path).c_str(), &buffer) != 0) return 0;
+#else
     struct stat buffer = {};
     if (stat (full_path.c_str(), &buffer) != 0) return 0;
+#endif
     return buffer.st_mtime;
 }
 
@@ -695,7 +700,7 @@ bool Local_Storage::update_save_filenames(std::string folder)
 
 bool Local_Storage::load_json(std::string full_path, nlohmann::json& json)
 {
-    std::ifstream inventory_file(full_path);
+    std::ifstream inventory_file(utf8_decode(full_path));
     // If there is a file and we opened it
     if (inventory_file)
     {
@@ -745,7 +750,7 @@ bool Local_Storage::write_json_file(std::string folder, std::string const&file, 
 
     create_directory(inv_path);
 
-    std::ofstream inventory_file(full_path, std::ios::trunc | std::ios::out);
+    std::ofstream inventory_file(utf8_decode(full_path), std::ios::trunc | std::ios::out);
     if (inventory_file)
     {
         inventory_file << std::setw(2) << json;
@@ -760,19 +765,14 @@ bool Local_Storage::write_json_file(std::string folder, std::string const&file, 
 std::vector<image_pixel_t> Local_Storage::load_image(std::string const& image_path)
 {
     std::vector<image_pixel_t> res;
-    FILE* hFile = fopen(image_path.c_str(), "r");
-    if (hFile != nullptr)
+    int width, height;
+    image_pixel_t* img = (image_pixel_t*)stbi_load(image_path.c_str(), &width, &height, nullptr, 4);
+    if (img != nullptr)
     {
-        int width, height;
-        image_pixel_t* img = (image_pixel_t*)stbi_load_from_file(hFile, &width, &height, nullptr, 4);
-        if (img != nullptr)
-        {
-            res.resize(width*height);
-            std::copy(img, img + width * height, res.begin());
+        res.resize(width*height);
+        std::copy(img, img + width * height, res.begin());
 
-            stbi_image_free(img);
-        }
-        fclose(hFile);
+        stbi_image_free(img);
     }
     return res;
 }

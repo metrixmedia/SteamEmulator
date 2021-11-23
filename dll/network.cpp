@@ -308,7 +308,7 @@ static int receive_packet(sock_t sock, IP_PORT *ip_port, char *data, unsigned lo
     return -1;
 }
 
-static bool send_broadcasts(sock_t sock, uint16 port, char *data, unsigned long length, std::vector<uint32_t> *custom_broadcasts)
+static bool send_broadcasts(sock_t sock, uint16 port, char *data, unsigned long length, std::vector<IP_PORT> *custom_broadcasts)
 {
     static std::chrono::high_resolution_clock::time_point last_get_broadcast_info;
     if (number_broadcasts < 0 || check_timedout(last_get_broadcast_info, 60.0)) {
@@ -338,11 +338,8 @@ static bool send_broadcasts(sock_t sock, uint16 port, char *data, unsigned long 
      * This is useful in cases of undetected network interfaces
      */
     PRINT_DEBUG("start custom broadcasts\n");
-    IP_PORT custom_targeted_broadcast;
-    custom_targeted_broadcast.port = port;
-    for(auto &ip : *custom_broadcasts) {
-        custom_targeted_broadcast.ip = ip;
-        send_packet_to(sock, custom_targeted_broadcast, data, length);
+    for(auto &addr : *custom_broadcasts) {
+        send_packet_to(sock, addr, data, length);
     }
 
     PRINT_DEBUG("end custom broadcasts\n");
@@ -487,11 +484,19 @@ static void socket_timeouts(struct TCP_Socket &socket, double extra_time)
     }
 }
 
-std::set<uint32> Networking::resolve_ip(std::string dns)
+std::set<IP_PORT> Networking::resolve_ip(std::string dns)
 {
     run_at_startup();
-    std::set<uint32> ips;
+    std::set<IP_PORT> ips;
     struct addrinfo* result = NULL;
+
+    uint16 port = 0;
+
+    auto port_sindex = dns.find(":", 0);
+    if (port_sindex != std::string::npos) {
+        port = (uint16)atoi(dns.substr(port_sindex + 1).c_str());
+        dns = dns.substr(0, port_sindex);
+    }
 
     if (getaddrinfo(dns.c_str(), NULL, NULL, &result) == 0) {
         for (struct addrinfo *res = result; res != NULL; res = res->ai_next) {
@@ -500,7 +505,10 @@ std::set<uint32> Networking::resolve_ip(std::string dns)
                 struct sockaddr_in *ipv4 = (struct sockaddr_in *)res->ai_addr;
                 uint32 ip;
                 memcpy(&ip, &ipv4->sin_addr, sizeof(ip));
-                ips.insert(ntohl(ip));
+                IP_PORT addr;
+                addr.ip = ntohl(ip);
+                addr.port = port;
+                ips.insert(addr);
             }
         }
     }
@@ -733,7 +741,7 @@ bool Networking::handle_low_level_udp(Common_Message *msg, IP_PORT ip_port)
 
 #define NUM_TCP_WAITING 128
 
-Networking::Networking(CSteamID id, uint32 appid, uint16 port, std::set<uint32_t> *custom_broadcasts, bool disable_sockets)
+Networking::Networking(CSteamID id, uint32 appid, uint16 port, std::set<IP_PORT> *custom_broadcasts, bool disable_sockets)
 {
     tcp_port = udp_port = port;
     own_ip = 0x7F000001;
@@ -749,7 +757,11 @@ Networking::Networking(CSteamID id, uint32 appid, uint16 port, std::set<uint32_t
     }
 
     if (custom_broadcasts) {
-        std::transform(custom_broadcasts->begin(), custom_broadcasts->end(), std::back_inserter(this->custom_broadcasts), [](uint32 ip) {return htonl(ip);});
+        std::transform(custom_broadcasts->begin(), custom_broadcasts->end(), std::back_inserter(this->custom_broadcasts), [](IP_PORT addr) {addr.ip = htonl(addr.ip); addr.port = htons(addr.port); return addr; });
+        for (auto& addr : this->custom_broadcasts) {
+            if (addr.port == htons(0))
+                addr.port = htons(port);
+        }
     }
 
     run_at_startup();

@@ -559,6 +559,12 @@ SteamIPAddress_t Steam_GameServer::GetPublicIP()
     return ip;
 }
 
+void Steam_GameServer::GetPublicIP_fix(SteamIPAddress_t *out)
+{
+    PRINT_DEBUG("GetPublicIP_fix\n");
+    if (out) *out = GetPublicIP();
+}
+
 // These are in GameSocketShare mode, where instead of ISteamGameServer creating its own
 // socket to talk to the master server on, it lets the game use its socket to forward messages
 // back and forth. This prevents us from requiring server ops to open up yet another port

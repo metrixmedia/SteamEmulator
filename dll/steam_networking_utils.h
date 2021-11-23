@@ -30,6 +30,7 @@ public ISteamNetworkingUtils
     std::chrono::time_point<std::chrono::steady_clock> initialized_time = std::chrono::steady_clock::now();
     FSteamNetworkingSocketsDebugOutput debug_function;
     bool relay_initialized = false;
+    bool init_relay = false;
 
 public:
 static void steam_callback(void *object, Common_Message *msg)
@@ -95,8 +96,19 @@ SteamNetworkingMessage_t *AllocateMessage( int cbAllocateBuffer )
 bool InitializeRelayAccess()
 {
     PRINT_DEBUG("Steam_Networking_Utils::InitializeRelayAccess\n");
-    relay_initialized = true;
-    return true;
+    init_relay = true;
+    return relay_initialized;
+}
+
+SteamRelayNetworkStatus_t get_network_status()
+{
+    SteamRelayNetworkStatus_t data = {};
+    data.m_eAvail = k_ESteamNetworkingAvailability_Current;
+    data.m_bPingMeasurementInProgress = 0;
+    data.m_eAvailAnyRelay = k_ESteamNetworkingAvailability_Current;
+    data.m_eAvailNetworkConfig = k_ESteamNetworkingAvailability_Current;
+    strcpy(data.m_debugMsg, "OK");
+    return data;
 }
 
 /// Fetch current status of the relay network.
@@ -115,11 +127,7 @@ ESteamNetworkingAvailability GetRelayNetworkStatus( SteamRelayNetworkStatus_t *p
     //TODO: check if this is how real steam returns it
     SteamRelayNetworkStatus_t data = {};
     if (relay_initialized) {
-        data.m_eAvail = k_ESteamNetworkingAvailability_Current;
-        data.m_bPingMeasurementInProgress = 0;
-        data.m_eAvailAnyRelay = k_ESteamNetworkingAvailability_Current;
-        data.m_eAvailNetworkConfig = k_ESteamNetworkingAvailability_Current;
-        strcpy(data.m_debugMsg, "OK");
+        data = get_network_status();
     }
 
     if (pDetails) {
@@ -173,8 +181,8 @@ bool ParsePingLocationString( const char *pszString, SteamNetworkPingLocation_t 
 bool CheckPingDataUpToDate( float flMaxAgeSeconds )
 {
     PRINT_DEBUG("Steam_Networking_Utils::CheckPingDataUpToDate %f\n", flMaxAgeSeconds);
-    relay_initialized = true;
-    return true;
+    init_relay = true;
+    return relay_initialized;
 }
 
 
@@ -628,6 +636,11 @@ bool SteamNetworkingIdentity_ParseString( SteamNetworkingIdentity *pIdentity, co
 
 void RunCallbacks()
 {
+    if (init_relay && !relay_initialized) {
+        relay_initialized = true;
+        SteamRelayNetworkStatus_t data = get_network_status();
+        callbacks->addCBResult(data.k_iCallback, &data, sizeof(data));
+    }
 }
 
 void Callback(Common_Message *msg)

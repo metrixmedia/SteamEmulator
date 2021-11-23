@@ -139,6 +139,8 @@ public:
     unsigned steam_pipe_counter = 1;
     std::map<HSteamPipe, enum Steam_Pipe> steam_pipes;
 
+    bool gameserver_has_ipv6_functions;
+
     Steam_Client();
     ~Steam_Client();
     	// Creates a communication pipe to the Steam client.

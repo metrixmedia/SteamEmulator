@@ -28,14 +28,14 @@ randombytes(char * const buf, const size_t size)
 
 std::string get_env_variable(std::string name)
 {
-    char env_variable[1024];
-    DWORD ret = GetEnvironmentVariableA(name.c_str(), env_variable, sizeof(env_variable));
+    wchar_t env_variable[1024];
+    DWORD ret = GetEnvironmentVariableW(utf8_decode(name).c_str(), env_variable, _countof(env_variable));
     if (ret <= 0) {
         return std::string();
     }
 
     env_variable[ret] = 0;
-    return std::string(env_variable);
+    return utf8_encode(env_variable);
 }
 
 #else
@@ -194,9 +194,9 @@ std::string get_full_lib_path()
 {
     std::string program_path;
 #if defined(__WINDOWS__)
-    char   DllPath[MAX_PATH] = {0};
-    GetModuleFileName((HINSTANCE)&__ImageBase, DllPath, _countof(DllPath));
-    program_path = DllPath;
+    wchar_t   DllPath[2048] = {0};
+    GetModuleFileNameW((HINSTANCE)&__ImageBase, DllPath, _countof(DllPath));
+    program_path = utf8_encode(DllPath);
 #else
     program_path = get_lib_path();
 #endif
@@ -240,17 +240,53 @@ std::string canonical_path(std::string path)
 {
     std::string output;
 #if defined(STEAM_WIN32)
-    char *buffer = _fullpath(NULL, path.c_str(), 0);
+    wchar_t *buffer = _wfullpath(NULL, utf8_decode(path).c_str(), 0);
+    if (buffer) {
+        output = utf8_encode(buffer);
+        free(buffer);
+    }
 #else
     char *buffer = canonicalize_file_name(path.c_str());
-#endif
-
     if (buffer) {
         output = buffer;
         free(buffer);
     }
+#endif
 
     return output;
+}
+
+bool file_exists_(std::string full_path)
+{
+#if defined(STEAM_WIN32)
+    struct _stat buffer;
+    if (_wstat(utf8_decode(full_path).c_str(), &buffer) != 0)
+        return false;
+
+    if ( buffer.st_mode & _S_IFDIR)
+        return false;
+#else
+    struct stat buffer;
+    if (stat(full_path.c_str(), &buffer) != 0)
+        return false;
+
+    if (S_ISDIR(buffer.st_mode))
+        return false;
+#endif
+
+    return true;
+}
+
+unsigned int file_size_(std::string full_path)
+{
+#if defined(STEAM_WIN32)
+    struct _stat buffer = {};
+    if (_wstat(utf8_decode(full_path).c_str(), &buffer) != 0) return 0;
+#else
+    struct stat buffer = {};
+    if (stat (full_path.c_str(), &buffer) != 0) return 0;
+#endif
+    return buffer.st_size;
 }
 
 static void steam_auth_ticket_callback(void *object, Common_Message *msg)
@@ -633,7 +669,7 @@ static void load_dll()
     PRINT_DEBUG("Crack file %s\n", path.c_str());
     if (file_exists(path)) {
         redirect_crackdll();
-        crack_dll_handle = LoadLibraryA(path.c_str());
+        crack_dll_handle = LoadLibraryW(utf8_decode(path).c_str());
         unredirect_crackdll();
         PRINT_DEBUG("Loaded crack file\n");
     }
@@ -657,7 +693,7 @@ static void load_dlls()
         if (full_path[length - 4] != '.') continue;
 
         PRINT_DEBUG("Trying to load %s\n", full_path.c_str());
-        if (LoadLibraryA(full_path.c_str())) {
+        if (LoadLibraryW(utf8_decode(full_path).c_str())) {
             PRINT_DEBUG("LOADED %s\n", full_path.c_str());
         }
     }

@@ -278,6 +278,7 @@ public:
 	// connect to
 	uint32 GetPublicIP_old();
 	SteamIPAddress_t GetPublicIP();
+	void GetPublicIP_fix(SteamIPAddress_t *out);
 
 // These are in GameSocketShare mode, where instead of ISteamGameServer creating its own
 // socket to talk to the master server on, it lets the game use its socket to forward messages

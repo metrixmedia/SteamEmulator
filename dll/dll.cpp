@@ -49,7 +49,7 @@ static void load_old_interface_versions()
     static bool loaded = false;
     if (loaded) return;
     std::string interfaces_path = Local_Storage::get_program_path() + "steam_interfaces.txt";
-    std::ifstream input( interfaces_path );
+    std::ifstream input( utf8_decode(interfaces_path) );
     PRINT_DEBUG("load from: %s\n", interfaces_path.c_str());
 
     for( std::string line; getline( input, line ); )
@@ -136,7 +136,7 @@ Steam_Client *get_steam_clientserver_old()
 static bool steamclient_has_ipv6_functions_flag;
 bool steamclient_has_ipv6_functions()
 {
-    return steamclient_has_ipv6_functions_flag;
+    return steamclient_has_ipv6_functions_flag || get_steam_client()->gameserver_has_ipv6_functions;
 }
 
 static void *create_client_interface(const char *ver)
@@ -262,6 +262,7 @@ STEAMAPI_API void S_CALLTYPE SteamAPI_Shutdown()
     PRINT_DEBUG("SteamAPI_Shutdown\n");
     get_steam_client()->clientShutdown();
     get_steam_client()->BReleaseSteamPipe(user_steam_pipe);
+    get_steam_client()->BShutdownIfAllPipesClosed();
     user_steam_pipe = 0;
     --global_counter;
     old_user_instance = NULL;
@@ -652,6 +653,7 @@ STEAMAPI_API void SteamGameServer_Shutdown()
     PRINT_DEBUG("SteamGameServer_Shutdown\n");
     get_steam_client()->serverShutdown();
     get_steam_client()->BReleaseSteamPipe(server_steam_pipe);
+    get_steam_client()->BShutdownIfAllPipesClosed();
     server_steam_pipe = 0;
     --global_counter;
     g_pSteamClientGameServer = NULL; //TODO: check if this actually gets nulled when SteamGameServer_Shutdown is called

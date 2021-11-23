@@ -623,7 +623,10 @@ bool GetItemDefinitionIDs(
 
     PRINT_DEBUG("array_size %u\n", *punItemDefIDsArraySize);
 
-    if (pItemDefIDs == nullptr)
+    if (!item_definitions_loaded)
+        return false;
+
+    if (pItemDefIDs == nullptr || *punItemDefIDsArraySize == 0)
     {
         *punItemDefIDsArraySize = defined_items.size();
         return true;

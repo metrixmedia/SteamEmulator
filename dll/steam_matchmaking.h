@@ -559,23 +559,35 @@ void Create_pending_lobbies()
             enter_lobby(&lobby, settings->get_local_steam_id());
             lobbies.push_back(lobby);
 
-            LobbyCreated_t data;
-            data.m_eResult = k_EResultOK;
-            data.m_ulSteamIDLobby = lobby.room_id();
-            callback_results->addCallResult(p_c->api_id, data.k_iCallback, &data, sizeof(data));
-            callbacks->addCBResult(data.k_iCallback, &data, sizeof(data));
-
-            {
-                LobbyEnter_t data;
-                data.m_ulSteamIDLobby = lobby.room_id();
-                data.m_rgfChatPermissions = 0; //Unused - Always 0
-                data.m_bLocked = false;
-                data.m_EChatRoomEnterResponse = k_EChatRoomEnterResponseSuccess;
+            if (settings->disable_lobby_creation) {
+                LobbyCreated_t data;
+                data.m_eResult = k_EResultFail;
+                data.m_ulSteamIDLobby = 0;
+                callback_results->addCallResult(p_c->api_id, data.k_iCallback, &data, sizeof(data));
                 callbacks->addCBResult(data.k_iCallback, &data, sizeof(data));
+            } else {
+                LobbyCreated_t data;
+                data.m_eResult = k_EResultOK;
+                data.m_ulSteamIDLobby = lobby.room_id();
+                callback_results->addCallResult(p_c->api_id, data.k_iCallback, &data, sizeof(data));
+                callbacks->addCBResult(data.k_iCallback, &data, sizeof(data));
+
+                {
+                    LobbyEnter_t data;
+                    data.m_ulSteamIDLobby = lobby.room_id();
+                    data.m_rgfChatPermissions = 0; //Unused - Always 0
+                    if (p_c->eLobbyType == k_ELobbyTypePrivate)
+                        data.m_bLocked = true;
+                    else
+                        data.m_bLocked = false;
+                    data.m_EChatRoomEnterResponse = k_EChatRoomEnterResponseSuccess;
+                    callbacks->addCBResult(data.k_iCallback, &data, sizeof(data));
+                }
+
+                on_self_enter_leave_lobby(lobby_id, p_c->eLobbyType, false);
+                trigger_lobby_dataupdate(lobby_id, lobby_id, true);
             }
 
-            on_self_enter_leave_lobby(lobby_id, p_c->eLobbyType, false);
-            trigger_lobby_dataupdate(lobby_id, lobby_id, true);
             p_c = pending_creates.erase(p_c);
         } else {
             ++p_c;
@@ -993,6 +1005,7 @@ void SetLobbyGameServer( CSteamID steamIDLobby, uint32 unGameServerIP, uint16 un
         lobby->mutable_gameserver()->set_id(steamIDGameServer.ConvertToUint64());
         lobby->mutable_gameserver()->set_ip(unGameServerIP);
         lobby->mutable_gameserver()->set_port(unGameServerPort);
+        lobby->mutable_gameserver()->set_num_update(lobby->gameserver().num_update() + 1);
 
         send_gameservercreated_cb(lobby->room_id(), lobby->gameserver().id(), lobby->gameserver().ip(), lobby->gameserver().port());
         trigger_lobby_dataupdate(steamIDLobby, steamIDLobby, true);
@@ -1385,7 +1398,7 @@ void Callback(Common_Message *msg)
                         }
                     }
 
-                    if (((joined) || (we_are_in_lobby && !protobuf_message_equal(lobby->gameserver(), msg->lobby().gameserver()))) && (CSteamID((uint64)msg->lobby().gameserver().id()).IsValid() || msg->lobby().gameserver().ip())) {
+                    if ((joined && msg->lobby().gameserver().num_update()) || (we_are_in_lobby && (lobby->gameserver().num_update() != msg->lobby().gameserver().num_update()))) {
                         send_gameservercreated_cb(lobby->room_id(), msg->lobby().gameserver().id(), msg->lobby().gameserver().ip(), msg->lobby().gameserver().port());
                         trigger_lobby_dataupdate((uint64)lobby->room_id(), (uint64)lobby->room_id(), true);
                     }

@@ -38,6 +38,10 @@ typedef int sock_t;
 struct IP_PORT {
     uint32 ip;
     uint16 port;
+    bool operator <(const IP_PORT& other) const
+    {
+        return (ip < other.ip) || (ip == other.ip && port < other.port);
+    }
 };
 
 struct Network_Callback {
@@ -103,7 +107,7 @@ class Networking {
     std::vector<CSteamID> ids;
     uint32 appid;
     std::chrono::high_resolution_clock::time_point last_broadcast;
-    std::vector<uint32_t> custom_broadcasts;
+    std::vector<IP_PORT> custom_broadcasts;
 
     std::vector<struct TCP_Socket> accepted;
     std::recursive_mutex mutex;
@@ -120,8 +124,8 @@ class Networking {
 public:
     //NOTE: for all functions ips/ports are passed/returned in host byte order
     //ex: 127.0.0.1 should be passed as 0x7F000001
-    static std::set<uint32> resolve_ip(std::string dns);
-    Networking(CSteamID id, uint32 appid, uint16 port, std::set<uint32_t> *custom_broadcasts, bool disable_sockets);
+    static std::set<IP_PORT> resolve_ip(std::string dns);
+    Networking(CSteamID id, uint32 appid, uint16 port, std::set<IP_PORT> *custom_broadcasts, bool disable_sockets);
     void addListenId(CSteamID id);
     void setAppID(uint32 appid);
     void Run();

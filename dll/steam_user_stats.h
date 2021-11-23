@@ -54,6 +54,7 @@ private:
 
     nlohmann::json defined_achievements;
     nlohmann::json user_achievements;
+    std::vector<std::string> sorted_achievement_names;
 
 unsigned int find_leaderboard(std::string name)
 {
@@ -64,6 +65,17 @@ unsigned int find_leaderboard(std::string name)
     }
 
     return 0;
+}
+
+nlohmann::detail::iter_impl<nlohmann::json> defined_achievements_find(std::string key)
+{
+    return std::find_if(defined_achievements.begin(), defined_achievements.end(), [key](nlohmann::json& item) {
+            std::string name = static_cast<std::string const&>(item["name"]);
+            return key.size() == name.size() && std::equal(name.begin(), name.end(), key.begin(),
+                                                            [](char a, char b) {
+                                                                return tolower(a) == tolower(b);
+                                                            });
+        });
 }
 
 void load_achievements_db()
@@ -98,6 +110,7 @@ Steam_User_Stats(Settings *settings, Local_Storage *local_storage, class SteamCa
     for (auto & it : defined_achievements) {
         try {
             std::string name = static_cast<std::string const&>(it["name"]);
+            sorted_achievement_names.push_back(name);
             if (user_achievements.find(name) == user_achievements.end()) {
                 user_achievements[name]["earned"] = false;
                 user_achievements[name]["earned_time"] = static_cast<uint32>(0);
@@ -108,6 +121,13 @@ Steam_User_Stats(Settings *settings, Local_Storage *local_storage, class SteamCa
             it["hidden"] = std::to_string(it["hidden"].get<int>());
         } catch (...) {}
     }
+
+    //TODO: not sure if the sort is actually case insensitive, ach names seem to be treated by steam as case insensitive so I assume they are.
+    //need to find a game with achievements of different case names to confirm
+    std::sort(sorted_achievement_names.begin(), sorted_achievement_names.end(), [](const std::string lhs, const std::string rhs){
+        const auto result = std::mismatch(lhs.cbegin(), lhs.cend(), rhs.cbegin(), rhs.cend(), [](const unsigned char lhs, const unsigned char rhs){return std::tolower(lhs) == std::tolower(rhs);});
+        return result.second != rhs.cend() && (result.first == lhs.cend() || std::tolower(*result.first) < std::tolower(*result.second));}
+    );
 }
 
 // Ask the server to send down this user's data and achievements for this game
@@ -227,10 +247,11 @@ bool GetAchievement( const char *pchName, bool *pbAchieved )
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
 
     try {
-        auto it = std::find_if(defined_achievements.begin(), defined_achievements.end(), [pchName]( nlohmann::json &item ) {
-            return item["name"].get<std::string>() == pchName;
-        });
-        auto ach = user_achievements.find(pchName);
+        auto it = defined_achievements_find(pchName);
+        if (it == defined_achievements.end()) return false;
+        std::string pch_name = it->value("name", std::string());
+
+        auto ach = user_achievements.find(pch_name);
         if (it != defined_achievements.end() && ach != user_achievements.end()) {
             if(pbAchieved != nullptr) *pbAchieved = (*ach)["earned"];
             return true;
@@ -249,13 +270,14 @@ bool SetAchievement( const char *pchName )
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
 
     try {
-        auto it = std::find_if(defined_achievements.begin(), defined_achievements.end(), [pchName](nlohmann::json& item) {
-            return item["name"].get<std::string>() == pchName;
-        });
+        auto it = defined_achievements_find(pchName);
+        if (it == defined_achievements.end()) return false;
+        std::string pch_name = it->value("name", std::string());
+
         if (it != defined_achievements.end()) {
-            if (user_achievements.find(pchName) == user_achievements.end() || user_achievements[pchName].value("earned", false) == false) {
-                user_achievements[pchName]["earned"] = true;
-                user_achievements[pchName]["earned_time"] = std::chrono::duration_cast<std::chrono::duration<uint32>>(std::chrono::system_clock::now().time_since_epoch()).count();
+            if (user_achievements.find(pch_name) == user_achievements.end() || user_achievements[pch_name].value("earned", false) == false) {
+                user_achievements[pch_name]["earned"] = true;
+                user_achievements[pch_name]["earned_time"] = std::chrono::duration_cast<std::chrono::duration<uint32>>(std::chrono::system_clock::now().time_since_epoch()).count();
 #ifdef EMU_OVERLAY
                 overlay->AddAchievementNotification(it.value());
 #endif
@@ -276,12 +298,13 @@ bool ClearAchievement( const char *pchName )
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
 
     try {
-        auto it = std::find_if(defined_achievements.begin(), defined_achievements.end(), [pchName](nlohmann::json& item) {
-            return static_cast<std::string const&>(item["name"]) == pchName;
-        });
+        auto it = defined_achievements_find(pchName);
+        if (it == defined_achievements.end()) return false;
+        std::string pch_name = it->value("name", std::string());
+
         if (it != defined_achievements.end()) {
-            user_achievements[pchName]["earned"] = false;
-            user_achievements[pchName]["earned_time"] = static_cast<uint32>(0);
+            user_achievements[pch_name]["earned"] = false;
+            user_achievements[pch_name]["earned_time"] = static_cast<uint32>(0);
             save_achievements();
             return true;
         }
@@ -301,10 +324,11 @@ bool GetAchievementAndUnlockTime( const char *pchName, bool *pbAchieved, uint32 
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
 
     try {
-        auto it = std::find_if(defined_achievements.begin(), defined_achievements.end(), [pchName](nlohmann::json& item) {
-            return static_cast<std::string const&>(item["name"]) == pchName;
-        });
-        auto ach = user_achievements.find(pchName);
+        auto it = defined_achievements_find(pchName);
+        if (it == defined_achievements.end()) return false;
+        std::string pch_name = it->value("name", std::string());
+
+        auto ach = user_achievements.find(pch_name);
         if (it != defined_achievements.end() && ach != user_achievements.end()) {
             if(pbAchieved != nullptr) *pbAchieved = (*ach)["earned"];
             if(punUnlockTime != nullptr) *punUnlockTime = (*ach)["earned_time"];
@@ -367,9 +391,7 @@ const char * GetAchievementDisplayAttribute( const char *pchName, const char *pc
 
     if (strcmp (pchKey, "name") == 0) {
         try {
-            auto it = std::find_if(defined_achievements.begin(), defined_achievements.end(), [pchName](nlohmann::json& item) {
-                return static_cast<std::string const&>(item["name"]) == pchName;
-            });
+            auto it = defined_achievements_find(pchName);
             if (it != defined_achievements.end()) {
                 return it.value()["displayName"].get_ptr<std::string*>()->c_str();
             }
@@ -378,9 +400,7 @@ const char * GetAchievementDisplayAttribute( const char *pchName, const char *pc
 
     if (strcmp (pchKey, "desc") == 0) {
         try {
-            auto it = std::find_if(defined_achievements.begin(), defined_achievements.end(), [pchName](nlohmann::json& item) {
-                return static_cast<std::string const&>(item["name"]) == pchName;
-            });
+            auto it = defined_achievements_find(pchName);
             if (it != defined_achievements.end()) {
                 return it.value()["description"].get_ptr<std::string*>()->c_str();
             }
@@ -389,9 +409,7 @@ const char * GetAchievementDisplayAttribute( const char *pchName, const char *pc
 
     if (strcmp (pchKey, "hidden") == 0) {
         try {
-            auto it = std::find_if(defined_achievements.begin(), defined_achievements.end(), [pchName](nlohmann::json& item) {
-                return static_cast<std::string const&>(item["name"]) == pchName;
-            });
+            auto it = defined_achievements_find(pchName);
             if (it != defined_achievements.end()) {
                 return it.value()["hidden"].get_ptr<std::string*>()->c_str();
             }
@@ -406,15 +424,17 @@ const char * GetAchievementDisplayAttribute( const char *pchName, const char *pc
 // Calling this w/ N out of N progress will NOT set the achievement, the game must still do that.
 bool IndicateAchievementProgress( const char *pchName, uint32 nCurProgress, uint32 nMaxProgress )
 {
-    PRINT_DEBUG("IndicateAchievementProgress\n");
+    PRINT_DEBUG("IndicateAchievementProgress %s\n", pchName);
     if (pchName == nullptr) return false;
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
 
     try {
-        auto it = std::find_if(defined_achievements.begin(), defined_achievements.end(), [pchName](nlohmann::json& item) {
-            return static_cast<std::string const&>(item["name"]) == pchName;
-        });
-        auto ach = user_achievements.find(pchName);
+        auto it = defined_achievements_find(pchName);
+        if (it == defined_achievements.end()) return false;
+
+        std::string pch_name = it->value("name", std::string());
+
+        auto ach = user_achievements.find(pch_name);
         if (it != defined_achievements.end()) {
             bool achieved = false;
             if ( ach != user_achievements.end()) {
@@ -424,14 +444,14 @@ bool IndicateAchievementProgress( const char *pchName, uint32 nCurProgress, uint
             UserAchievementStored_t data = {};
             data.m_nGameID = settings->get_local_game_id().ToUint64();
             data.m_bGroupAchievement = false;
-            strncpy(data.m_rgchAchievementName, pchName, k_cchStatNameMax);
+            strncpy(data.m_rgchAchievementName, pch_name.c_str(), k_cchStatNameMax);
 
             if (achieved) {
                 data.m_nCurProgress = 0;
                 data.m_nMaxProgress = 0;
             } else {
-                user_achievements[pchName]["progress"] = nCurProgress;
-                user_achievements[pchName]["max_progress"] = nMaxProgress;
+                user_achievements[pch_name]["progress"] = nCurProgress;
+                user_achievements[pch_name]["max_progress"] = nMaxProgress;
                 data.m_nCurProgress = nCurProgress;
                 data.m_nMaxProgress = nMaxProgress;
             }
@@ -459,12 +479,11 @@ uint32 GetNumAchievements()
 const char * GetAchievementName( uint32 iAchievement )
 {
     PRINT_DEBUG("GetAchievementName\n");
-    try {
-        static std::string achievement_name;
-        achievement_name = defined_achievements[iAchievement]["name"].get<std::string>();
-        return achievement_name.c_str();
-    } catch (...) {}
-    return "";
+    if (iAchievement >= sorted_achievement_names.size()) {
+        return "";
+    }
+
+    return sorted_achievement_names[iAchievement].c_str();
 }
 
 
@@ -580,6 +599,12 @@ SteamAPICall_t FindOrCreateLeaderboard( const char *pchLeaderboardName, ELeaderb
 {
     PRINT_DEBUG("FindOrCreateLeaderboard %s\n", pchLeaderboardName);
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
+    if (!pchLeaderboardName) {
+        LeaderboardFindResult_t data;
+        data.m_hSteamLeaderboard = 0;
+        data.m_bLeaderboardFound = 0;
+        return callback_results->addCallResult(data.k_iCallback, &data, sizeof(data));
+    }
 
     unsigned int leader = find_leaderboard(pchLeaderboardName);
     if (!leader) {
@@ -605,6 +630,12 @@ SteamAPICall_t FindLeaderboard( const char *pchLeaderboardName )
 {
     PRINT_DEBUG("FindLeaderboard %s\n", pchLeaderboardName);
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
+    if (!pchLeaderboardName) {
+        LeaderboardFindResult_t data;
+        data.m_hSteamLeaderboard = 0;
+        data.m_bLeaderboardFound = 0;
+        return callback_results->addCallResult(data.k_iCallback, &data, sizeof(data));
+    }
 
     auto settings_Leaderboards = settings->getLeaderboards();
     if (settings_Leaderboards.count(pchLeaderboardName)) {

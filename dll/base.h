@@ -101,6 +101,8 @@ std::string get_full_lib_path();
 std::string get_full_program_path();
 std::string get_current_path();
 std::string canonical_path(std::string path);
+bool file_exists_(std::string full_path);
+unsigned int file_size_(std::string full_path);
 
 #define DEFAULT_CB_TIMEOUT 0.002
 

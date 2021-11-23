@@ -25,7 +25,10 @@ struct Steam_Http_Request {
 	std::string response;
 };
 
-class Steam_HTTP : public ISteamHTTP
+class Steam_HTTP :
+public ISteamHTTP001,
+public ISteamHTTP002,
+public ISteamHTTP
 {
     class Settings *settings;
     class Networking *network;
