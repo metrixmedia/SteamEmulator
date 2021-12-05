@@ -1,3 +1,5 @@
+# Unofficial GitHub Mirror for Mr. GoldBerg Steam Emulator - [Official website](http://mr_goldberg.gitlab.io/)
+
 # Goldberg Steam Emulator
 
 This is a steam emulator that emulates steam online features on a LAN. It works on both Linux and Windows. For a readme on how to use it see: [The Release Readme](Readme_release.txt)
