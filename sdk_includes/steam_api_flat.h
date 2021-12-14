@@ -63,6 +63,8 @@ STEAMAPI_API bool SteamAPI_ISteamUser_BLoggedOn( ISteamUser* self );
 STEAMAPI_API uint64_steamid SteamAPI_ISteamUser_GetSteamID( ISteamUser* self );
 STEAMAPI_API int SteamAPI_ISteamUser_InitiateGameConnection( ISteamUser* self, void * pAuthBlob, int cbMaxAuthBlob, uint64_steamid steamIDGameServer, uint32 unIPServer, uint16 usPortServer, bool bSecure );
 STEAMAPI_API void SteamAPI_ISteamUser_TerminateGameConnection( ISteamUser* self, uint32 unIPServer, uint16 usPortServer );
+STEAMAPI_API int SteamAPI_ISteamUser_InitiateGameConnection_DEPRECATED( ISteamUser* self, void * pAuthBlob, int cbMaxAuthBlob, uint64_steamid steamIDGameServer, uint32 unIPServer, uint16 usPortServer, bool bSecure );
+STEAMAPI_API void SteamAPI_ISteamUser_TerminateGameConnection_DEPRECATED( ISteamUser* self, uint32 unIPServer, uint16 usPortServer );
 STEAMAPI_API void SteamAPI_ISteamUser_TrackAppUsageEvent( ISteamUser* self, uint64_gameid gameID, int eAppUsageEvent, const char * pchExtraInfo );
 STEAMAPI_API bool SteamAPI_ISteamUser_GetUserDataFolder( ISteamUser* self, char * pchBuffer, int cubBuffer );
 STEAMAPI_API void SteamAPI_ISteamUser_StartVoiceRecording( ISteamUser* self );
@@ -208,6 +210,9 @@ STEAMAPI_API bool SteamAPI_ISteamUtils_IsSteamChinaLauncher( ISteamUtils* self )
 STEAMAPI_API bool SteamAPI_ISteamUtils_InitFilterText( ISteamUtils* self, uint32 unFilterOptions );
 STEAMAPI_API int SteamAPI_ISteamUtils_FilterText( ISteamUtils* self, ETextFilteringContext eContext, uint64_steamid sourceSteamID, const char * pchInputMessage, char * pchOutFilteredText, uint32 nByteSizeOutFilteredText );
 STEAMAPI_API ESteamIPv6ConnectivityState SteamAPI_ISteamUtils_GetIPv6ConnectivityState( ISteamUtils* self, ESteamIPv6ConnectivityProtocol eProtocol );
+STEAMAPI_API bool SteamAPI_ISteamUtils_IsSteamRunningOnSteamDeck( ISteamUtils* self );
+STEAMAPI_API bool SteamAPI_ISteamUtils_ShowModalGamepadTextInput( ISteamUtils* self, EGamepadTextInputLineMode eLineInputMode );
+STEAMAPI_API void SteamAPI_ISteamUtils_SetGameLauncherMode( ISteamUtils* self, bool bLauncherMode );
 
 // ISteamMatchmaking
 STEAMAPI_API ISteamMatchmaking *SteamAPI_SteamMatchmaking_v009();
@@ -323,6 +328,7 @@ STEAMAPI_API bool SteamAPI_ISteamParties_GetBeaconLocationData( ISteamParties* s
 
 // ISteamRemoteStorage
 STEAMAPI_API ISteamRemoteStorage *SteamAPI_SteamRemoteStorage_v014();
+STEAMAPI_API ISteamRemoteStorage *SteamAPI_SteamRemoteStorage_v016();
 STEAMAPI_API bool SteamAPI_ISteamRemoteStorage_FileWrite( ISteamRemoteStorage* self, const char * pchFile, const void * pvData, int32 cubData );
 STEAMAPI_API int32 SteamAPI_ISteamRemoteStorage_FileRead( ISteamRemoteStorage* self, const char * pchFile, void * pvData, int32 cubDataToRead );
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamRemoteStorage_FileWriteAsync( ISteamRemoteStorage* self, const char * pchFile, const void * pvData, uint32 cubData );
@@ -378,6 +384,11 @@ STEAMAPI_API SteamAPICall_t SteamAPI_ISteamRemoteStorage_SetUserPublishedFileAct
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamRemoteStorage_EnumeratePublishedFilesByUserAction( ISteamRemoteStorage* self, EWorkshopFileAction eAction, uint32 unStartIndex );
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamRemoteStorage_EnumeratePublishedWorkshopFiles( ISteamRemoteStorage* self, EWorkshopEnumerationType eEnumerationType, uint32 unStartIndex, uint32 unCount, uint32 unDays, SteamParamStringArray_t * pTags, SteamParamStringArray_t * pUserTags );
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamRemoteStorage_UGCDownloadToLocation( ISteamRemoteStorage* self, UGCHandle_t hContent, const char * pchLocation, uint32 unPriority );
+STEAMAPI_API int32 SteamAPI_ISteamRemoteStorage_GetLocalFileChangeCount( ISteamRemoteStorage* self );
+STEAMAPI_API const char * SteamAPI_ISteamRemoteStorage_GetLocalFileChange( ISteamRemoteStorage* self, int iFile, ERemoteStorageLocalFileChange * pEChangeType, ERemoteStorageFilePathType * pEFilePathType );
+STEAMAPI_API bool SteamAPI_ISteamRemoteStorage_BeginFileWriteBatch( ISteamRemoteStorage* self );
+STEAMAPI_API bool SteamAPI_ISteamRemoteStorage_EndFileWriteBatch( ISteamRemoteStorage* self );
+
 
 // ISteamUserStats
 STEAMAPI_API ISteamUserStats *SteamAPI_SteamUserStats_v012();
@@ -578,10 +589,16 @@ STEAMAPI_API bool SteamAPI_ISteamHTTP_GetHTTPRequestWasTimedOut( ISteamHTTP* sel
 // ISteamInput
 STEAMAPI_API ISteamInput *SteamAPI_SteamInput_v001();
 STEAMAPI_API ISteamInput *SteamAPI_SteamInput_v002();
-STEAMAPI_API bool SteamAPI_ISteamInput_Init( ISteamInput* self );
+STEAMAPI_API ISteamInput *SteamAPI_SteamInput_v005();
+STEAMAPI_API bool SteamAPI_ISteamInput_Init( ISteamInput* self, bool bExplicitlyCallRunFrame );
 STEAMAPI_API bool SteamAPI_ISteamInput_Shutdown( ISteamInput* self );
-STEAMAPI_API void SteamAPI_ISteamInput_RunFrame( ISteamInput* self );
+STEAMAPI_API bool SteamAPI_ISteamInput_SetInputActionManifestFilePath( ISteamInput* self, const char * pchInputActionManifestAbsolutePath );
+STEAMAPI_API void SteamAPI_ISteamInput_RunFrame( ISteamInput* self, bool bReservedValue );
+STEAMAPI_API bool SteamAPI_ISteamInput_BWaitForData( ISteamInput* self, bool bWaitForever, uint32 unTimeout );
+STEAMAPI_API bool SteamAPI_ISteamInput_BNewDataAvailable( ISteamInput* self );
 STEAMAPI_API int SteamAPI_ISteamInput_GetConnectedControllers( ISteamInput* self, InputHandle_t * handlesOut );
+STEAMAPI_API void SteamAPI_ISteamInput_EnableDeviceCallbacks( ISteamInput* self );
+STEAMAPI_API void SteamAPI_ISteamInput_EnableActionEventCallbacks( ISteamInput* self, SteamInputActionEventCallbackPointer pCallback );
 STEAMAPI_API InputActionSetHandle_t SteamAPI_ISteamInput_GetActionSetHandle( ISteamInput* self, const char * pszActionSetName );
 STEAMAPI_API void SteamAPI_ISteamInput_ActivateActionSet( ISteamInput* self, InputHandle_t inputHandle, InputActionSetHandle_t actionSetHandle );
 STEAMAPI_API InputActionSetHandle_t SteamAPI_ISteamInput_GetCurrentActionSet( ISteamInput* self, InputHandle_t inputHandle );
@@ -592,17 +609,26 @@ STEAMAPI_API int SteamAPI_ISteamInput_GetActiveActionSetLayers( ISteamInput* sel
 STEAMAPI_API InputDigitalActionHandle_t SteamAPI_ISteamInput_GetDigitalActionHandle( ISteamInput* self, const char * pszActionName );
 STEAMAPI_API InputDigitalActionData_t SteamAPI_ISteamInput_GetDigitalActionData( ISteamInput* self, InputHandle_t inputHandle, InputDigitalActionHandle_t digitalActionHandle );
 STEAMAPI_API int SteamAPI_ISteamInput_GetDigitalActionOrigins( ISteamInput* self, InputHandle_t inputHandle, InputActionSetHandle_t actionSetHandle, InputDigitalActionHandle_t digitalActionHandle, EInputActionOrigin * originsOut );
+STEAMAPI_API const char * SteamAPI_ISteamInput_GetStringForDigitalActionName( ISteamInput* self, InputDigitalActionHandle_t eActionHandle );
 STEAMAPI_API InputAnalogActionHandle_t SteamAPI_ISteamInput_GetAnalogActionHandle( ISteamInput* self, const char * pszActionName );
 STEAMAPI_API InputAnalogActionData_t SteamAPI_ISteamInput_GetAnalogActionData( ISteamInput* self, InputHandle_t inputHandle, InputAnalogActionHandle_t analogActionHandle );
 STEAMAPI_API int SteamAPI_ISteamInput_GetAnalogActionOrigins( ISteamInput* self, InputHandle_t inputHandle, InputActionSetHandle_t actionSetHandle, InputAnalogActionHandle_t analogActionHandle, EInputActionOrigin * originsOut );
+STEAMAPI_API const char * SteamAPI_ISteamInput_GetGlyphPNGForActionOrigin( ISteamInput* self, EInputActionOrigin eOrigin, ESteamInputGlyphSize eSize, uint32 unFlags );
 STEAMAPI_API const char * SteamAPI_ISteamInput_GetGlyphForActionOrigin( ISteamInput* self, EInputActionOrigin eOrigin );
+STEAMAPI_API const char * SteamAPI_ISteamInput_GetGlyphSVGForActionOrigin( ISteamInput* self, EInputActionOrigin eOrigin, uint32 unFlags );
+STEAMAPI_API const char * SteamAPI_ISteamInput_GetGlyphForActionOrigin_Legacy( ISteamInput* self, EInputActionOrigin eOrigin );
 STEAMAPI_API const char * SteamAPI_ISteamInput_GetStringForActionOrigin( ISteamInput* self, EInputActionOrigin eOrigin );
+STEAMAPI_API const char * SteamAPI_ISteamInput_GetStringForAnalogActionName( ISteamInput* self, InputAnalogActionHandle_t eActionHandle );
 STEAMAPI_API void SteamAPI_ISteamInput_StopAnalogActionMomentum( ISteamInput* self, InputHandle_t inputHandle, InputAnalogActionHandle_t eAction );
 STEAMAPI_API InputMotionData_t SteamAPI_ISteamInput_GetMotionData( ISteamInput* self, InputHandle_t inputHandle );
 STEAMAPI_API void SteamAPI_ISteamInput_TriggerVibration( ISteamInput* self, InputHandle_t inputHandle, unsigned short usLeftSpeed, unsigned short usRightSpeed );
+STEAMAPI_API void SteamAPI_ISteamInput_TriggerVibrationExtended( ISteamInput* self, InputHandle_t inputHandle, unsigned short usLeftSpeed, unsigned short usRightSpeed, unsigned short usLeftTriggerSpeed, unsigned short usRightTriggerSpeed );
+STEAMAPI_API void SteamAPI_ISteamInput_TriggerSimpleHapticEvent( ISteamInput* self, InputHandle_t inputHandle, EControllerHapticLocation eHapticLocation, uint8 nIntensity, char nGainDB, uint8 nOtherIntensity, char nOtherGainDB );
 STEAMAPI_API void SteamAPI_ISteamInput_SetLEDColor( ISteamInput* self, InputHandle_t inputHandle, uint8 nColorR, uint8 nColorG, uint8 nColorB, unsigned int nFlags );
 STEAMAPI_API void SteamAPI_ISteamInput_TriggerHapticPulse( ISteamInput* self, InputHandle_t inputHandle, ESteamControllerPad eTargetPad, unsigned short usDurationMicroSec );
 STEAMAPI_API void SteamAPI_ISteamInput_TriggerRepeatedHapticPulse( ISteamInput* self, InputHandle_t inputHandle, ESteamControllerPad eTargetPad, unsigned short usDurationMicroSec, unsigned short usOffMicroSec, unsigned short unRepeat, unsigned int nFlags );
+STEAMAPI_API void SteamAPI_ISteamInput_Legacy_TriggerHapticPulse( ISteamInput* self, InputHandle_t inputHandle, ESteamControllerPad eTargetPad, unsigned short usDurationMicroSec );
+STEAMAPI_API void SteamAPI_ISteamInput_Legacy_TriggerRepeatedHapticPulse( ISteamInput* self, InputHandle_t inputHandle, ESteamControllerPad eTargetPad, unsigned short usDurationMicroSec, unsigned short usOffMicroSec, unsigned short unRepeat, unsigned int nFlags );
 STEAMAPI_API bool SteamAPI_ISteamInput_ShowBindingPanel( ISteamInput* self, InputHandle_t inputHandle );
 STEAMAPI_API ESteamInputType SteamAPI_ISteamInput_GetInputTypeForHandle( ISteamInput* self, InputHandle_t inputHandle );
 STEAMAPI_API InputHandle_t SteamAPI_ISteamInput_GetControllerForGamepadIndex( ISteamInput* self, int nIndex );
@@ -613,6 +639,7 @@ STEAMAPI_API EInputActionOrigin SteamAPI_ISteamInput_GetActionOriginFromXboxOrig
 STEAMAPI_API EInputActionOrigin SteamAPI_ISteamInput_TranslateActionOrigin( ISteamInput* self, ESteamInputType eDestinationInputType, EInputActionOrigin eSourceOrigin );
 STEAMAPI_API bool SteamAPI_ISteamInput_GetDeviceBindingRevision( ISteamInput* self, InputHandle_t inputHandle, int * pMajor, int * pMinor );
 STEAMAPI_API uint32 SteamAPI_ISteamInput_GetRemotePlaySessionID( ISteamInput* self, InputHandle_t inputHandle );
+STEAMAPI_API uint16 SteamAPI_ISteamInput_GetSessionInputConfigurationSettings( ISteamInput* self );
 
 // ISteamController
 STEAMAPI_API ISteamController *SteamAPI_SteamController_v007();
@@ -739,6 +766,8 @@ STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_AddAppDependency( ISteamUGC* self
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_RemoveAppDependency( ISteamUGC* self, PublishedFileId_t nPublishedFileID, AppId_t nAppID );
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_GetAppDependencies( ISteamUGC* self, PublishedFileId_t nPublishedFileID );
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_DeleteItem( ISteamUGC* self, PublishedFileId_t nPublishedFileID );
+STEAMAPI_API bool SteamAPI_ISteamUGC_ShowWorkshopEULA( ISteamUGC* self );
+STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_GetWorkshopEULAStatus( ISteamUGC* self );
 
 // ISteamAppList
 STEAMAPI_API ISteamAppList *SteamAPI_SteamAppList_v001();
@@ -936,6 +965,7 @@ STEAMAPI_API void SteamAPI_ISteamNetworkingCustomSignalingRecvContext_SendReject
 
 // ISteamNetworkingUtils
 STEAMAPI_API ISteamNetworkingUtils *SteamAPI_SteamNetworkingUtils_SteamAPI_v003();
+STEAMAPI_API ISteamNetworkingUtils *SteamAPI_SteamNetworkingUtils_SteamAPI_v004();
 STEAMAPI_API ISteamNetworkingUtils *SteamAPI_SteamNetworkingUtils_v003();
 STEAMAPI_API SteamNetworkingMessage_t * SteamAPI_ISteamNetworkingUtils_AllocateMessage( ISteamNetworkingUtils* self, int cbAllocateBuffer );
 STEAMAPI_API void SteamAPI_ISteamNetworkingUtils_InitRelayNetworkAccess( ISteamNetworkingUtils* self );
@@ -976,6 +1006,7 @@ STEAMAPI_API bool SteamAPI_ISteamNetworkingUtils_SteamNetworkingIdentity_ParseSt
 
 // ISteamGameServer
 STEAMAPI_API ISteamGameServer *SteamAPI_SteamGameServer_v013();
+STEAMAPI_API ISteamGameServer *SteamAPI_SteamGameServer_v014();
 STEAMAPI_API void SteamAPI_ISteamGameServer_SetProduct( ISteamGameServer* self, const char * pszProduct );
 STEAMAPI_API void SteamAPI_ISteamGameServer_SetGameDescription( ISteamGameServer* self, const char * pszGameDescription );
 STEAMAPI_API void SteamAPI_ISteamGameServer_SetModDir( ISteamGameServer* self, const char * pszModDir );
@@ -1003,6 +1034,7 @@ STEAMAPI_API bool SteamAPI_ISteamGameServer_SendUserConnectAndAuthenticate( ISte
 STEAMAPI_API uint64_steamid SteamAPI_ISteamGameServer_CreateUnauthenticatedUserConnection( ISteamGameServer* self );
 STEAMAPI_API void SteamAPI_ISteamGameServer_SendUserDisconnect( ISteamGameServer* self, uint64_steamid steamIDUser );
 STEAMAPI_API bool SteamAPI_ISteamGameServer_BUpdateUserData( ISteamGameServer* self, uint64_steamid steamIDUser, const char * pchPlayerName, uint32 uScore );
+STEAMAPI_API void SteamAPI_ISteamGameServer_SetAdvertiseServerActive( ISteamGameServer* self, bool bActive );
 STEAMAPI_API HAuthTicket SteamAPI_ISteamGameServer_GetAuthSessionTicket( ISteamGameServer* self, void * pTicket, int cbMaxTicket, uint32 * pcbTicket );
 STEAMAPI_API EBeginAuthSessionResult SteamAPI_ISteamGameServer_BeginAuthSession( ISteamGameServer* self, const void * pAuthTicket, int cbAuthTicket, uint64_steamid steamID );
 STEAMAPI_API void SteamAPI_ISteamGameServer_EndAuthSession( ISteamGameServer* self, uint64_steamid steamID );
@@ -1019,6 +1051,9 @@ STEAMAPI_API void SteamAPI_ISteamGameServer_SetHeartbeatInterval( ISteamGameServ
 STEAMAPI_API void SteamAPI_ISteamGameServer_ForceHeartbeat( ISteamGameServer* self );
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamGameServer_AssociateWithClan( ISteamGameServer* self, uint64_steamid steamIDClan );
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamGameServer_ComputeNewPlayerCompatibility( ISteamGameServer* self, uint64_steamid steamIDNewPlayer );
+STEAMAPI_API bool SteamAPI_ISteamGameServer_SendUserConnectAndAuthenticate_DEPRECATED( ISteamGameServer* self, uint32 unIPClient, const void * pvAuthBlob, uint32 cubAuthBlobSize, CSteamID * pSteamIDUser );
+STEAMAPI_API void SteamAPI_ISteamGameServer_SendUserDisconnect_DEPRECATED( ISteamGameServer* self, uint64_steamid steamIDUser );
+
 
 // ISteamGameServerStats
 STEAMAPI_API ISteamGameServerStats *SteamAPI_SteamGameServerStats_v001();

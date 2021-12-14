@@ -145,6 +145,9 @@ enum EResult
 	k_EResultNoLauncherSpecified = 117,			// No launcher was specified, but a launcher was needed to choose correct realm for operation.
 	k_EResultMustAgreeToSSA = 118,				// User must agree to china SSA or global SSA before login
 	k_EResultLauncherMigrated = 119,			// The specified launcher type is no longer supported; the user should be directed elsewhere
+	k_EResultSteamRealmMismatch = 120,                      // The user's realm does not match the realm of the requested resource
+	k_EResultInvalidSignature = 121,                        // signature check did not match
+	k_EResultParseFailure = 122,                            // Failed to parse input
 };
 
 // Error codes for use with the voice functions
