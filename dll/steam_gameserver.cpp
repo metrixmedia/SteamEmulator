@@ -618,6 +618,19 @@ void Steam_GameServer::EnableHeartbeats( bool bActive )
     PRINT_DEBUG("EnableHeartbeats\n");
 }
 
+/// Indicate whether you wish to be listed on the master server list
+/// and/or respond to server browser / LAN discovery packets.
+/// The server starts with this value set to false.  You should set all
+/// relevant server parameters before enabling advertisement on the server.
+///
+/// (This function used to be named EnableHeartbeats, so if you are wondering
+/// where that function went, it's right here.  It does the same thing as before,
+/// the old name was just confusing.)
+void Steam_GameServer::SetAdvertiseServerActive( bool bActive )
+{
+    PRINT_DEBUG("SetAdvertiseServerActive\n");
+    EnableHeartbeats(bActive);
+}
 
 // You usually don't need to modify this.
 // Pass -1 to use the default value for iHeartbeatInterval.
@@ -627,11 +640,21 @@ void Steam_GameServer::SetHeartbeatInterval( int iHeartbeatInterval )
     PRINT_DEBUG("SetHeartbeatInterval\n");
 }
 
+void Steam_GameServer::SetMasterServerHeartbeatInterval_DEPRECATED( int iHeartbeatInterval )
+{
+    PRINT_DEBUG("SetMasterServerHeartbeatInterval_DEPRECATED\n");
+}
+
 
 // Force a heartbeat to steam at the next opportunity
 void Steam_GameServer::ForceHeartbeat()
 {
     PRINT_DEBUG("ForceHeartbeat\n");
+}
+
+void Steam_GameServer::ForceMasterServerHeartbeat_DEPRECATED()
+{
+    PRINT_DEBUG("ForceMasterServerHeartbeat_DEPRECATED\n");
 }
 
 

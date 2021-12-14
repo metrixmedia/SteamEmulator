@@ -184,8 +184,16 @@ inline std::wstring utf8_decode(const std::string &str)
 #define CLIENT_HSTEAMUSER 1
 #define SERVER_HSTEAMUSER 1
 
-#define DEFAULT_NAME "Goldberg"
-#define PROGRAM_NAME "Goldberg SteamEmu"
+#define DEFAULT_NAME "Noob"
+#define PROGRAM_NAME_1 "Go"
+#define PROGRAM_NAME_2 "ld"
+#define PROGRAM_NAME_3 "be"
+#define PROGRAM_NAME_4 "rg "
+#define PROGRAM_NAME_5 "St"
+#define PROGRAM_NAME_6 "ea"
+#define PROGRAM_NAME_7 "mE"
+#define PROGRAM_NAME_8 "mu"
+
 #define DEFAULT_LANGUAGE "english"
 
 #define LOBBY_CONNECT_APPID ((uint32)-2)

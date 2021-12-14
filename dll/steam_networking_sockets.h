@@ -58,6 +58,7 @@ public ISteamNetworkingSockets003,
 public ISteamNetworkingSockets004,
 public ISteamNetworkingSockets006,
 public ISteamNetworkingSockets008,
+public ISteamNetworkingSockets009,
 public ISteamNetworkingSockets
 {
     class Settings *settings;

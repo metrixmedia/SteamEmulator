@@ -50,6 +50,7 @@ public ISteamRemoteStorage010,
 public ISteamRemoteStorage011,
 public ISteamRemoteStorage012,
 public ISteamRemoteStorage013,
+public ISteamRemoteStorage014,
 public ISteamRemoteStorage
 {
 private:
@@ -760,5 +761,33 @@ SteamAPICall_t UGCDownloadToLocation( UGCHandle_t hContent, const char *pchLocat
     PRINT_DEBUG("Steam_Remote_Storage::UGCDownloadToLocation\n");
     return 0;
 }
+
+// Cloud dynamic state change notification
+int32 GetLocalFileChangeCount()
+{
+    PRINT_DEBUG("%s\n", __FUNCTION__);
+    return 0;
+}
+
+const char *GetLocalFileChange( int iFile, ERemoteStorageLocalFileChange *pEChangeType, ERemoteStorageFilePathType *pEFilePathType )
+{
+    PRINT_DEBUG("%s\n", __FUNCTION__);
+    return "";
+}
+
+// Indicate to Steam the beginning / end of a set of local file
+// operations - for example, writing a game save that requires updating two files.
+bool BeginFileWriteBatch()
+{
+    PRINT_DEBUG("%s\n", __FUNCTION__);
+    return true;
+}
+
+bool EndFileWriteBatch()
+{
+    PRINT_DEBUG("%s\n", __FUNCTION__);
+    return true;
+}
+
 
 };

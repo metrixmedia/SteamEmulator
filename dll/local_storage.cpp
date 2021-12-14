@@ -434,7 +434,7 @@ std::string Local_Storage::get_user_appdata_path()
         }
     }
 #endif
-    return user_appdata_path.append(PATH_SEPARATOR).append(PROGRAM_NAME).append(" Saves");
+    return user_appdata_path.append(PATH_SEPARATOR).append(PROGRAM_NAME_1).append(PROGRAM_NAME_2).append(PROGRAM_NAME_3).append(PROGRAM_NAME_4).append(PROGRAM_NAME_5).append(PROGRAM_NAME_6).append(PROGRAM_NAME_7).append(PROGRAM_NAME_8).append(" Saves");
 }
 
 static std::string replace_with(std::string s, std::string const &old, const char *new_str)

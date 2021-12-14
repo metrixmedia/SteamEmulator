@@ -304,6 +304,8 @@ ISteamGameServer *Steam_Client::GetISteamGameServer( HSteamUser hSteamUser, HSte
         return (ISteamGameServer *)(void *)(ISteamGameServer011 *)steam_gameserver;
     } else if (strcmp(pchVersion, "SteamGameServer012") == 0) {
         return (ISteamGameServer *)(void *)(ISteamGameServer012 *)steam_gameserver;
+    } else if (strcmp(pchVersion, "SteamGameServer013") == 0) {
+        return (ISteamGameServer *)(void *)(ISteamGameServer013 *)steam_gameserver;
     } else if (strcmp(pchVersion, STEAMGAMESERVER_INTERFACE_VERSION) == 0) {
         gameserver_has_ipv6_functions = true;
         return (ISteamGameServer *)(void *)(ISteamGameServer *)steam_gameserver;
@@ -481,8 +483,10 @@ void *Steam_Client::GetISteamGenericInterface( HSteamUser hSteamUser, HSteamPipe
             return (void *)(ISteamNetworkingSocketsSerialized003 *)steam_networking_sockets_serialized_temp;
         } else if (strcmp(pchVersion, "SteamNetworkingSocketsSerialized004") == 0) {
             return (void *)(ISteamNetworkingSocketsSerialized004 *)steam_networking_sockets_serialized_temp;
+        } else if (strcmp(pchVersion, "SteamNetworkingSocketsSerialized005") == 0) {
+            return (void *)(ISteamNetworkingSocketsSerialized005 *)steam_networking_sockets_serialized_temp;
         } else {
-            return (void *)(ISteamNetworkingSocketsSerialized004 *)steam_networking_sockets_serialized_temp;
+            return (void *)(ISteamNetworkingSocketsSerialized005 *)steam_networking_sockets_serialized_temp;
         }
     } else if (strstr(pchVersion, "SteamNetworkingSockets") == pchVersion) {
         Steam_Networking_Sockets *steam_networking_sockets_temp;
@@ -504,6 +508,8 @@ void *Steam_Client::GetISteamGenericInterface( HSteamUser hSteamUser, HSteamPipe
             return (void *)(ISteamNetworkingSockets006 *) steam_networking_sockets_temp;
         } else if (strcmp(pchVersion, "SteamNetworkingSockets008") == 0) {
             return (void *)(ISteamNetworkingSockets008 *) steam_networking_sockets_temp;
+        } else if (strcmp(pchVersion, "SteamNetworkingSockets009") == 0) {
+            return (void *)(ISteamNetworkingSockets009 *) steam_networking_sockets_temp;
         } else {
             return (void *)(ISteamNetworkingSockets *) steam_networking_sockets_temp;
         }
@@ -746,6 +752,8 @@ ISteamRemoteStorage *Steam_Client::GetISteamRemoteStorage( HSteamUser hSteamuser
         return (ISteamRemoteStorage *)(void *)(ISteamRemoteStorage012 *)steam_remote_storage;
     } else if (strcmp(pchVersion, "STEAMREMOTESTORAGE_INTERFACE_VERSION013") == 0) {
         return (ISteamRemoteStorage *)(void *)(ISteamRemoteStorage013 *)steam_remote_storage;
+    } else if (strcmp(pchVersion, "STEAMREMOTESTORAGE_INTERFACE_VERSION014") == 0) {
+        return (ISteamRemoteStorage *)(void *)(ISteamRemoteStorage014 *)steam_remote_storage;
     } else if (strcmp(pchVersion, STEAMREMOTESTORAGE_INTERFACE_VERSION) == 0) {
         return (ISteamRemoteStorage *)(void *)(ISteamRemoteStorage *)steam_remote_storage;
     } else {
@@ -1086,6 +1094,8 @@ ISteamInput *Steam_Client::GetISteamInput( HSteamUser hSteamUser, HSteamPipe hSt
 
     if (strcmp(pchVersion, "SteamInput001") == 0) {
         return (ISteamInput *)(void *)(ISteamInput001 *)steam_controller;
+    } else if (strcmp(pchVersion, "SteamInput002") == 0) {
+        return (ISteamInput *)(void *)(ISteamInput002 *)steam_controller;
     } else if (strcmp(pchVersion, STEAMINPUT_INTERFACE_VERSION) == 0) {
         return (ISteamInput *)(void *)(ISteamInput *)steam_controller;
     } else {

@@ -203,6 +203,7 @@ bool GetQueryUGCTagDisplayName( UGCQueryHandle_t handle, uint32 index, uint32 in
 bool GetQueryUGCPreviewURL( UGCQueryHandle_t handle, uint32 index, STEAM_OUT_STRING_COUNT(cchURLSize) char *pchURL, uint32 cchURLSize )
 {
     PRINT_DEBUG("Steam_UGC::GetQueryUGCPreviewURL\n");
+    //TODO: escape simulator tries downloading this url and unsubscribes if it fails
     return false;
 }
 
@@ -855,5 +856,21 @@ SteamAPICall_t DeleteItem( PublishedFileId_t nPublishedFileID )
     PRINT_DEBUG("Steam_UGC::DeleteItem\n");
     return 0;
 }
+
+// Show the app's latest Workshop EULA to the user in an overlay window, where they can accept it or not
+bool ShowWorkshopEULA()
+{
+    PRINT_DEBUG("%s\n", __FUNCTION__);
+    return false;
+}
+
+// Retrieve information related to the user's acceptance or not of the app's specific Workshop EULA
+STEAM_CALL_RESULT( WorkshopEULAStatus_t )
+SteamAPICall_t GetWorkshopEULAStatus()
+{
+    PRINT_DEBUG("%s\n", __FUNCTION__);
+    return 0;
+}
+
 
 };

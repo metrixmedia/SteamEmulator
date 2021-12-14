@@ -101,6 +101,7 @@ public ISteamController006,
 public ISteamController007,
 public ISteamController,
 public ISteamInput001,
+public ISteamInput002,
 public ISteamInput
 {
     class Settings *settings;
@@ -164,6 +165,7 @@ public ISteamInput
 
     bool disabled;
     bool initialized;
+    bool explicitly_call_run_frame;
 
     void set_handles(std::map<std::string, std::map<std::string, std::pair<std::set<std::string>, std::string>>> action_sets) {
         uint64 handle_num = 1;
@@ -316,9 +318,9 @@ Steam_Controller(class Settings *settings, class SteamCallResults *callback_resu
 }
 
 // Init and Shutdown must be called when starting/ending use of this interface
-bool Init()
+bool Init(bool bExplicitlyCallRunFrame)
 {
-    PRINT_DEBUG("Steam_Controller::Init()\n");
+    PRINT_DEBUG("Steam_Controller::Init() %u\n", bExplicitlyCallRunFrame);
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
     if (disabled || initialized) {
         return true;
@@ -342,6 +344,7 @@ bool Init()
     background_rumble_thread = std::thread(background_rumble, rumble_thread_data);
 
     initialized = true;
+    explicitly_call_run_frame = bExplicitlyCallRunFrame;
     return true;
 }
 
@@ -349,6 +352,11 @@ bool Init( const char *pchAbsolutePathToControllerConfigVDF )
 {
     PRINT_DEBUG("Steam_Controller::Init() old\n");
     return Init();
+}
+
+bool Init()
+{
+    return Init(true);
 }
 
 bool Shutdown()
@@ -374,10 +382,57 @@ void SetOverrideMode( const char *pchMode )
     PRINT_DEBUG("Steam_Controller::SetOverrideMode\n");
 }
 
+// Set the absolute path to the Input Action Manifest file containing the in-game actions
+// and file paths to the official configurations. Used in games that bundle Steam Input
+// configurations inside of the game depot instead of using the Steam Workshop
+bool SetInputActionManifestFilePath( const char *pchInputActionManifestAbsolutePath )
+{
+    PRINT_DEBUG("TODO %s\n", __FUNCTION__);
+    //TODO SteamInput005
+    return false;
+}
+
+bool BWaitForData( bool bWaitForever, uint32 unTimeout )
+{
+    PRINT_DEBUG("TODO %s\n", __FUNCTION__);
+    //TODO SteamInput005
+    return false;
+}
+
+// Returns true if new data has been received since the last time action data was accessed
+// via GetDigitalActionData or GetAnalogActionData. The game will still need to call
+// SteamInput()->RunFrame() or SteamAPI_RunCallbacks() before this to update the data stream
+bool BNewDataAvailable()
+{
+    PRINT_DEBUG("TODO %s\n", __FUNCTION__);
+    //TODO SteamInput005
+    return false;
+}
+
+// Enable SteamInputDeviceConnected_t and SteamInputDeviceDisconnected_t callbacks.
+// Each controller that is already connected will generate a device connected
+// callback when you enable them
+void EnableDeviceCallbacks()
+{
+    PRINT_DEBUG("TODO %s\n", __FUNCTION__);
+    //TODO SteamInput005
+    return;
+}
+
+// Enable SteamInputActionEvent_t callbacks. Directly calls your callback function
+// for lower latency than standard Steam callbacks. Supports one callback at a time.
+// Note: this is called within either SteamInput()->RunFrame or by SteamAPI_RunCallbacks
+void EnableActionEventCallbacks( SteamInputActionEventCallbackPointer pCallback )
+{
+    PRINT_DEBUG("TODO %s\n", __FUNCTION__);
+    //TODO SteamInput005
+    return;
+}
+
 // Synchronize API state with the latest Steam Controller inputs available. This
 // is performed automatically by SteamAPI_RunCallbacks, but for the absolute lowest
 // possible latency, you call this directly before reading controller state.
-void RunFrame()
+void RunFrame(bool bReservedValue)
 {
     PRINT_DEBUG("Steam_Controller::RunFrame()\n");
     if (disabled || !initialized) {
@@ -385,6 +440,11 @@ void RunFrame()
     }
 
     GamepadUpdate();
+}
+
+void RunFrame()
+{
+    RunFrame(true);
 }
 
 bool GetControllerState( uint32 unControllerIndex, SteamControllerState001_t *pState )
@@ -686,6 +746,14 @@ int GetDigitalActionOrigins( InputHandle_t inputHandle, InputActionSetHandle_t a
     return count;
 }
 
+// Returns a localized string (from Steam's language setting) for the user-facing action name corresponding to the specified handle
+const char *GetStringForDigitalActionName( InputDigitalActionHandle_t eActionHandle )
+{
+    PRINT_DEBUG("TODO %s\n", __FUNCTION__);
+    //TODO SteamInput005
+    return "Button String";
+}
+
 // Lookup the handle for an analog action. Best to do this once on startup, and store the handles for all future API calls.
 ControllerAnalogActionHandle_t GetAnalogActionHandle( const char *pszActionName )
 {
@@ -824,6 +892,13 @@ void TriggerHapticPulse( ControllerHandle_t controllerHandle, ESteamControllerPa
     PRINT_DEBUG("Steam_Controller::TriggerHapticPulse\n");
 }
 
+// Trigger a haptic pulse on a controller
+void Legacy_TriggerHapticPulse( InputHandle_t inputHandle, ESteamControllerPad eTargetPad, unsigned short usDurationMicroSec )
+{
+    PRINT_DEBUG("%s\n", __FUNCTION__);
+    TriggerHapticPulse(inputHandle, eTargetPad, usDurationMicroSec );
+}
+
 void TriggerHapticPulse( uint32 unControllerIndex, ESteamControllerPad eTargetPad, unsigned short usDurationMicroSec )
 {
     PRINT_DEBUG("Steam_Controller::TriggerHapticPulse old\n");
@@ -837,6 +912,18 @@ void TriggerRepeatedHapticPulse( ControllerHandle_t controllerHandle, ESteamCont
     PRINT_DEBUG("Steam_Controller::TriggerRepeatedHapticPulse\n");
 }
 
+void Legacy_TriggerRepeatedHapticPulse( InputHandle_t inputHandle, ESteamControllerPad eTargetPad, unsigned short usDurationMicroSec, unsigned short usOffMicroSec, unsigned short unRepeat, unsigned int nFlags )
+{
+    PRINT_DEBUG("%s\n", __FUNCTION__);
+    TriggerRepeatedHapticPulse(inputHandle, eTargetPad, usDurationMicroSec, usOffMicroSec, unRepeat, nFlags);
+}
+
+
+// Send a haptic pulse, works on Steam Deck and Steam Controller devices
+void TriggerSimpleHapticEvent( InputHandle_t inputHandle, EControllerHapticLocation eHapticLocation, uint8 nIntensity, char nGainDB, uint8 nOtherIntensity, char nOtherGainDB )
+{
+    PRINT_DEBUG("TODO %s\n", __FUNCTION__);
+}
 
 // Tigger a vibration event on supported controllers.  
 void TriggerVibration( ControllerHandle_t controllerHandle, unsigned short usLeftSpeed, unsigned short usRightSpeed )
@@ -862,6 +949,13 @@ void TriggerVibration( ControllerHandle_t controllerHandle, unsigned short usLef
     rumble_thread_data->rumble_thread_cv.notify_one();
 }
 
+// Trigger a vibration event on supported controllers including Xbox trigger impulse rumble - Steam will translate these commands into haptic pulses for Steam Controllers
+void TriggerVibrationExtended( InputHandle_t inputHandle, unsigned short usLeftSpeed, unsigned short usRightSpeed, unsigned short usLeftTriggerSpeed, unsigned short usRightTriggerSpeed )
+{
+    PRINT_DEBUG("TODO %s\n", __FUNCTION__);
+    TriggerVibration(inputHandle, usLeftSpeed, usRightSpeed);
+    //TODO trigger impulse rumbles
+}
 
 // Set the controller LED color on supported controllers.  
 void SetLEDColor( ControllerHandle_t controllerHandle, uint8 nColorR, uint8 nColorG, uint8 nColorB, unsigned int nFlags )
@@ -929,6 +1023,13 @@ const char *GetStringForActionOrigin( EInputActionOrigin eOrigin )
     return "Button String";
 }
 
+// Returns a localized string (from Steam's language setting) for the user-facing action name corresponding to the specified handle
+const char *GetStringForAnalogActionName( InputAnalogActionHandle_t eActionHandle )
+{
+    PRINT_DEBUG("TODO %s\n", __FUNCTION__);
+    //TODO SteamInput005
+    return "Button String";
+}
 
 // Get a local path to art for on-screen glyph for a particular origin 
 const char *GetGlyphForActionOrigin( EControllerActionOrigin eOrigin )
@@ -1015,6 +1116,29 @@ const char *GetGlyphForActionOrigin( EInputActionOrigin eOrigin )
     return glyph->second.c_str();
 }
 
+// Get a local path to a PNG file for the provided origin's glyph. 
+const char *GetGlyphPNGForActionOrigin( EInputActionOrigin eOrigin, ESteamInputGlyphSize eSize, uint32 unFlags )
+{
+    PRINT_DEBUG("TODO %s\n", __FUNCTION__);
+    //TODO SteamInput005
+    return "";
+}
+
+// Get a local path to a SVG file for the provided origin's glyph. 
+const char *GetGlyphSVGForActionOrigin( EInputActionOrigin eOrigin, uint32 unFlags )
+{
+    PRINT_DEBUG("TODO %s\n", __FUNCTION__);
+    //TODO SteamInput005
+    return "";
+}
+
+// Get a local path to an older, Big Picture Mode-style PNG file for a particular origin
+const char *GetGlyphForActionOrigin_Legacy( EInputActionOrigin eOrigin )
+{
+    PRINT_DEBUG("%s\n", __FUNCTION__);
+    return GetGlyphForActionOrigin(eOrigin);
+}
+
 // Returns the input type for a particular handle
 ESteamInputType GetInputTypeForHandle( ControllerHandle_t controllerHandle )
 {
@@ -1078,9 +1202,19 @@ uint32 GetRemotePlaySessionID( InputHandle_t inputHandle )
     return 0;
 }
 
+// Get a bitmask of the Steam Input Configuration types opted in for the current session. Returns ESteamInputConfigurationEnableType values.?	
+// Note: user can override the settings from the Steamworks Partner site so the returned values may not exactly match your default configuration
+uint16 GetSessionInputConfigurationSettings()
+{
+    PRINT_DEBUG("TODO %s\n", __FUNCTION__);
+    return 0;
+}
+
 void RunCallbacks()
 {
-    RunFrame();
+    if (explicitly_call_run_frame) {
+        RunFrame();
+    }
 }
 
 };
