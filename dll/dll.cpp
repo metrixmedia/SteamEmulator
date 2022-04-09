@@ -44,12 +44,13 @@ static char old_inventory[128] = "STEAMINVENTORY_INTERFACE_V001";
 static char old_video[128] = "STEAMVIDEO_INTERFACE_V001";
 static char old_masterserver_updater[128] = "SteamMasterServerUpdater001";
 
-static void load_old_interface_versions()
+static bool try_load_steam_interfaces(std::string interfaces_path)
 {
-    static bool loaded = false;
-    if (loaded) return;
-    std::string interfaces_path = Local_Storage::get_program_path() + "steam_interfaces.txt";
     std::ifstream input( utf8_decode(interfaces_path) );
+    if (!input.is_open()) {
+        return false;
+    }
+
     PRINT_DEBUG("load from: %s\n", interfaces_path.c_str());
 
     for( std::string line; getline( input, line ); )
@@ -82,6 +83,17 @@ static void load_old_interface_versions()
         PRINT_DEBUG("NOT REPLACED %s\n", line.c_str());
 #undef REPLACE_WITH_FILE
     }
+
+    return true;
+}
+
+static void load_old_interface_versions()
+{
+    static bool loaded = false;
+    if (loaded) return;
+
+    if (!try_load_steam_interfaces(Local_Storage::get_game_settings_path() + "steam_interfaces.txt"))
+        try_load_steam_interfaces(Local_Storage::get_program_path() + "steam_interfaces.txt");
 
     PRINT_DEBUG("client: %s\n", old_client);
     PRINT_DEBUG("gameserver: %s\n", old_gameserver);

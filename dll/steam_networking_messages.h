@@ -336,7 +336,7 @@ bool CloseChannelWithUser( const SteamNetworkingIdentity &identityRemote, int nL
 /// you do not need the corresponding details.  Note that sessions time out after a while,
 /// so if a connection fails, or SendMessageToUser returns SendMessageToUser, you cannot wait
 /// indefinitely to obtain the reason for failure.
-ESteamNetworkingConnectionState GetSessionConnectionInfo( const SteamNetworkingIdentity &identityRemote, SteamNetConnectionInfo_t *pConnectionInfo, SteamNetworkingQuickConnectionStatus *pQuickStatus )
+ESteamNetworkingConnectionState GetSessionConnectionInfo( const SteamNetworkingIdentity &identityRemote, SteamNetConnectionInfo_t *pConnectionInfo, SteamNetConnectionRealTimeStatus_t *pQuickStatus )
 {
     PRINT_DEBUG("Steam_Networking_Messages::GetSessionConnectionInfo\n");
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
@@ -360,7 +360,7 @@ ESteamNetworkingConnectionState GetSessionConnectionInfo( const SteamNetworkingI
     }
 
     if (pQuickStatus) {
-        memset(pQuickStatus, 0, sizeof(SteamNetworkingQuickConnectionStatus));
+        memset(pQuickStatus, 0, sizeof(SteamNetConnectionRealTimeStatus_t));
         pQuickStatus->m_eState = state;
         pQuickStatus->m_nPing = 10; //TODO: calculate real numbers?
         pQuickStatus->m_flConnectionQualityLocal = 1.0;

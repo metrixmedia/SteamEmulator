@@ -58,14 +58,14 @@ STEAM_CALLBACK_BEGIN( BroadcastUploadStop_t, k_iClientVideoCallbacks + 5 )
 	STEAM_CALLBACK_MEMBER( 0, EBroadcastUploadResult, m_eResult )
 STEAM_CALLBACK_END(1)
 
-STEAM_CALLBACK_BEGIN( GetVideoURLResult_t, k_iClientVideoCallbacks + 11 )
+STEAM_CALLBACK_BEGIN( GetVideoURLResult_t, k_iSteamVideoCallbacks + 11 )
 	STEAM_CALLBACK_MEMBER( 0, EResult, m_eResult )
 	STEAM_CALLBACK_MEMBER( 1, AppId_t, m_unVideoAppID )
 	STEAM_CALLBACK_MEMBER( 2, char, m_rgchURL[256] )
 STEAM_CALLBACK_END(3)
 
 
-STEAM_CALLBACK_BEGIN( GetOPFSettingsResult_t, k_iClientVideoCallbacks + 24 )
+STEAM_CALLBACK_BEGIN( GetOPFSettingsResult_t, k_iSteamVideoCallbacks + 24 )
 	STEAM_CALLBACK_MEMBER( 0, EResult, m_eResult )
 	STEAM_CALLBACK_MEMBER( 1, AppId_t, m_unVideoAppID )
 STEAM_CALLBACK_END(2)

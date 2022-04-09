@@ -55,6 +55,9 @@ private:
     nlohmann::json defined_achievements;
     nlohmann::json user_achievements;
     std::vector<std::string> sorted_achievement_names;
+    std::map<std::string, int32> stats_cache_int;
+    std::map<std::string, float> stats_cache_float;
+
 
 unsigned int find_leaderboard(std::string name)
 {
@@ -200,8 +203,17 @@ bool SetStat( const char *pchName, int32 nData )
     PRINT_DEBUG("SetStat int32 %s\n", pchName);
     if (!pchName) return false;
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
+    auto cached_stat = stats_cache_int.find(pchName);
+    if (cached_stat != stats_cache_int.end()) {
+        if (cached_stat->second == nData) return true;
+    }
 
-    return local_storage->store_data(Local_Storage::stats_storage_folder, pchName, (char* )&nData, sizeof(nData)) == sizeof(nData);
+    if (local_storage->store_data(Local_Storage::stats_storage_folder, pchName, (char* )&nData, sizeof(nData)) == sizeof(nData)) {
+        stats_cache_int[pchName] = nData;
+        return true;
+    }
+
+    return false;
 }
 
 bool SetStat( const char *pchName, float fData )
@@ -209,8 +221,17 @@ bool SetStat( const char *pchName, float fData )
     PRINT_DEBUG("SetStat float %s\n", pchName);
     if (!pchName) return false;
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
+    auto cached_stat = stats_cache_float.find(pchName);
+    if (cached_stat != stats_cache_float.end()) {
+        if (cached_stat->second == fData) return true;
+    }
 
-    return local_storage->store_data(Local_Storage::stats_storage_folder, pchName, (char* )&fData, sizeof(fData)) == sizeof(fData);
+    if (local_storage->store_data(Local_Storage::stats_storage_folder, pchName, (char* )&fData, sizeof(fData)) == sizeof(fData)) {
+        stats_cache_float[pchName] = fData;
+        return true;
+    }
+
+    return false;
 }
 
 bool UpdateAvgRateStat( const char *pchName, float flCountThisSession, double dSessionLength )

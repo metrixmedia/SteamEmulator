@@ -104,6 +104,7 @@
 #include "isteamnetworkingutils.h"
 #include "isteamnetworkingutils001.h"
 #include "isteamnetworkingutils002.h"
+#include "isteamnetworkingutils003.h"
 #include "isteamnetworkingsockets001.h"
 #include "isteamnetworkingsockets002.h"
 #include "isteamnetworkingsockets003.h"
@@ -153,6 +154,7 @@
 #include "isteamugc012.h"
 #include "isteamugc013.h"
 #include "isteamugc014.h"
+#include "isteamugc015.h"
 #include "isteamapplist.h"
 #include "isteamhtmlsurface.h"
 #include "isteamhtmlsurface001.h"
@@ -170,11 +172,13 @@
 #include "isteaminput.h"
 #include "isteaminput001.h"
 #include "isteaminput002.h"
+#include "isteaminput005.h"
 #include "isteamremoteplay.h"
 #include "isteamnetworkingmessages.h"
 #include "isteamnetworkingsockets.h"
 #include "isteamnetworkingutils.h"
 #include "isteamtv.h"
+#include "steamnetworkingfakeip.h"
 
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------//

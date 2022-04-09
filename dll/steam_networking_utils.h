@@ -20,6 +20,7 @@
 class Steam_Networking_Utils :
 public ISteamNetworkingUtils001,
 public ISteamNetworkingUtils002,
+public ISteamNetworkingUtils003,
 public ISteamNetworkingUtils
 {
     class Settings *settings;
@@ -275,6 +276,40 @@ void SetDebugOutputFunction( ESteamNetworkingSocketsDebugOutputType eDetailLevel
     }
 }
 
+//
+// Fake IP
+//
+// Useful for interfacing with code that assumes peers are identified using an IPv4 address
+//
+
+/// Return true if an IPv4 address is one that might be used as a "fake" one.
+/// This function is fast; it just does some logical tests on the IP and does
+/// not need to do any lookup operations.
+// inline bool IsFakeIPv4( uint32 nIPv4 ) { return GetIPv4FakeIPType( nIPv4 ) > k_ESteamNetworkingFakeIPType_NotFake; }
+ESteamNetworkingFakeIPType GetIPv4FakeIPType( uint32 nIPv4 )
+{
+    PRINT_DEBUG("TODO: %s\n", __FUNCTION__);
+    return k_ESteamNetworkingFakeIPType_NotFake;
+}
+
+/// Get the real identity associated with a given FakeIP.
+///
+/// On failure, returns:
+/// - k_EResultInvalidParam: the IP is not a FakeIP.
+/// - k_EResultNoMatch: we don't recognize that FakeIP and don't know the corresponding identity.
+///
+/// FakeIP's used by active connections, or the FakeIPs assigned to local identities,
+/// will always work.  FakeIPs for recently destroyed connections will continue to
+/// return results for a little while, but not forever.  At some point, we will forget
+/// FakeIPs to save space.  It's reasonably safe to assume that you can read back the
+/// real identity of a connection very soon after it is destroyed.  But do not wait
+/// indefinitely.
+EResult GetRealIdentityForFakeIP( const SteamNetworkingIPAddr &fakeIP, SteamNetworkingIdentity *pOutRealIdentity )
+{
+    PRINT_DEBUG("TODO: %s\n", __FUNCTION__);
+    return k_EResultNoMatch;
+}
+
 
 //
 // Set and get configuration values, see ESteamNetworkingConfigValue for individual descriptions.
@@ -328,15 +363,39 @@ ESteamNetworkingGetConfigValueResult GetConfigValue( ESteamNetworkingConfigValue
 /// Any of the output parameters can be NULL if you do not need that information.
 bool GetConfigValueInfo( ESteamNetworkingConfigValue eValue, const char **pOutName, ESteamNetworkingConfigDataType *pOutDataType, ESteamNetworkingConfigScope *pOutScope, ESteamNetworkingConfigValue *pOutNextValue )
 {
-    PRINT_DEBUG("Steam_Networking_Utils::GetConfigValueInfo\n");
+    PRINT_DEBUG("TODO: Steam_Networking_Utils::GetConfigValueInfo old\n");
+    //TODO flat api
     return false;
 }
 
+/// Get info about a configuration value.  Returns the name of the value,
+/// or NULL if the value doesn't exist.  Other output parameters can be NULL
+/// if you do not need them.
+const char *GetConfigValueInfo( ESteamNetworkingConfigValue eValue, ESteamNetworkingConfigDataType *pOutDataType, ESteamNetworkingConfigScope *pOutScope )
+{
+    PRINT_DEBUG("TODO: %s\n", __FUNCTION__);
+    //TODO flat api
+    return NULL;
+}
 
 /// Return the lowest numbered configuration value available in the current environment.
 ESteamNetworkingConfigValue GetFirstConfigValue()
 {
     PRINT_DEBUG("Steam_Networking_Utils::GetFirstConfigValue\n");
+    return k_ESteamNetworkingConfig_Invalid;
+}
+
+/// Iterate the list of all configuration values in the current environment that it might
+/// be possible to display or edit using a generic UI.  To get the first iterable value,
+/// pass k_ESteamNetworkingConfig_Invalid.  Returns k_ESteamNetworkingConfig_Invalid
+/// to signal end of list.
+///
+/// The bEnumerateDevVars argument can be used to include "dev" vars.  These are vars that
+/// are recommended to only be editable in "debug" or "dev" mode and typically should not be
+/// shown in a retail environment where a malicious local user might use this to cheat.
+ESteamNetworkingConfigValue IterateGenericEditableConfigValues( ESteamNetworkingConfigValue eCurrent, bool bEnumerateDevVars )
+{
+    PRINT_DEBUG("TODO: %s\n", __FUNCTION__);
     return k_ESteamNetworkingConfig_Invalid;
 }
 
@@ -500,6 +559,13 @@ bool SteamNetworkingIPAddr_ParseString( SteamNetworkingIPAddr *pAddr, const char
 
     return valid;
 }
+
+ESteamNetworkingFakeIPType SteamNetworkingIPAddr_GetFakeIPType( const SteamNetworkingIPAddr &addr )
+{
+    PRINT_DEBUG("TODO: %s\n", __FUNCTION__);
+    return k_ESteamNetworkingFakeIPType_NotFake;
+}
+
 
 void SteamNetworkingIdentity_ToString( const SteamNetworkingIdentity &identity, char *buf, size_t cbBuf )
 {

@@ -22,6 +22,8 @@ struct Listen_Socket {
 
     int virtual_port;
     int real_port;
+
+    CSteamID created_by;
 };
 
 enum connect_socket_status {
@@ -49,6 +51,14 @@ struct Connect_Socket {
     HSteamNetPollGroup poll_group;
 
     unsigned long long packet_receive_counter;
+    CSteamID created_by;
+};
+
+struct shared_between_client_server {
+    std::vector<struct Listen_Socket> listen_sockets;
+    std::map<HSteamNetConnection, struct Connect_Socket> connect_sockets;
+    std::map<HSteamNetPollGroup, std::list<HSteamNetConnection>> poll_groups;
+    unsigned used;
 };
 
 class Steam_Networking_Sockets :
@@ -67,9 +77,7 @@ public ISteamNetworkingSockets
     class SteamCallBacks *callbacks;
     class RunEveryRunCB *run_every_runcb;
 
-    std::vector<struct Listen_Socket> listen_sockets;
-    std::map<HSteamNetConnection, struct Connect_Socket> connect_sockets;
-    std::map<HSteamNetPollGroup, std::list<HSteamNetConnection>> poll_groups;
+    struct shared_between_client_server *s;
     std::chrono::steady_clock::time_point created;
 
     static const int SNS_DISABLED_PORT = -1;
@@ -91,7 +99,7 @@ static void steam_run_every_runcb(void *object)
     steam_networkingsockets->RunCallbacks();
 }
 
-Steam_Networking_Sockets(class Settings *settings, class Networking *network, class SteamCallResults *callback_results, class SteamCallBacks *callbacks, class RunEveryRunCB *run_every_runcb)
+Steam_Networking_Sockets(class Settings *settings, class Networking *network, class SteamCallResults *callback_results, class SteamCallBacks *callbacks, class RunEveryRunCB *run_every_runcb, shared_between_client_server *sbcs)
 {
     this->settings = settings;
     this->network = network;
@@ -103,6 +111,14 @@ Steam_Networking_Sockets(class Settings *settings, class Networking *network, cl
     this->callback_results = callback_results;
     this->callbacks = callbacks;
 
+    if (!sbcs) {
+        this->s = new shared_between_client_server();
+        this->s->used = 0;
+    } else {
+        this->s = sbcs;
+        this->s->used += 1;
+    }
+
     this->created = std::chrono::steady_clock::now();
 }
 
@@ -110,6 +126,11 @@ Steam_Networking_Sockets(class Settings *settings, class Networking *network, cl
 {
     //TODO rm network callbacks
     this->run_every_runcb->remove(&Steam_Networking_Sockets::steam_run_every_runcb, this);
+    if (this->s->used) {
+        this->s->used -= 1;
+    } else {
+        delete this->s;
+    }
 }
 
 static unsigned long get_socket_id()
@@ -119,38 +140,45 @@ static unsigned long get_socket_id()
     return socket_id;
 }
 
+shared_between_client_server *get_shared_between_client_server()
+{
+    return s;
+}
+
 HSteamListenSocket new_listen_socket(int nSteamConnectVirtualPort, int real_port)
 {
     HSteamListenSocket socket_id = get_socket_id();
     if (socket_id == k_HSteamListenSocket_Invalid) ++socket_id;
+    CSteamID steam_id = settings->get_local_steam_id();
 
-    auto conn = std::find_if(listen_sockets.begin(), listen_sockets.end(), [&nSteamConnectVirtualPort](struct Listen_Socket const& conn) { return conn.virtual_port == nSteamConnectVirtualPort;});
-    if (conn != listen_sockets.end()) return k_HSteamListenSocket_Invalid;
+    auto conn = std::find_if(s->listen_sockets.begin(), s->listen_sockets.end(), [&nSteamConnectVirtualPort,&steam_id](struct Listen_Socket const& conn) { return conn.virtual_port == nSteamConnectVirtualPort && conn.created_by == steam_id;});
+    if (conn != s->listen_sockets.end()) return k_HSteamListenSocket_Invalid;
 
     struct Listen_Socket listen_socket;
     listen_socket.socket_id = socket_id;
     listen_socket.virtual_port = nSteamConnectVirtualPort;
     listen_socket.real_port = real_port;
-    listen_sockets.push_back(listen_socket);
+    listen_socket.created_by = steam_id;
+    s->listen_sockets.push_back(listen_socket);
     return socket_id;
 }
 
 struct Listen_Socket *get_connection_socket(HSteamListenSocket id)
 {
-    auto conn = std::find_if(listen_sockets.begin(), listen_sockets.end(), [&id](struct Listen_Socket const& conn) { return conn.socket_id == id;});
-    if (conn == listen_sockets.end()) return NULL;
+    auto conn = std::find_if(s->listen_sockets.begin(), s->listen_sockets.end(), [&id](struct Listen_Socket const& conn) { return conn.socket_id == id;});
+    if (conn == s->listen_sockets.end()) return NULL;
     return &(*conn);
 }
 
 bool send_packet_new_connection(HSteamNetConnection m_hConn)
 {
-    auto connect_socket = connect_sockets.find(m_hConn);
-    if (connect_socket == connect_sockets.end()) return false;
+    auto connect_socket = s->connect_sockets.find(m_hConn);
+    if (connect_socket == s->connect_sockets.end()) return false;
 
     //TODO: right now this only supports connecting with steam id, might need to make ip/port connections work in the future when I find a game that uses them.
 
     Common_Message msg;
-    msg.set_source_id(settings->get_local_steam_id().ConvertToUint64());
+    msg.set_source_id(connect_socket->second.created_by.ConvertToUint64());
     msg.set_allocated_networking_sockets(new Networking_Sockets);
     if (connect_socket->second.status == CONNECT_SOCKET_CONNECTING) {
         msg.mutable_networking_sockets()->set_type(Networking_Sockets::CONNECTION_REQUEST);
@@ -188,11 +216,12 @@ HSteamNetConnection new_connect_socket(SteamNetworkingIdentity remote_identity, 
     socket.status = status;
     socket.user_data = -1;
     socket.poll_group = k_HSteamNetPollGroup_Invalid;
+    socket.created_by = settings->get_local_steam_id();
 
     HSteamNetConnection socket_id = get_socket_id();
     if (socket_id == k_HSteamNetConnection_Invalid) ++socket_id;
 
-    if (connect_sockets.insert(std::make_pair(socket_id, socket)).second == false) {
+    if (s->connect_sockets.insert(std::make_pair(socket_id, socket)).second == false) {
         return k_HSteamNetConnection_Invalid;
     }
 
@@ -210,21 +239,36 @@ ESteamNetworkingConnectionState convert_status(enum connect_socket_status old_st
     return k_ESteamNetworkingConnectionState_None;
 }
 
+void set_steamnetconnectioninfo(std::map<HSteamNetConnection, Connect_Socket>::iterator connect_socket, SteamNetConnectionInfo_t *pInfo)
+{
+    pInfo->m_identityRemote = connect_socket->second.remote_identity;
+    pInfo->m_nUserData = connect_socket->second.user_data;
+    pInfo->m_hListenSocket = connect_socket->second.listen_socket_id;
+    pInfo->m_addrRemote.Clear(); //TODO
+    if (connect_socket->second.real_port != SNS_DISABLED_PORT) {
+        pInfo->m_addrRemote.SetIPv4(network->getIP(connect_socket->second.remote_identity.GetSteamID()), connect_socket->first);
+    }
+
+    pInfo->m_idPOPRemote = 0;
+    pInfo->m_idPOPRelay = 0;
+    pInfo->m_eState = convert_status(connect_socket->second.status);
+    pInfo->m_eEndReason = 0; //TODO
+    pInfo->m_szEndDebug[0] = 0;
+    sprintf(pInfo->m_szConnectionDescription, "%u", connect_socket->first);
+
+    //Note some games might not allocate a struct the whole size of SteamNetConnectionInfo_t when calling GetConnectionInfo
+    //keep this in mind in future interface updates
+}
+
 void launch_callback(HSteamNetConnection m_hConn, enum connect_socket_status old_status)
 {
-    auto connect_socket = connect_sockets.find(m_hConn);
-    if (connect_socket == connect_sockets.end()) return;
+    auto connect_socket = s->connect_sockets.find(m_hConn);
+    if (connect_socket == s->connect_sockets.end()) return;
 
     struct SteamNetConnectionStatusChangedCallback_t data = {};
     data.m_hConn = connect_socket->first;
-    data.m_info.m_identityRemote = connect_socket->second.remote_identity;
-    data.m_info.m_hListenSocket = connect_socket->second.listen_socket_id;
-    data.m_info.m_nUserData = connect_socket->second.user_data;
-    //TODO
-    //m_addrRemote
-    //m_eEndReason
-    data.m_info.m_eState = convert_status(connect_socket->second.status);
     data.m_eOldState = convert_status(old_status);
+    set_steamnetconnectioninfo(connect_socket, &data.m_info);
     callbacks->addCBResult(data.k_iCallback, &data, sizeof(data));
 }
 
@@ -477,8 +521,8 @@ EResult AcceptConnection( HSteamNetConnection hConn )
     PRINT_DEBUG("Steam_Networking_Sockets::AcceptConnection %u\n", hConn);
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
 
-    auto connect_socket = connect_sockets.find(hConn);
-    if (connect_socket == connect_sockets.end()) return k_EResultInvalidParam;
+    auto connect_socket = s->connect_sockets.find(hConn);
+    if (connect_socket == s->connect_sockets.end()) return k_EResultInvalidParam;
     if (connect_socket->second.status != CONNECT_SOCKET_NOT_ACCEPTED) return k_EResultInvalidState;
     connect_socket->second.status = CONNECT_SOCKET_CONNECTED;
     send_packet_new_connection(connect_socket->first);
@@ -514,13 +558,13 @@ bool CloseConnection( HSteamNetConnection hPeer, int nReason, const char *pszDeb
     PRINT_DEBUG("Steam_Networking_Sockets::CloseConnection %u\n", hPeer);
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
 
-    auto connect_socket = connect_sockets.find(hPeer);
-    if (connect_socket == connect_sockets.end()) return false;
+    auto connect_socket = s->connect_sockets.find(hPeer);
+    if (connect_socket == s->connect_sockets.end()) return false;
 
     if (connect_socket->second.status != CONNECT_SOCKET_CLOSED && connect_socket->second.status != CONNECT_SOCKET_TIMEDOUT) {
         //TODO send/nReason and pszDebug
         Common_Message msg;
-        msg.set_source_id(settings->get_local_steam_id().ConvertToUint64());
+        msg.set_source_id(connect_socket->second.created_by.ConvertToUint64());
         msg.set_dest_id(connect_socket->second.remote_identity.GetSteamID64());
         msg.set_allocated_networking_sockets(new Networking_Sockets);
         msg.mutable_networking_sockets()->set_type(Networking_Sockets::CONNECTION_END);
@@ -531,7 +575,7 @@ bool CloseConnection( HSteamNetConnection hPeer, int nReason, const char *pszDeb
         network->sendTo(&msg, true);
     }
 
-    connect_sockets.erase(connect_socket);
+    s->connect_sockets.erase(connect_socket);
     return true;
 }
 
@@ -558,13 +602,13 @@ bool CloseListenSocket( HSteamListenSocket hSocket )
     PRINT_DEBUG("Steam_Networking_Sockets::CloseListenSocket\n");
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
 
-    auto conn = std::find_if(listen_sockets.begin(), listen_sockets.end(), [&hSocket](struct Listen_Socket const& conn) { return conn.socket_id == hSocket;});
-    if (conn == listen_sockets.end()) return false;
+    auto conn = std::find_if(s->listen_sockets.begin(), s->listen_sockets.end(), [&hSocket](struct Listen_Socket const& conn) { return conn.socket_id == hSocket;});
+    if (conn == s->listen_sockets.end()) return false;
 
     std::queue<HSteamNetConnection> to_close;
 
-    auto socket_conn = std::begin(connect_sockets);
-    while (socket_conn != std::end(connect_sockets)) {
+    auto socket_conn = std::begin(s->connect_sockets);
+    while (socket_conn != std::end(s->connect_sockets)) {
         if (socket_conn->second.listen_socket_id == hSocket) {
             to_close.push(socket_conn->first);
         }
@@ -577,7 +621,7 @@ bool CloseListenSocket( HSteamListenSocket hSocket )
         to_close.pop();
     }
 
-    listen_sockets.erase(conn);
+    s->listen_sockets.erase(conn);
     return true;
 }
 
@@ -586,8 +630,8 @@ bool SetConnectionUserData( HSteamNetConnection hPeer, int64 nUserData )
 {
     PRINT_DEBUG("Steam_Networking_Sockets::SetConnectionUserData\n");
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
-    auto connect_socket = connect_sockets.find(hPeer);
-    if (connect_socket == connect_sockets.end()) return false;
+    auto connect_socket = s->connect_sockets.find(hPeer);
+    if (connect_socket == s->connect_sockets.end()) return false;
     connect_socket->second.user_data = nUserData;
     return true;
 }
@@ -599,8 +643,8 @@ int64 GetConnectionUserData( HSteamNetConnection hPeer )
 {
     PRINT_DEBUG("Steam_Networking_Sockets::GetConnectionUserData\n");
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
-    auto connect_socket = connect_sockets.find(hPeer);
-    if (connect_socket == connect_sockets.end()) return -1;
+    auto connect_socket = s->connect_sockets.find(hPeer);
+    if (connect_socket == s->connect_sockets.end()) return -1;
     return connect_socket->second.user_data;
 }
 
@@ -692,14 +736,14 @@ EResult SendMessageToConnection( HSteamNetConnection hConn, const void *pData, u
     PRINT_DEBUG("Steam_Networking_Sockets::SendMessageToConnection %u, len %u, flags %i\n", hConn, cbData, nSendFlags);
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
 
-    auto connect_socket = connect_sockets.find(hConn);
-    if (connect_socket == connect_sockets.end()) return k_EResultInvalidParam;
+    auto connect_socket = s->connect_sockets.find(hConn);
+    if (connect_socket == s->connect_sockets.end()) return k_EResultInvalidParam;
     if (connect_socket->second.status == CONNECT_SOCKET_CLOSED) return k_EResultNoConnection;
     if (connect_socket->second.status == CONNECT_SOCKET_TIMEDOUT) return k_EResultNoConnection;
     if (connect_socket->second.status != CONNECT_SOCKET_CONNECTED) return k_EResultInvalidState;
 
     Common_Message msg;
-    msg.set_source_id(settings->get_local_steam_id().ConvertToUint64());
+    msg.set_source_id(connect_socket->second.created_by.ConvertToUint64());
     msg.set_dest_id(connect_socket->second.remote_identity.GetSteamID64());
     msg.set_allocated_networking_sockets(new Networking_Sockets);
     msg.mutable_networking_sockets()->set_type(Networking_Sockets::DATA);
@@ -785,8 +829,8 @@ static void delete_steam_message(SteamNetworkingMessage_t *pMsg)
 
 SteamNetworkingMessage_t *get_steam_message_connection(HSteamNetConnection hConn)
 {
-    auto connect_socket = connect_sockets.find(hConn);
-    if (connect_socket == connect_sockets.end()) return NULL;
+    auto connect_socket = s->connect_sockets.find(hConn);
+    if (connect_socket == s->connect_sockets.end()) return NULL;
     if (connect_socket->second.data.empty()) return NULL;
     SteamNetworkingMessage_t *pMsg = new SteamNetworkingMessage_t();
     unsigned long size = connect_socket->second.data.front().size();
@@ -857,8 +901,8 @@ int ReceiveMessagesOnListenSocket( HSteamListenSocket hSocket, SteamNetworkingMe
     SteamNetworkingMessage_t *msg = NULL;
     int messages = 0;
 
-    auto socket_conn = std::begin(connect_sockets);
-    while (socket_conn != std::end(connect_sockets) && messages < nMaxMessages) {
+    auto socket_conn = std::begin(s->connect_sockets);
+    while (socket_conn != std::end(s->connect_sockets) && messages < nMaxMessages) {
         if (socket_conn->second.listen_socket_id == hSocket) {
             while (messages < nMaxMessages && (msg = get_steam_message_connection(socket_conn->first))) {
                 ppOutMessages[messages] = msg;
@@ -880,19 +924,10 @@ bool GetConnectionInfo( HSteamNetConnection hConn, SteamNetConnectionInfo_t *pIn
         return false;
 
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
-    auto connect_socket = connect_sockets.find(hConn);
-    if (connect_socket == connect_sockets.end()) return false;
+    auto connect_socket = s->connect_sockets.find(hConn);
+    if (connect_socket == s->connect_sockets.end()) return false;
 
-    pInfo->m_identityRemote = connect_socket->second.remote_identity;
-    pInfo->m_nUserData = connect_socket->second.user_data;
-    pInfo->m_hListenSocket = connect_socket->second.listen_socket_id;
-    pInfo->m_addrRemote.Clear(); //TODO
-    pInfo->m_idPOPRemote = 0;
-    pInfo->m_idPOPRelay = 0;
-    pInfo->m_eState = convert_status(connect_socket->second.status);
-    pInfo->m_eEndReason = 0; //TODO
-    pInfo->m_szEndDebug[0] = 0;
-    sprintf(pInfo->m_szConnectionDescription, "%u", hConn);
+    set_steamnetconnectioninfo(connect_socket, pInfo);
 
     //Note some games might not allocate a struct the whole size of SteamNetConnectionInfo_t
     //keep this in mind in future interface updates
@@ -900,6 +935,48 @@ bool GetConnectionInfo( HSteamNetConnection hConn, SteamNetConnectionInfo_t *pIn
     return true;
 }
 
+/// Returns a small set of information about the real-time state of the connection
+/// and the queue status of each lane.
+/// 
+/// - pStatus may be NULL if the information is not desired.  (E.g. you are only interested
+///   in the lane information.)
+/// - On entry, nLanes specifies the length of the pLanes array.  This may be 0
+///   if you do not wish to receive any lane data.  It's OK for this to be smaller than
+///   the total number of configured lanes.
+/// - pLanes points to an array that will receive lane-specific info.  It can be NULL
+///   if this is not needed.
+/// 
+/// Return value:
+/// - k_EResultNoConnection - connection handle is invalid or connection has been closed.
+/// - k_EResultInvalidParam - nLanes is bad
+EResult GetConnectionRealTimeStatus( HSteamNetConnection hConn, SteamNetConnectionRealTimeStatus_t *pStatus, int nLanes, SteamNetConnectionRealTimeLaneStatus_t *pLanes )
+{
+    PRINT_DEBUG("%s %u %p %i %p\n", __FUNCTION__, hConn, pStatus, nLanes, pLanes);
+    std::lock_guard<std::recursive_mutex> lock(global_mutex);
+    auto connect_socket = s->connect_sockets.find(hConn);
+    if (connect_socket == s->connect_sockets.end()) return k_EResultNoConnection;
+
+    if (pStatus) {
+        pStatus->m_eState = convert_status(connect_socket->second.status);
+        pStatus->m_nPing = 10; //TODO: calculate real numbers?
+        pStatus->m_flConnectionQualityLocal = 1.0;
+        pStatus->m_flConnectionQualityRemote = 1.0;
+        //TODO: rest
+        pStatus->m_flOutPacketsPerSec = 0.0;
+        pStatus->m_flOutBytesPerSec = 0.0;
+        pStatus->m_flInPacketsPerSec = 0.0;
+        pStatus->m_flInBytesPerSec = 0.0;
+        pStatus->m_cbSentUnackedReliable = 0.0;
+        pStatus->m_usecQueueTime = 0.0;
+
+        //Note some games (volcanoids) might not allocate a struct the whole size of SteamNetworkingQuickConnectionStatus
+        //keep this in mind in future interface updates
+        //NOTE: need to implement GetQuickConnectionStatus seperately if this changes.
+    }
+
+    //TODO: lanes
+    return k_EResultOK;
+}
 
 /// Fetch the next available message(s) from the socket, if any.
 /// Returns the number of messages returned into your array, up to nMaxMessages.
@@ -955,26 +1032,7 @@ bool GetQuickConnectionStatus( HSteamNetConnection hConn, SteamNetworkingQuickCo
     if (!pStats)
         return false;
 
-    std::lock_guard<std::recursive_mutex> lock(global_mutex);
-    auto connect_socket = connect_sockets.find(hConn);
-    if (connect_socket == connect_sockets.end()) return false;
-
-    pStats->m_eState = convert_status(connect_socket->second.status);
-    pStats->m_nPing = 10; //TODO: calculate real numbers?
-    pStats->m_flConnectionQualityLocal = 1.0;
-    pStats->m_flConnectionQualityRemote = 1.0;
-    //TODO: rest
-    pStats->m_flOutPacketsPerSec = 0.0;
-    pStats->m_flOutBytesPerSec = 0.0;
-    pStats->m_flInPacketsPerSec = 0.0;
-    pStats->m_flInBytesPerSec = 0.0;
-    pStats->m_cbSentUnackedReliable = 0.0;
-    pStats->m_usecQueueTime = 0.0;
-
-    //Note some games (volcanoids) might not allocate a struct the whole size of SteamNetworkingQuickConnectionStatus
-    //keep this in mind in future interface updates
-
-    return true;
+    return GetConnectionRealTimeStatus(hConn, pStats, 0, NULL) == k_EResultOK;
 }
 
 
@@ -1073,11 +1131,90 @@ bool CreateSocketPair( HSteamNetConnection *pOutConnection1, HSteamNetConnection
     remote_identity.SetSteamID(settings->get_local_steam_id());
     HSteamNetConnection con1 = new_connect_socket(remote_identity, 0, SNS_DISABLED_PORT, CONNECT_SOCKET_CONNECTED, k_HSteamListenSocket_Invalid, k_HSteamNetConnection_Invalid);
     HSteamNetConnection con2 = new_connect_socket(remote_identity, 0, SNS_DISABLED_PORT, CONNECT_SOCKET_CONNECTED, k_HSteamListenSocket_Invalid, con1);
-    connect_sockets[con1].remote_id = con2;
+    s->connect_sockets[con1].remote_id = con2;
     *pOutConnection1 = con1;
     *pOutConnection2 = con2;
     return true;
 }
+
+/// Configure multiple outbound messages streams ("lanes") on a connection, and
+/// control head-of-line blocking between them.  Messages within a given lane
+/// are always sent in the order they are queued, but messages from different
+/// lanes may be sent out of order.  Each lane has its own message number
+/// sequence.  The first message sent on each lane will be assigned the number 1.
+///
+/// Each lane has a "priority".  Lower priority lanes will only be processed
+/// when all higher-priority lanes are empty.  The magnitudes of the priority
+/// values are not relevant, only their sort order.  Higher numeric values
+/// take priority over lower numeric values.
+/// 
+/// Each lane also is assigned a weight, which controls the approximate proportion
+/// of the bandwidth that will be consumed by the lane, relative to other lanes
+/// of the same priority.  (This is assuming the lane stays busy.  An idle lane
+/// does not build up "credits" to be be spent once a message is queued.)
+/// This value is only meaningful as a proportion, relative to other lanes with
+/// the same priority.  For lanes with different priorities, the strict priority
+/// order will prevail, and their weights relative to each other are not relevant.
+/// Thus, if a lane has a unique priority value, the weight value for that lane is
+/// not relevant.  
+///
+/// Example: 3 lanes, with priorities [ 0, 10, 10 ] and weights [ (NA), 20, 5 ].
+/// Messages sent on the first will always be sent first, before messages in the
+/// other two lanes.  Its weight value is irrelevant, since there are no other
+/// lanes with priority=0.  The other two lanes will share bandwidth, with the second
+/// and third lanes sharing bandwidth using a ratio of approximately 4:1.
+/// (The weights [ NA, 4, 1 ] would be equivalent.)
+///
+/// Notes:
+/// - At the time of this writing, some code has performance cost that is linear
+///   in the number of lanes, so keep the number of lanes to an absolute minimum.
+///   3 or so is fine; >8 is a lot.  The max number of lanes on Steam is 255,
+///   which is a very large number and not recommended!  If you are compiling this
+///   library from source, see STEAMNETWORKINGSOCKETS_MAX_LANES.)
+/// - Lane priority values may be any int.  Their absolute value is not relevant,
+///   only the order matters.
+/// - Weights must be positive, and due to implementation details, they are restricted
+///   to 16-bit values.  The absolute magnitudes don't matter, just the proportions.
+/// - Messages sent on a lane index other than 0 have a small overhead on the wire,
+///   so for maximum wire efficiency, lane 0 should be the "most common" lane, regardless
+///   of priorities or weights.
+/// - A connection has a single lane by default.  Calling this function with
+///   nNumLanes=1 is legal, but pointless, since the priority and weight values are
+///   irrelevant in that case.
+/// - You may reconfigure connection lanes at any time, however reducing the number of
+///   lanes is not allowed.
+/// - Reconfiguring lanes might restart any bandwidth sharing balancing.  Usually you
+///   will call this function once, near the start of the connection, perhaps after
+///   exchanging a few messages.
+/// - To assign all lanes the same priority, you may use pLanePriorities=NULL.
+/// - If you wish all lanes with the same priority to share bandwidth equally (or
+///   if no two lanes have the same priority value, and thus priority values are
+///   irrelevant), you may use pLaneWeights=NULL
+/// - Priorities and weights determine the order that messages are SENT on the wire.
+///   There are NO GUARANTEES on the order that messages are RECEIVED!  Due to packet
+///   loss, out-of-order delivery, and subtle details of packet serialization, messages
+///   might still be received slightly out-of-order!  The *only* strong guarantee is that
+///   *reliable* messages on the *same lane* will be delivered in the order they are sent.
+/// - Each host configures the lanes for the packets they send; the lanes for the flow
+///   in one direction are completely unrelated to the lanes in the opposite direction.
+/// 
+/// Return value:
+/// - k_EResultNoConnection - bad hConn
+/// - k_EResultInvalidParam - Invalid number of lanes, bad weights, or you tried to reduce the number of lanes
+/// - k_EResultInvalidState - Connection is already dead, etc
+/// 
+/// See also:
+/// SteamNetworkingMessage_t::m_idxLane
+EResult ConfigureConnectionLanes( HSteamNetConnection hConn, int nNumLanes, const int *pLanePriorities, const uint16 *pLaneWeights )
+{
+    PRINT_DEBUG("TODO: %s\n", __FUNCTION__);
+    std::lock_guard<std::recursive_mutex> lock(global_mutex);
+    auto connect_socket = s->connect_sockets.find(hConn);
+    if (connect_socket == s->connect_sockets.end()) return k_EResultNoConnection;
+    //TODO
+    return k_EResultOK;
+}
+
 
 /// Get the identity assigned to this interface.
 /// E.g. on Steam, this is the user's SteamID, or for the gameserver interface, the SteamID assigned
@@ -1145,7 +1282,7 @@ HSteamNetPollGroup CreatePollGroup()
     ++poll_group_counter;
 
     HSteamNetPollGroup poll_group_number = poll_group_counter;
-    poll_groups[poll_group_number] = std::list<HSteamNetConnection>();
+    s->poll_groups[poll_group_number] = std::list<HSteamNetConnection>();
     return poll_group_number;
 }
 
@@ -1158,19 +1295,19 @@ bool DestroyPollGroup( HSteamNetPollGroup hPollGroup )
 {
     PRINT_DEBUG("Steam_Networking_Sockets::DestroyPollGroup\n");
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
-    auto group = poll_groups.find(hPollGroup);
-    if (group == poll_groups.end()) {
+    auto group = s->poll_groups.find(hPollGroup);
+    if (group == s->poll_groups.end()) {
         return false;
     }
 
     for (auto c : group->second) {
-        auto connect_socket = connect_sockets.find(c);
-        if (connect_socket != connect_sockets.end()) {
+        auto connect_socket = s->connect_sockets.find(c);
+        if (connect_socket != s->connect_sockets.end()) {
             connect_socket->second.poll_group = k_HSteamNetPollGroup_Invalid;
         }
     }
 
-    poll_groups.erase(group);
+    s->poll_groups.erase(group);
     return true;
 }
 
@@ -1192,20 +1329,20 @@ bool SetConnectionPollGroup( HSteamNetConnection hConn, HSteamNetPollGroup hPoll
 {
     PRINT_DEBUG("Steam_Networking_Sockets::SetConnectionPollGroup %u %u\n", hConn, hPollGroup);
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
-    auto connect_socket = connect_sockets.find(hConn);
-    if (connect_socket == connect_sockets.end()) {
+    auto connect_socket = s->connect_sockets.find(hConn);
+    if (connect_socket == s->connect_sockets.end()) {
         return false;
     }
 
-    auto group = poll_groups.find(hPollGroup);
-    if (group == poll_groups.end() && hPollGroup != k_HSteamNetPollGroup_Invalid) {
+    auto group = s->poll_groups.find(hPollGroup);
+    if (group == s->poll_groups.end() && hPollGroup != k_HSteamNetPollGroup_Invalid) {
         return false;
     }
 
     HSteamNetPollGroup old_poll_group = connect_socket->second.poll_group;
     if (old_poll_group != k_HSteamNetPollGroup_Invalid) {
-        auto group = poll_groups.find(hPollGroup);
-        if (group != poll_groups.end()) {
+        auto group = s->poll_groups.find(hPollGroup);
+        if (group != s->poll_groups.end()) {
             group->second.remove(hConn);
         }
     }
@@ -1238,8 +1375,8 @@ int ReceiveMessagesOnPollGroup( HSteamNetPollGroup hPollGroup, SteamNetworkingMe
 {
     PRINT_DEBUG("Steam_Networking_Sockets::ReceiveMessagesOnPollGroup %u %i\n", hPollGroup, nMaxMessages);
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
-    auto group = poll_groups.find(hPollGroup);
-    if (group == poll_groups.end()) {
+    auto group = s->poll_groups.find(hPollGroup);
+    if (group == s->poll_groups.end()) {
         return 0;
     }
 
@@ -1253,6 +1390,7 @@ int ReceiveMessagesOnPollGroup( HSteamNetPollGroup hPollGroup, SteamNetworkingMe
         }
     }
 
+    PRINT_DEBUG("Steam_Networking_Sockets::ReceiveMessagesOnPollGroup out %i\n", messages);
     return messages;
 }
 
@@ -1684,6 +1822,152 @@ bool SetCertificate( const void *pCertificate, int cbCertificate, SteamNetworkin
     return false;
 }
 
+/// Reset the identity associated with this instance.
+/// Any open connections are closed.  Any previous certificates, etc are discarded.
+/// You can pass a specific identity that you want to use, or you can pass NULL,
+/// in which case the identity will be invalid until you set it using SetCertificate
+///
+/// NOTE: This function is not actually supported on Steam!  It is included
+///       for use on other platforms where the active user can sign out and
+///       a new user can sign in.
+void ResetIdentity( const SteamNetworkingIdentity *pIdentity )
+{
+    PRINT_DEBUG("TODO: %s\n", __FUNCTION__);
+}
+
+//
+// "FakeIP" system.
+//
+// A FakeIP is essentially a temporary, arbitrary identifier that
+// happens to be a valid IPv4 address.  The purpose of this system is to make it
+// easy to integrate with existing code that identifies hosts using IPv4 addresses.
+// The FakeIP address will never actually be used to send or receive any packets
+// on the Internet, it is strictly an identifier.
+//
+// FakeIP addresses are designed to (hopefully) pass through existing code as
+// transparently as possible, while conflicting with "real" addresses that might
+// be in use on networks (both the Internet and LANs) in the same code as little
+// as possible.  At the time this comment is being written, they come from the
+// 169.254.0.0/16 range, and the port number will always be >1024.  HOWEVER,
+// this is subject to change!  Do not make assumptions about these addresses,
+// or your code might break in the future.  In particular, you should use
+// functions such as  ISteamNetworkingUtils::IsFakeIP to determine if an IP
+// address is a "fake" one used by this system.
+//
+
+/// Begin asynchronous process of allocating a fake IPv4 address that other
+/// peers can use to contact us via P2P.  IP addresses returned by this
+/// function are globally unique for a given appid.
+///
+/// nNumPorts is the numbers of ports you wish to reserve.  This is useful
+/// for the same reason that listening on multiple UDP ports is useful for
+/// different types of traffic.  Because these allocations come from a global
+/// namespace, there is a relatively strict limit on the maximum number of
+/// ports you may request.  (At the time of this writing, the limit is 4.)
+/// The Port assignments are *not* guaranteed to have any particular order
+/// or relationship!  Do *not* assume they are contiguous, even though that
+/// may often occur in practice.
+///
+/// Returns false if a request was already in progress, true if a new request
+/// was started.  A SteamNetworkingFakeIPResult_t will be posted when the request
+/// completes.
+///
+/// For gameservers, you *must* call this after initializing the SDK but before
+/// beginning login.  Steam needs to know in advance that FakeIP will be used.
+/// Everywhere your public IP would normally appear (such as the server browser) will be
+/// replaced by the FakeIP, and the fake port at index 0.  The request is actually queued
+/// until the logon completes, so you must not wait until the allocation completes
+/// before logging in.  Except for trivial failures that can be detected locally
+/// (e.g. invalid parameter), a SteamNetworkingFakeIPResult_t callback (whether success or
+/// failure) will not be posted until after we have logged in.  Furthermore, it is assumed
+/// that FakeIP allocation is essential for your application to function, and so failure
+/// will not be reported until *several* retries have been attempted.  This process may
+/// last several minutes.  It is *highly* recommended to treat failure as fatal.
+///
+/// To communicate using a connection-oriented (TCP-style) API:
+/// - Server creates a listen socket using CreateListenSocketP2PFakeIP
+/// - Client connects using ConnectByIPAddress, passing in the FakeIP address.
+/// - The connection will behave mostly like a P2P connection.  The identities
+///   that appear in SteamNetConnectionInfo_t will be the FakeIP identity until
+///   we know the real identity.  Then it will be the real identity.  If the
+///   SteamNetConnectionInfo_t::m_addrRemote is valid, it will be a real IPv4
+///   address of a NAT-punched connection.  Otherwise, it will not be valid.
+/// 
+/// To communicate using an ad-hoc sendto/recv from (UDP-style) API,
+/// use CreateFakeUDPPort.
+bool BeginAsyncRequestFakeIP( int nNumPorts )
+{
+    PRINT_DEBUG("TODO: %s\n", __FUNCTION__);
+    return false;
+}
+
+/// Return info about the FakeIP and port(s) that we have been assigned,
+/// if any.  idxFirstPort is currently reserved and must be zero.
+/// Make sure and check SteamNetworkingFakeIPResult_t::m_eResult
+void GetFakeIP( int idxFirstPort, SteamNetworkingFakeIPResult_t *pInfo )
+{
+    PRINT_DEBUG("TODO: %s\n", __FUNCTION__);
+}
+
+/// Create a listen socket that will listen for P2P connections sent
+/// to our FakeIP.  A peer can initiate connections to this listen
+/// socket by calling ConnectByIPAddress.
+///
+/// idxFakePort refers to the *index* of the fake port requested,
+/// not the actual port number.  For example, pass 0 to refer to the
+/// first port in the reservation.  You must call this only after calling
+/// BeginAsyncRequestFakeIP.  However, you do not need to wait for the
+/// request to complete before creating the listen socket.
+HSteamListenSocket CreateListenSocketP2PFakeIP( int idxFakePort, int nOptions, const SteamNetworkingConfigValue_t *pOptions )
+{
+    PRINT_DEBUG("TODO: %s\n", __FUNCTION__);
+    return k_HSteamListenSocket_Invalid;
+}
+
+/// If the connection was initiated using the "FakeIP" system, then we
+/// we can get an IP address for the remote host.  If the remote host had
+/// a global FakeIP at the time the connection was established, this
+/// function will return that global IP.  Otherwise, a FakeIP that is
+/// unique locally will be allocated from the local FakeIP address space,
+/// and that will be returned.
+/// 
+/// The allocation of local FakeIPs attempts to assign addresses in
+/// a consistent manner.  If multiple connections are made to the
+/// same remote host, they *probably* will return the same FakeIP.
+/// However, since the namespace is limited, this cannot be guaranteed.
+///
+/// On failure, returns:
+/// - k_EResultInvalidParam: invalid connection handle
+/// - k_EResultIPNotFound: This connection wasn't made using FakeIP system
+EResult GetRemoteFakeIPForConnection( HSteamNetConnection hConn, SteamNetworkingIPAddr *pOutAddr )
+{
+    PRINT_DEBUG("TODO: %s\n", __FUNCTION__);
+    return k_EResultNone;
+}
+
+/// Get an interface that can be used like a UDP port to send/receive
+/// datagrams to a FakeIP address.  This is intended to make it easy
+/// to port existing UDP-based code to take advantage of SDR.
+/// 
+/// idxFakeServerPort refers to the *index* of the port allocated using
+/// BeginAsyncRequestFakeIP and is used to create "server" ports.  You may
+/// call this before the allocation has completed.  However, any attempts
+/// to send packets will fail until the allocation has succeeded.  When
+/// the peer receives packets sent from this interface, the from address
+/// of the packet will be the globally-unique FakeIP.  If you call this
+/// function multiple times and pass the same (nonnegative) fake port index,
+/// the same object will be returned, and this object is not reference counted.
+/// 
+/// To create a "client" port (e.g. the equivalent of an ephemeral UDP port)
+/// pass -1.  In this case, a distinct object will be returned for each call.
+/// When the peer receives packets sent from this interface, the peer will
+/// assign a FakeIP from its own locally-controlled namespace.
+ISteamNetworkingFakeUDPPort *CreateFakeUDPPort( int idxFakeServerPort )
+{
+    PRINT_DEBUG("TODO: %s\n", __FUNCTION__);
+    return NULL;
+}
+
 // TEMP KLUDGE Call to invoke all queued callbacks.
 // Eventually this function will go away, and callwacks will be ordinary Steamworks callbacks.
 // You should call this at the same time you call SteamAPI_RunCallbacks and SteamGameServer_RunCallbacks
@@ -1699,6 +1983,7 @@ void RunCallbacks()
     //TODO: timeout unaccepted connections after a few seconds or so
 }
 
+
 void Callback(Common_Message *msg)
 {
     if (msg->has_low_level()) {
@@ -1707,7 +1992,7 @@ void Callback(Common_Message *msg)
         }
 
         if (msg->low_level().type() == Low_Level::DISCONNECT) {
-            for (auto & connect_socket : connect_sockets) {
+            for (auto & connect_socket : s->connect_sockets) {
                 if (connect_socket.second.remote_identity.GetSteamID64() == msg->source_id()) {
                     enum connect_socket_status old_status = connect_socket.second.status;
                     connect_socket.second.status = CONNECT_SOCKET_TIMEDOUT;
@@ -1718,18 +2003,19 @@ void Callback(Common_Message *msg)
     }
 
     if (msg->has_networking_sockets()) {
-        PRINT_DEBUG("Steam_Networking_Sockets: got network socket msg %u\n", msg->networking_sockets().type());
+        PRINT_DEBUG("Steam_Networking_Sockets: got network socket msg %u %llu\n", msg->networking_sockets().type(), msg->source_id());
         if (msg->networking_sockets().type() == Networking_Sockets::CONNECTION_REQUEST) {
             int virtual_port = msg->networking_sockets().virtual_port();
             int real_port = msg->networking_sockets().real_port();
+            uint64 dest_id = msg->dest_id();
             std::vector<Listen_Socket>::iterator conn;
             if (virtual_port == SNS_DISABLED_PORT) {
-                conn = std::find_if(listen_sockets.begin(), listen_sockets.end(), [&real_port](struct Listen_Socket const& conn) { return conn.real_port == real_port;});
+                conn = std::find_if(s->listen_sockets.begin(), s->listen_sockets.end(), [&real_port,&dest_id](struct Listen_Socket const& conn) { return conn.real_port == real_port && dest_id == conn.created_by.ConvertToUint64();});
             } else {
-                conn = std::find_if(listen_sockets.begin(), listen_sockets.end(), [&virtual_port](struct Listen_Socket const& conn) { return conn.virtual_port == virtual_port;});
+                conn = std::find_if(s->listen_sockets.begin(), s->listen_sockets.end(), [&virtual_port,&dest_id](struct Listen_Socket const& conn) { return conn.virtual_port == virtual_port && dest_id == conn.created_by.ConvertToUint64();});
             }
 
-            if (conn != listen_sockets.end()) {
+            if (conn != s->listen_sockets.end()) {
                 SteamNetworkingIdentity identity;
                 identity.SetSteamID64(msg->source_id());
                 HSteamNetConnection new_connection = new_connect_socket(identity, virtual_port, real_port, CONNECT_SOCKET_NOT_ACCEPTED, conn->socket_id, msg->networking_sockets().connection_id_from());
@@ -1737,8 +2023,8 @@ void Callback(Common_Message *msg)
             }
 
         } else if (msg->networking_sockets().type() == Networking_Sockets::CONNECTION_ACCEPTED) {
-            auto connect_socket = connect_sockets.find(msg->networking_sockets().connection_id());
-            if (connect_socket != connect_sockets.end()) {
+            auto connect_socket = s->connect_sockets.find(msg->networking_sockets().connection_id());
+            if (connect_socket != s->connect_sockets.end()) {
                 if (connect_socket->second.remote_identity.GetSteamID64() == 0) {
                     connect_socket->second.remote_identity.SetSteamID64(msg->source_id());
                 }
@@ -1750,15 +2036,16 @@ void Callback(Common_Message *msg)
                 }
             }
         } else if (msg->networking_sockets().type() == Networking_Sockets::DATA) {
-            auto connect_socket = connect_sockets.find(msg->networking_sockets().connection_id());
-            if (connect_socket != connect_sockets.end()) {
+            auto connect_socket = s->connect_sockets.find(msg->networking_sockets().connection_id());
+            if (connect_socket != s->connect_sockets.end()) {
                 if (connect_socket->second.remote_identity.GetSteamID64() == msg->source_id() && connect_socket->second.status == CONNECT_SOCKET_CONNECTED) {
+                    PRINT_DEBUG("Steam_Networking_Sockets: got data len %u on connection %u\n", msg->networking_sockets().data().size(), connect_socket->first);
                     connect_socket->second.data.push(msg->networking_sockets().data());
                 }
             }
         } else if (msg->networking_sockets().type() == Networking_Sockets::CONNECTION_END) {
-            auto connect_socket = connect_sockets.find(msg->networking_sockets().connection_id());
-            if (connect_socket != connect_sockets.end()) {
+            auto connect_socket = s->connect_sockets.find(msg->networking_sockets().connection_id());
+            if (connect_socket != s->connect_sockets.end()) {
                 if (connect_socket->second.remote_identity.GetSteamID64() == msg->source_id() && connect_socket->second.status == CONNECT_SOCKET_CONNECTED) {
                     enum connect_socket_status old_status = connect_socket->second.status;
                     connect_socket->second.status = CONNECT_SOCKET_CLOSED;

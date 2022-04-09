@@ -91,6 +91,7 @@ enum EXTRA_GAMEPAD_BUTTONS {
 
 #define JOY_ID_START 10
 #define STICK_DPAD 3
+#define DEADZONE_BUTTON_STICK 0.3
 
 class Steam_Controller :
 public ISteamController001,
@@ -102,6 +103,7 @@ public ISteamController007,
 public ISteamController,
 public ISteamInput001,
 public ISteamInput002,
+public ISteamInput005,
 public ISteamInput
 {
     class Settings *settings;
@@ -331,9 +333,9 @@ bool Init(bool bExplicitlyCallRunFrame)
 
     for (int i = 1; i < 5; ++i) {
         struct Controller_Action cont_action(i);
-        //Activate the action set if there is only one present.
-        //TODO: I don't know if one gets activated by default when there's more than one
-        if (action_handles.size() == 1) {
+        //Activate the first action set.
+        //TODO: check exactly what decides which gets activated by default
+        if (action_handles.size() >= 1) {
             cont_action.activate_action_set(action_handles.begin()->second, controller_maps);
         }
 
@@ -521,6 +523,7 @@ void ActivateActionSet( ControllerHandle_t controllerHandle, ControllerActionSet
 
 ControllerActionSetHandle_t GetCurrentActionSet( ControllerHandle_t controllerHandle )
 {
+    //TODO: should return zero if no action set specifically activated with ActivateActionSet
     PRINT_DEBUG("Steam_Controller::GetCurrentActionSet %llu\n", controllerHandle);
     auto controller = controllers.find(controllerHandle);
     if (controller == controllers.end()) return 0;
@@ -562,7 +565,11 @@ ControllerDigitalActionHandle_t GetDigitalActionHandle( const char *pszActionNam
     std::transform(upper_action_name.begin(), upper_action_name.end(), upper_action_name.begin(),[](unsigned char c){ return std::toupper(c); });
 
     auto handle = digital_action_handles.find(upper_action_name);
-    if (handle == digital_action_handles.end()) return 0;
+    if (handle == digital_action_handles.end()) {
+        //apparently GetDigitalActionHandle also works with analog handles
+        handle = analog_action_handles.find(upper_action_name);
+        if (handle == analog_action_handles.end()) return 0;
+    }
 
     PRINT_DEBUG("Steam_Controller::GetDigitalActionHandle %s ret %llu\n", pszActionName, handle->second);
     return handle->second;
@@ -601,17 +608,31 @@ ControllerDigitalActionData_t GetDigitalActionData( ControllerHandle_t controlle
                 case BUTTON_STICK_LEFT_UP:
                 case BUTTON_STICK_LEFT_DOWN:
                 case BUTTON_STICK_LEFT_LEFT:
-                case BUTTON_STICK_LEFT_RIGHT:
-                    pressed = GamepadStickLength(device, STICK_LEFT) > 0.1 &&
-                                        ((int)GamepadStickDir(device, STICK_LEFT) == ((button - BUTTON_STICK_LEFT_UP) + 1));
+                case BUTTON_STICK_LEFT_RIGHT: {
+                    float x = 0, y = 0, len = GamepadStickLength(device, STICK_LEFT);
+                    GamepadStickNormXY(device, STICK_LEFT, &x, &y);
+                    x *= len;
+                    y *= len;
+                    if (button == BUTTON_STICK_LEFT_UP) pressed = y > DEADZONE_BUTTON_STICK;
+                    if (button == BUTTON_STICK_LEFT_DOWN) pressed = y < -DEADZONE_BUTTON_STICK;
+                    if (button == BUTTON_STICK_LEFT_RIGHT) pressed = x > DEADZONE_BUTTON_STICK;
+                    if (button == BUTTON_STICK_LEFT_LEFT) pressed = x < -DEADZONE_BUTTON_STICK;
                     break;
+                }
                 case BUTTON_STICK_RIGHT_UP:
                 case BUTTON_STICK_RIGHT_DOWN:
                 case BUTTON_STICK_RIGHT_LEFT:
-                case BUTTON_STICK_RIGHT_RIGHT:
-                    pressed = GamepadStickLength(device, STICK_RIGHT) > 0.1 &&
-                                        ((int)GamepadStickDir(device, STICK_RIGHT) == ((button - BUTTON_STICK_RIGHT_UP) + 1));
+                case BUTTON_STICK_RIGHT_RIGHT: {
+                    float x = 0, y = 0, len = GamepadStickLength(device, STICK_RIGHT);
+                    GamepadStickNormXY(device, STICK_RIGHT, &x, &y);
+                    x *= len;
+                    y *= len;
+                    if (button == BUTTON_STICK_RIGHT_UP) pressed = y > DEADZONE_BUTTON_STICK;
+                    if (button == BUTTON_STICK_RIGHT_DOWN) pressed = y < -DEADZONE_BUTTON_STICK;
+                    if (button == BUTTON_STICK_RIGHT_RIGHT) pressed = x > DEADZONE_BUTTON_STICK;
+                    if (button == BUTTON_STICK_RIGHT_LEFT) pressed = x < -DEADZONE_BUTTON_STICK;
                     break;
+                }
                 default:
                     break;
             }

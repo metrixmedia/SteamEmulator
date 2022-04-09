@@ -794,8 +794,8 @@ STEAMAPI_API ISteamUtils *SteamAPI_SteamGameServerUtils_v009()
 
 STEAMAPI_API uint32 SteamAPI_ISteamUtils_GetSecondsSinceAppActive( ISteamUtils* self )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -806,8 +806,8 @@ STEAMAPI_API uint32 SteamAPI_ISteamUtils_GetSecondsSinceAppActive( ISteamUtils* 
 
 STEAMAPI_API uint32 SteamAPI_ISteamUtils_GetSecondsSinceComputerActive( ISteamUtils* self )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -818,8 +818,8 @@ STEAMAPI_API uint32 SteamAPI_ISteamUtils_GetSecondsSinceComputerActive( ISteamUt
 
 STEAMAPI_API EUniverse SteamAPI_ISteamUtils_GetConnectedUniverse( ISteamUtils* self )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -830,8 +830,8 @@ STEAMAPI_API EUniverse SteamAPI_ISteamUtils_GetConnectedUniverse( ISteamUtils* s
 
 STEAMAPI_API uint32 SteamAPI_ISteamUtils_GetServerRealTime( ISteamUtils* self )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -842,8 +842,8 @@ STEAMAPI_API uint32 SteamAPI_ISteamUtils_GetServerRealTime( ISteamUtils* self )
 
 STEAMAPI_API const char * SteamAPI_ISteamUtils_GetIPCountry( ISteamUtils* self )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -854,8 +854,8 @@ STEAMAPI_API const char * SteamAPI_ISteamUtils_GetIPCountry( ISteamUtils* self )
 
 STEAMAPI_API bool SteamAPI_ISteamUtils_GetImageSize( ISteamUtils* self, int iImage, uint32 * pnWidth, uint32 * pnHeight )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -866,8 +866,8 @@ STEAMAPI_API bool SteamAPI_ISteamUtils_GetImageSize( ISteamUtils* self, int iIma
 
 STEAMAPI_API bool SteamAPI_ISteamUtils_GetImageRGBA( ISteamUtils* self, int iImage, uint8 * pubDest, int nDestBufferSize )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -878,8 +878,8 @@ STEAMAPI_API bool SteamAPI_ISteamUtils_GetImageRGBA( ISteamUtils* self, int iIma
 
 STEAMAPI_API bool SteamAPI_ISteamUtils_GetCSERIPPort( ISteamUtils* self, uint32 * unIP, uint16 * usPort )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -890,8 +890,8 @@ STEAMAPI_API bool SteamAPI_ISteamUtils_GetCSERIPPort( ISteamUtils* self, uint32 
 
 STEAMAPI_API uint8 SteamAPI_ISteamUtils_GetCurrentBatteryPower( ISteamUtils* self )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -902,8 +902,8 @@ STEAMAPI_API uint8 SteamAPI_ISteamUtils_GetCurrentBatteryPower( ISteamUtils* sel
 
 STEAMAPI_API uint32 SteamAPI_ISteamUtils_GetAppID( ISteamUtils* self )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -914,8 +914,8 @@ STEAMAPI_API uint32 SteamAPI_ISteamUtils_GetAppID( ISteamUtils* self )
 
 STEAMAPI_API void SteamAPI_ISteamUtils_SetOverlayNotificationPosition( ISteamUtils* self, ENotificationPosition eNotificationPosition )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -926,8 +926,8 @@ STEAMAPI_API void SteamAPI_ISteamUtils_SetOverlayNotificationPosition( ISteamUti
 
 STEAMAPI_API bool SteamAPI_ISteamUtils_IsAPICallCompleted( ISteamUtils* self, SteamAPICall_t hSteamAPICall, bool * pbFailed )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -938,8 +938,8 @@ STEAMAPI_API bool SteamAPI_ISteamUtils_IsAPICallCompleted( ISteamUtils* self, St
 
 STEAMAPI_API ESteamAPICallFailure SteamAPI_ISteamUtils_GetAPICallFailureReason( ISteamUtils* self, SteamAPICall_t hSteamAPICall )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -950,8 +950,8 @@ STEAMAPI_API ESteamAPICallFailure SteamAPI_ISteamUtils_GetAPICallFailureReason( 
 
 STEAMAPI_API bool SteamAPI_ISteamUtils_GetAPICallResult( ISteamUtils* self, SteamAPICall_t hSteamAPICall, void * pCallback, int cubCallback, int iCallbackExpected, bool * pbFailed )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -962,8 +962,8 @@ STEAMAPI_API bool SteamAPI_ISteamUtils_GetAPICallResult( ISteamUtils* self, Stea
 
 STEAMAPI_API uint32 SteamAPI_ISteamUtils_GetIPCCallCount( ISteamUtils* self )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -974,8 +974,8 @@ STEAMAPI_API uint32 SteamAPI_ISteamUtils_GetIPCCallCount( ISteamUtils* self )
 
 STEAMAPI_API void SteamAPI_ISteamUtils_SetWarningMessageHook( ISteamUtils* self, SteamAPIWarningMessageHook_t pFunction )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -986,8 +986,8 @@ STEAMAPI_API void SteamAPI_ISteamUtils_SetWarningMessageHook( ISteamUtils* self,
 
 STEAMAPI_API bool SteamAPI_ISteamUtils_IsOverlayEnabled( ISteamUtils* self )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -998,8 +998,8 @@ STEAMAPI_API bool SteamAPI_ISteamUtils_IsOverlayEnabled( ISteamUtils* self )
 
 STEAMAPI_API bool SteamAPI_ISteamUtils_BOverlayNeedsPresent( ISteamUtils* self )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -1010,8 +1010,8 @@ STEAMAPI_API bool SteamAPI_ISteamUtils_BOverlayNeedsPresent( ISteamUtils* self )
 
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUtils_CheckFileSignature( ISteamUtils* self, const char * szFileName )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -1022,8 +1022,8 @@ STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUtils_CheckFileSignature( ISteamUtils
 
 STEAMAPI_API bool SteamAPI_ISteamUtils_ShowGamepadTextInput( ISteamUtils* self, EGamepadTextInputMode eInputMode, EGamepadTextInputLineMode eLineInputMode, const char * pchDescription, uint32 unCharMax, const char * pchExistingText )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -1034,8 +1034,8 @@ STEAMAPI_API bool SteamAPI_ISteamUtils_ShowGamepadTextInput( ISteamUtils* self, 
 
 STEAMAPI_API uint32 SteamAPI_ISteamUtils_GetEnteredGamepadTextLength( ISteamUtils* self )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -1046,8 +1046,8 @@ STEAMAPI_API uint32 SteamAPI_ISteamUtils_GetEnteredGamepadTextLength( ISteamUtil
 
 STEAMAPI_API bool SteamAPI_ISteamUtils_GetEnteredGamepadTextInput( ISteamUtils* self, char * pchText, uint32 cchText )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -1058,8 +1058,8 @@ STEAMAPI_API bool SteamAPI_ISteamUtils_GetEnteredGamepadTextInput( ISteamUtils* 
 
 STEAMAPI_API const char * SteamAPI_ISteamUtils_GetSteamUILanguage( ISteamUtils* self )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -1070,8 +1070,8 @@ STEAMAPI_API const char * SteamAPI_ISteamUtils_GetSteamUILanguage( ISteamUtils* 
 
 STEAMAPI_API bool SteamAPI_ISteamUtils_IsSteamRunningInVR( ISteamUtils* self )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -1082,8 +1082,8 @@ STEAMAPI_API bool SteamAPI_ISteamUtils_IsSteamRunningInVR( ISteamUtils* self )
 
 STEAMAPI_API void SteamAPI_ISteamUtils_SetOverlayNotificationInset( ISteamUtils* self, int nHorizontalInset, int nVerticalInset )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -1094,8 +1094,8 @@ STEAMAPI_API void SteamAPI_ISteamUtils_SetOverlayNotificationInset( ISteamUtils*
 
 STEAMAPI_API bool SteamAPI_ISteamUtils_IsSteamInBigPictureMode( ISteamUtils* self )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -1106,8 +1106,8 @@ STEAMAPI_API bool SteamAPI_ISteamUtils_IsSteamInBigPictureMode( ISteamUtils* sel
 
 STEAMAPI_API void SteamAPI_ISteamUtils_StartVRDashboard( ISteamUtils* self )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -1118,8 +1118,8 @@ STEAMAPI_API void SteamAPI_ISteamUtils_StartVRDashboard( ISteamUtils* self )
 
 STEAMAPI_API bool SteamAPI_ISteamUtils_IsVRHeadsetStreamingEnabled( ISteamUtils* self )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -1130,8 +1130,8 @@ STEAMAPI_API bool SteamAPI_ISteamUtils_IsVRHeadsetStreamingEnabled( ISteamUtils*
 
 STEAMAPI_API void SteamAPI_ISteamUtils_SetVRHeadsetStreamingEnabled( ISteamUtils* self, bool bEnabled )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -1142,8 +1142,8 @@ STEAMAPI_API void SteamAPI_ISteamUtils_SetVRHeadsetStreamingEnabled( ISteamUtils
 
 STEAMAPI_API bool SteamAPI_ISteamUtils_IsSteamChinaLauncher( ISteamUtils* self )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -1155,8 +1155,8 @@ STEAMAPI_API bool SteamAPI_ISteamUtils_IsSteamChinaLauncher( ISteamUtils* self )
 STEAMAPI_API bool SteamAPI_ISteamUtils_InitFilterText( ISteamUtils* self, uint32 unFilterOptions )
 {
     //Note: older function only has less arguments
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -1168,8 +1168,8 @@ STEAMAPI_API bool SteamAPI_ISteamUtils_InitFilterText( ISteamUtils* self, uint32
 STEAMAPI_API int SteamAPI_ISteamUtils_FilterText( ISteamUtils* self, ETextFilteringContext eContext, uint64_steamid sourceSteamID, const char * pchInputMessage, char * pchOutFilteredText, uint32 nByteSizeOutFilteredText )
 {
     //Note: older function only has less arguments
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -1180,8 +1180,8 @@ STEAMAPI_API int SteamAPI_ISteamUtils_FilterText( ISteamUtils* self, ETextFilter
 
 STEAMAPI_API ESteamIPv6ConnectivityState SteamAPI_ISteamUtils_GetIPv6ConnectivityState( ISteamUtils* self, ESteamIPv6ConnectivityProtocol eProtocol )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -1192,8 +1192,8 @@ STEAMAPI_API ESteamIPv6ConnectivityState SteamAPI_ISteamUtils_GetIPv6Connectivit
 
 STEAMAPI_API bool SteamAPI_ISteamUtils_IsSteamRunningOnSteamDeck( ISteamUtils* self )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -1204,8 +1204,8 @@ STEAMAPI_API bool SteamAPI_ISteamUtils_IsSteamRunningOnSteamDeck( ISteamUtils* s
 
 STEAMAPI_API bool SteamAPI_ISteamUtils_ShowModalGamepadTextInput( ISteamUtils* self, EGamepadTextInputLineMode eLineInputMode )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -1215,10 +1215,23 @@ STEAMAPI_API bool SteamAPI_ISteamUtils_ShowModalGamepadTextInput( ISteamUtils* s
     return (ptr)->ShowFloatingGamepadTextInput((EFloatingGamepadTextInputMode)eLineInputMode, 0, 0, 0, 0);
 }
 
+STEAMAPI_API bool SteamAPI_ISteamUtils_ShowFloatingGamepadTextInput( ISteamUtils* self, EFloatingGamepadTextInputMode eKeyboardMode, int nTextFieldXPosition, int nTextFieldYPosition, int nTextFieldWidth, int nTextFieldHeight )
+{
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    auto ptr = get_steam_client()->steam_gameserver_utils;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_utils;
+    }
+
+    //flat vs normal api mismatch
+    return (ptr)->ShowFloatingGamepadTextInput( eKeyboardMode, nTextFieldXPosition, nTextFieldYPosition, nTextFieldWidth, nTextFieldHeight);
+}
+
 STEAMAPI_API void SteamAPI_ISteamUtils_SetGameLauncherMode( ISteamUtils* self, bool bLauncherMode )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
     auto ptr = get_steam_client()->steam_gameserver_utils;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_utils;
@@ -1227,6 +1240,17 @@ STEAMAPI_API void SteamAPI_ISteamUtils_SetGameLauncherMode( ISteamUtils* self, b
     return (ptr)->SetGameLauncherMode(bLauncherMode);
 }
 
+STEAMAPI_API bool SteamAPI_ISteamUtils_DismissFloatingGamepadTextInput( ISteamUtils* self )
+{
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_utils);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_utils);
+    auto ptr = get_steam_client()->steam_gameserver_utils;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_utils;
+    }
+
+    return (ptr)->DismissFloatingGamepadTextInput();
+}
 
 STEAMAPI_API ISteamMatchmaking *SteamAPI_SteamMatchmaking_v009()
 {
@@ -2988,9 +3012,15 @@ STEAMAPI_API ISteamInput *SteamAPI_SteamInput_v005()
     return get_steam_client()->GetISteamInput(flat_hsteamuser(), flat_hsteampipe(), "SteamInput005");
 }
 
+STEAMAPI_API ISteamInput *SteamAPI_SteamInput_v006()
+{
+    return get_steam_client()->GetISteamInput(flat_hsteamuser(), flat_hsteampipe(), "SteamInput006");
+}
+
 STEAMAPI_API bool SteamAPI_ISteamInput_Init( ISteamInput* self, bool bExplicitlyCallRunFrame )
 {
-    return self->Init(bExplicitlyCallRunFrame);
+    //TODO: do something with bExplicitlyCallRunFrame
+    return (get_steam_client()->steam_controller)->Init();
 }
 
 STEAMAPI_API bool SteamAPI_ISteamInput_Shutdown( ISteamInput* self )
@@ -3428,6 +3458,11 @@ STEAMAPI_API ISteamUGC *SteamAPI_SteamUGC_v015()
     return get_steam_client()->GetISteamUGC(flat_hsteamuser(), flat_hsteampipe(), "STEAMUGC_INTERFACE_VERSION015");
 }
 
+STEAMAPI_API ISteamUGC *SteamAPI_SteamUGC_v016()
+{
+    return get_steam_client()->GetISteamUGC(flat_hsteamuser(), flat_hsteampipe(), "STEAMUGC_INTERFACE_VERSION016");
+}
+
 STEAMAPI_API ISteamUGC *SteamAPI_SteamGameServerUGC_v014()
 {
     return get_steam_client()->GetISteamUGC(flat_gs_hsteamuser(), flat_gs_hsteampipe(), "STEAMUGC_INTERFACE_VERSION014");
@@ -3438,10 +3473,15 @@ STEAMAPI_API ISteamUGC *SteamAPI_SteamGameServerUGC_v015()
     return get_steam_client()->GetISteamUGC(flat_gs_hsteamuser(), flat_gs_hsteampipe(), "STEAMUGC_INTERFACE_VERSION015");
 }
 
+STEAMAPI_API ISteamUGC *SteamAPI_SteamGameServerUGC_v016()
+{
+    return get_steam_client()->GetISteamUGC(flat_gs_hsteamuser(), flat_gs_hsteampipe(), "STEAMUGC_INTERFACE_VERSION016");
+}
+
 STEAMAPI_API UGCQueryHandle_t SteamAPI_ISteamUGC_CreateQueryUserUGCRequest( ISteamUGC* self, AccountID_t unAccountID, EUserUGCList eListType, EUGCMatchingUGCType eMatchingUGCType, EUserUGCListSortOrder eSortOrder, AppId_t nCreatorAppID, AppId_t nConsumerAppID, uint32 unPage )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3452,8 +3492,8 @@ STEAMAPI_API UGCQueryHandle_t SteamAPI_ISteamUGC_CreateQueryUserUGCRequest( ISte
 
 STEAMAPI_API UGCQueryHandle_t SteamAPI_ISteamUGC_CreateQueryAllUGCRequest(intptr_t instancePtr, EUGCQuery eQueryType, EUGCMatchingUGCType eMatchingeMatchingUGCTypeFileType, AppId_t nCreatorAppID, AppId_t nConsumerAppID, uint32 unPage)
 {
-    int test1 = ((char *)instancePtr - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)instancePtr - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)instancePtr - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)instancePtr - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3464,8 +3504,8 @@ STEAMAPI_API UGCQueryHandle_t SteamAPI_ISteamUGC_CreateQueryAllUGCRequest(intptr
 
 STEAMAPI_API UGCQueryHandle_t SteamAPI_ISteamUGC_CreateQueryAllUGCRequest0(intptr_t instancePtr, EUGCQuery eQueryType, EUGCMatchingUGCType eMatchingeMatchingUGCTypeFileType, AppId_t nCreatorAppID, AppId_t nConsumerAppID, const char * pchCursor)
 {
-    int test1 = ((char *)instancePtr - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)instancePtr - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)instancePtr - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)instancePtr - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3476,8 +3516,8 @@ STEAMAPI_API UGCQueryHandle_t SteamAPI_ISteamUGC_CreateQueryAllUGCRequest0(intpt
 
 STEAMAPI_API UGCQueryHandle_t SteamAPI_ISteamUGC_CreateQueryAllUGCRequestPage( ISteamUGC* self, EUGCQuery eQueryType, EUGCMatchingUGCType eMatchingeMatchingUGCTypeFileType, AppId_t nCreatorAppID, AppId_t nConsumerAppID, uint32 unPage )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3488,8 +3528,8 @@ STEAMAPI_API UGCQueryHandle_t SteamAPI_ISteamUGC_CreateQueryAllUGCRequestPage( I
 
 STEAMAPI_API UGCQueryHandle_t SteamAPI_ISteamUGC_CreateQueryAllUGCRequestCursor( ISteamUGC* self, EUGCQuery eQueryType, EUGCMatchingUGCType eMatchingeMatchingUGCTypeFileType, AppId_t nCreatorAppID, AppId_t nConsumerAppID, const char * pchCursor )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3500,8 +3540,8 @@ STEAMAPI_API UGCQueryHandle_t SteamAPI_ISteamUGC_CreateQueryAllUGCRequestCursor(
 
 STEAMAPI_API UGCQueryHandle_t SteamAPI_ISteamUGC_CreateQueryUGCDetailsRequest( ISteamUGC* self, PublishedFileId_t * pvecPublishedFileID, uint32 unNumPublishedFileIDs )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3512,8 +3552,8 @@ STEAMAPI_API UGCQueryHandle_t SteamAPI_ISteamUGC_CreateQueryUGCDetailsRequest( I
 
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_SendQueryUGCRequest( ISteamUGC* self, UGCQueryHandle_t handle )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3524,8 +3564,8 @@ STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_SendQueryUGCRequest( ISteamUGC* s
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_GetQueryUGCResult( ISteamUGC* self, UGCQueryHandle_t handle, uint32 index, SteamUGCDetails_t * pDetails )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3536,8 +3576,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_GetQueryUGCResult( ISteamUGC* self, UGCQuer
 
 STEAMAPI_API uint32 SteamAPI_ISteamUGC_GetQueryUGCNumTags( ISteamUGC* self, UGCQueryHandle_t handle, uint32 index )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3548,8 +3588,8 @@ STEAMAPI_API uint32 SteamAPI_ISteamUGC_GetQueryUGCNumTags( ISteamUGC* self, UGCQ
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_GetQueryUGCTag( ISteamUGC* self, UGCQueryHandle_t handle, uint32 index, uint32 indexTag, char * pchValue, uint32 cchValueSize )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3560,8 +3600,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_GetQueryUGCTag( ISteamUGC* self, UGCQueryHa
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_GetQueryUGCTagDisplayName( ISteamUGC* self, UGCQueryHandle_t handle, uint32 index, uint32 indexTag, char * pchValue, uint32 cchValueSize )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3572,8 +3612,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_GetQueryUGCTagDisplayName( ISteamUGC* self,
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_GetQueryUGCPreviewURL( ISteamUGC* self, UGCQueryHandle_t handle, uint32 index, char * pchURL, uint32 cchURLSize )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3584,8 +3624,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_GetQueryUGCPreviewURL( ISteamUGC* self, UGC
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_GetQueryUGCMetadata( ISteamUGC* self, UGCQueryHandle_t handle, uint32 index, char * pchMetadata, uint32 cchMetadatasize )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3596,8 +3636,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_GetQueryUGCMetadata( ISteamUGC* self, UGCQu
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_GetQueryUGCChildren( ISteamUGC* self, UGCQueryHandle_t handle, uint32 index, PublishedFileId_t * pvecPublishedFileID, uint32 cMaxEntries )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3608,8 +3648,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_GetQueryUGCChildren( ISteamUGC* self, UGCQu
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_GetQueryUGCStatistic( ISteamUGC* self, UGCQueryHandle_t handle, uint32 index, EItemStatistic eStatType, uint64 * pStatValue )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3620,8 +3660,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_GetQueryUGCStatistic( ISteamUGC* self, UGCQ
 
 STEAMAPI_API uint32 SteamAPI_ISteamUGC_GetQueryUGCNumAdditionalPreviews( ISteamUGC* self, UGCQueryHandle_t handle, uint32 index )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3632,8 +3672,8 @@ STEAMAPI_API uint32 SteamAPI_ISteamUGC_GetQueryUGCNumAdditionalPreviews( ISteamU
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_GetQueryUGCAdditionalPreview( ISteamUGC* self, UGCQueryHandle_t handle, uint32 index, uint32 previewIndex, char * pchURLOrVideoID, uint32 cchURLSize, char * pchOriginalFileName, uint32 cchOriginalFileNameSize, EItemPreviewType * pPreviewType )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3644,8 +3684,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_GetQueryUGCAdditionalPreview( ISteamUGC* se
 
 STEAMAPI_API uint32 SteamAPI_ISteamUGC_GetQueryUGCNumKeyValueTags( ISteamUGC* self, UGCQueryHandle_t handle, uint32 index )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3656,8 +3696,8 @@ STEAMAPI_API uint32 SteamAPI_ISteamUGC_GetQueryUGCNumKeyValueTags( ISteamUGC* se
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_GetQueryUGCKeyValueTag( ISteamUGC* self, UGCQueryHandle_t handle, uint32 index, uint32 keyValueTagIndex, char * pchKey, uint32 cchKeySize, char * pchValue, uint32 cchValueSize )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3668,8 +3708,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_GetQueryUGCKeyValueTag( ISteamUGC* self, UG
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_GetQueryUGCKeyValueTag0(intptr_t instancePtr, UGCQueryHandle_t handle, uint32 index, const char * pchKey, char * pchValue, uint32 cchValueSize)
 {
-    int test1 = ((char *)instancePtr - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)instancePtr - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)instancePtr - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)instancePtr - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3680,8 +3720,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_GetQueryUGCKeyValueTag0(intptr_t instancePt
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_GetQueryFirstUGCKeyValueTag( ISteamUGC* self, UGCQueryHandle_t handle, uint32 index, const char * pchKey, char * pchValue, uint32 cchValueSize )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3692,8 +3732,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_GetQueryFirstUGCKeyValueTag( ISteamUGC* sel
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_ReleaseQueryUGCRequest( ISteamUGC* self, UGCQueryHandle_t handle )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3704,8 +3744,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_ReleaseQueryUGCRequest( ISteamUGC* self, UG
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_AddRequiredTag( ISteamUGC* self, UGCQueryHandle_t handle, const char * pTagName )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3716,8 +3756,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_AddRequiredTag( ISteamUGC* self, UGCQueryHa
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_AddRequiredTagGroup( ISteamUGC* self, UGCQueryHandle_t handle, const SteamParamStringArray_t * pTagGroups )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3728,8 +3768,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_AddRequiredTagGroup( ISteamUGC* self, UGCQu
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_AddExcludedTag( ISteamUGC* self, UGCQueryHandle_t handle, const char * pTagName )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3740,8 +3780,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_AddExcludedTag( ISteamUGC* self, UGCQueryHa
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_SetReturnOnlyIDs( ISteamUGC* self, UGCQueryHandle_t handle, bool bReturnOnlyIDs )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3752,8 +3792,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_SetReturnOnlyIDs( ISteamUGC* self, UGCQuery
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_SetReturnKeyValueTags( ISteamUGC* self, UGCQueryHandle_t handle, bool bReturnKeyValueTags )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3764,8 +3804,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_SetReturnKeyValueTags( ISteamUGC* self, UGC
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_SetReturnLongDescription( ISteamUGC* self, UGCQueryHandle_t handle, bool bReturnLongDescription )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3776,8 +3816,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_SetReturnLongDescription( ISteamUGC* self, 
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_SetReturnMetadata( ISteamUGC* self, UGCQueryHandle_t handle, bool bReturnMetadata )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3788,8 +3828,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_SetReturnMetadata( ISteamUGC* self, UGCQuer
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_SetReturnChildren( ISteamUGC* self, UGCQueryHandle_t handle, bool bReturnChildren )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3800,8 +3840,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_SetReturnChildren( ISteamUGC* self, UGCQuer
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_SetReturnAdditionalPreviews( ISteamUGC* self, UGCQueryHandle_t handle, bool bReturnAdditionalPreviews )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3812,8 +3852,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_SetReturnAdditionalPreviews( ISteamUGC* sel
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_SetReturnTotalOnly( ISteamUGC* self, UGCQueryHandle_t handle, bool bReturnTotalOnly )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3824,8 +3864,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_SetReturnTotalOnly( ISteamUGC* self, UGCQue
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_SetReturnPlaytimeStats( ISteamUGC* self, UGCQueryHandle_t handle, uint32 unDays )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3836,8 +3876,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_SetReturnPlaytimeStats( ISteamUGC* self, UG
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_SetLanguage( ISteamUGC* self, UGCQueryHandle_t handle, const char * pchLanguage )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3848,8 +3888,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_SetLanguage( ISteamUGC* self, UGCQueryHandl
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_SetAllowCachedResponse( ISteamUGC* self, UGCQueryHandle_t handle, uint32 unMaxAgeSeconds )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3860,8 +3900,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_SetAllowCachedResponse( ISteamUGC* self, UG
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_SetCloudFileNameFilter( ISteamUGC* self, UGCQueryHandle_t handle, const char * pMatchCloudFileName )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3872,8 +3912,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_SetCloudFileNameFilter( ISteamUGC* self, UG
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_SetMatchAnyTag( ISteamUGC* self, UGCQueryHandle_t handle, bool bMatchAnyTag )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3884,8 +3924,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_SetMatchAnyTag( ISteamUGC* self, UGCQueryHa
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_SetSearchText( ISteamUGC* self, UGCQueryHandle_t handle, const char * pSearchText )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3896,8 +3936,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_SetSearchText( ISteamUGC* self, UGCQueryHan
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_SetRankedByTrendDays( ISteamUGC* self, UGCQueryHandle_t handle, uint32 unDays )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3906,10 +3946,34 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_SetRankedByTrendDays( ISteamUGC* self, UGCQ
     return (ptr)->SetRankedByTrendDays(handle, unDays);
 }
 
+STEAMAPI_API bool SteamAPI_ISteamUGC_SetTimeCreatedDateRange( ISteamUGC* self, UGCQueryHandle_t handle, RTime32 rtStart, RTime32 rtEnd )
+{
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    auto ptr = get_steam_client()->steam_gameserver_ugc;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_ugc;
+    }
+
+    return (ptr)->SetTimeCreatedDateRange(handle, rtStart, rtEnd);
+}
+
+STEAMAPI_API bool SteamAPI_ISteamUGC_SetTimeUpdatedDateRange( ISteamUGC* self, UGCQueryHandle_t handle, RTime32 rtStart, RTime32 rtEnd )
+{
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    auto ptr = get_steam_client()->steam_gameserver_ugc;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_ugc;
+    }
+
+    return (ptr)->SetTimeUpdatedDateRange(handle, rtStart, rtEnd);
+}
+
 STEAMAPI_API bool SteamAPI_ISteamUGC_AddRequiredKeyValueTag( ISteamUGC* self, UGCQueryHandle_t handle, const char * pKey, const char * pValue )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3920,8 +3984,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_AddRequiredKeyValueTag( ISteamUGC* self, UG
 
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_RequestUGCDetails( ISteamUGC* self, PublishedFileId_t nPublishedFileID, uint32 unMaxAgeSeconds )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3932,8 +3996,8 @@ STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_RequestUGCDetails( ISteamUGC* sel
 
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_CreateItem( ISteamUGC* self, AppId_t nConsumerAppId, EWorkshopFileType eFileType )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3944,8 +4008,8 @@ STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_CreateItem( ISteamUGC* self, AppI
 
 STEAMAPI_API UGCUpdateHandle_t SteamAPI_ISteamUGC_StartItemUpdate( ISteamUGC* self, AppId_t nConsumerAppId, PublishedFileId_t nPublishedFileID )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3956,8 +4020,8 @@ STEAMAPI_API UGCUpdateHandle_t SteamAPI_ISteamUGC_StartItemUpdate( ISteamUGC* se
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_SetItemTitle( ISteamUGC* self, UGCUpdateHandle_t handle, const char * pchTitle )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3968,8 +4032,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_SetItemTitle( ISteamUGC* self, UGCUpdateHan
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_SetItemDescription( ISteamUGC* self, UGCUpdateHandle_t handle, const char * pchDescription )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3980,8 +4044,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_SetItemDescription( ISteamUGC* self, UGCUpd
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_SetItemUpdateLanguage( ISteamUGC* self, UGCUpdateHandle_t handle, const char * pchLanguage )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -3992,8 +4056,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_SetItemUpdateLanguage( ISteamUGC* self, UGC
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_SetItemMetadata( ISteamUGC* self, UGCUpdateHandle_t handle, const char * pchMetaData )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4004,8 +4068,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_SetItemMetadata( ISteamUGC* self, UGCUpdate
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_SetItemVisibility( ISteamUGC* self, UGCUpdateHandle_t handle, ERemoteStoragePublishedFileVisibility eVisibility )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4016,8 +4080,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_SetItemVisibility( ISteamUGC* self, UGCUpda
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_SetItemTags( ISteamUGC* self, UGCUpdateHandle_t updateHandle, const SteamParamStringArray_t * pTags )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4028,8 +4092,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_SetItemTags( ISteamUGC* self, UGCUpdateHand
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_SetItemContent( ISteamUGC* self, UGCUpdateHandle_t handle, const char * pszContentFolder )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4040,8 +4104,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_SetItemContent( ISteamUGC* self, UGCUpdateH
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_SetItemPreview( ISteamUGC* self, UGCUpdateHandle_t handle, const char * pszPreviewFile )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4052,8 +4116,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_SetItemPreview( ISteamUGC* self, UGCUpdateH
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_SetAllowLegacyUpload( ISteamUGC* self, UGCUpdateHandle_t handle, bool bAllowLegacyUpload )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4064,8 +4128,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_SetAllowLegacyUpload( ISteamUGC* self, UGCU
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_RemoveAllItemKeyValueTags( ISteamUGC* self, UGCUpdateHandle_t handle )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4076,8 +4140,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_RemoveAllItemKeyValueTags( ISteamUGC* self,
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_RemoveItemKeyValueTags( ISteamUGC* self, UGCUpdateHandle_t handle, const char * pchKey )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4088,8 +4152,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_RemoveItemKeyValueTags( ISteamUGC* self, UG
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_AddItemKeyValueTag( ISteamUGC* self, UGCUpdateHandle_t handle, const char * pchKey, const char * pchValue )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4100,8 +4164,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_AddItemKeyValueTag( ISteamUGC* self, UGCUpd
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_AddItemPreviewFile( ISteamUGC* self, UGCUpdateHandle_t handle, const char * pszPreviewFile, EItemPreviewType type )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4112,8 +4176,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_AddItemPreviewFile( ISteamUGC* self, UGCUpd
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_AddItemPreviewVideo( ISteamUGC* self, UGCUpdateHandle_t handle, const char * pszVideoID )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4124,8 +4188,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_AddItemPreviewVideo( ISteamUGC* self, UGCUp
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_UpdateItemPreviewFile( ISteamUGC* self, UGCUpdateHandle_t handle, uint32 index, const char * pszPreviewFile )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4136,8 +4200,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_UpdateItemPreviewFile( ISteamUGC* self, UGC
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_UpdateItemPreviewVideo( ISteamUGC* self, UGCUpdateHandle_t handle, uint32 index, const char * pszVideoID )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4148,8 +4212,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_UpdateItemPreviewVideo( ISteamUGC* self, UG
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_RemoveItemPreview( ISteamUGC* self, UGCUpdateHandle_t handle, uint32 index )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4160,8 +4224,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_RemoveItemPreview( ISteamUGC* self, UGCUpda
 
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_SubmitItemUpdate( ISteamUGC* self, UGCUpdateHandle_t handle, const char * pchChangeNote )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4172,8 +4236,8 @@ STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_SubmitItemUpdate( ISteamUGC* self
 
 STEAMAPI_API EItemUpdateStatus SteamAPI_ISteamUGC_GetItemUpdateProgress( ISteamUGC* self, UGCUpdateHandle_t handle, uint64 * punBytesProcessed, uint64 * punBytesTotal )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4184,8 +4248,8 @@ STEAMAPI_API EItemUpdateStatus SteamAPI_ISteamUGC_GetItemUpdateProgress( ISteamU
 
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_SetUserItemVote( ISteamUGC* self, PublishedFileId_t nPublishedFileID, bool bVoteUp )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4196,8 +4260,8 @@ STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_SetUserItemVote( ISteamUGC* self,
 
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_GetUserItemVote( ISteamUGC* self, PublishedFileId_t nPublishedFileID )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4208,8 +4272,8 @@ STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_GetUserItemVote( ISteamUGC* self,
 
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_AddItemToFavorites( ISteamUGC* self, AppId_t nAppId, PublishedFileId_t nPublishedFileID )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4220,8 +4284,8 @@ STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_AddItemToFavorites( ISteamUGC* se
 
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_RemoveItemFromFavorites( ISteamUGC* self, AppId_t nAppId, PublishedFileId_t nPublishedFileID )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4232,8 +4296,8 @@ STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_RemoveItemFromFavorites( ISteamUG
 
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_SubscribeItem( ISteamUGC* self, PublishedFileId_t nPublishedFileID )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4244,8 +4308,8 @@ STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_SubscribeItem( ISteamUGC* self, P
 
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_UnsubscribeItem( ISteamUGC* self, PublishedFileId_t nPublishedFileID )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4256,8 +4320,8 @@ STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_UnsubscribeItem( ISteamUGC* self,
 
 STEAMAPI_API uint32 SteamAPI_ISteamUGC_GetNumSubscribedItems( ISteamUGC* self )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4268,8 +4332,8 @@ STEAMAPI_API uint32 SteamAPI_ISteamUGC_GetNumSubscribedItems( ISteamUGC* self )
 
 STEAMAPI_API uint32 SteamAPI_ISteamUGC_GetSubscribedItems( ISteamUGC* self, PublishedFileId_t * pvecPublishedFileID, uint32 cMaxEntries )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4280,8 +4344,8 @@ STEAMAPI_API uint32 SteamAPI_ISteamUGC_GetSubscribedItems( ISteamUGC* self, Publ
 
 STEAMAPI_API uint32 SteamAPI_ISteamUGC_GetItemState( ISteamUGC* self, PublishedFileId_t nPublishedFileID )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4292,8 +4356,8 @@ STEAMAPI_API uint32 SteamAPI_ISteamUGC_GetItemState( ISteamUGC* self, PublishedF
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_GetItemInstallInfo( ISteamUGC* self, PublishedFileId_t nPublishedFileID, uint64 * punSizeOnDisk, char * pchFolder, uint32 cchFolderSize, uint32 * punTimeStamp )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4304,8 +4368,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_GetItemInstallInfo( ISteamUGC* self, Publis
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_GetItemDownloadInfo( ISteamUGC* self, PublishedFileId_t nPublishedFileID, uint64 * punBytesDownloaded, uint64 * punBytesTotal )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4316,8 +4380,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_GetItemDownloadInfo( ISteamUGC* self, Publi
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_DownloadItem( ISteamUGC* self, PublishedFileId_t nPublishedFileID, bool bHighPriority )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4328,8 +4392,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_DownloadItem( ISteamUGC* self, PublishedFil
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_BInitWorkshopForGameServer( ISteamUGC* self, DepotId_t unWorkshopDepotID, const char * pszFolder )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4340,8 +4404,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_BInitWorkshopForGameServer( ISteamUGC* self
 
 STEAMAPI_API void SteamAPI_ISteamUGC_SuspendDownloads( ISteamUGC* self, bool bSuspend )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4352,8 +4416,8 @@ STEAMAPI_API void SteamAPI_ISteamUGC_SuspendDownloads( ISteamUGC* self, bool bSu
 
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_StartPlaytimeTracking( ISteamUGC* self, PublishedFileId_t * pvecPublishedFileID, uint32 unNumPublishedFileIDs )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4364,8 +4428,8 @@ STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_StartPlaytimeTracking( ISteamUGC*
 
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_StopPlaytimeTracking( ISteamUGC* self, PublishedFileId_t * pvecPublishedFileID, uint32 unNumPublishedFileIDs )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4376,8 +4440,8 @@ STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_StopPlaytimeTracking( ISteamUGC* 
 
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_StopPlaytimeTrackingForAllItems( ISteamUGC* self )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4388,8 +4452,8 @@ STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_StopPlaytimeTrackingForAllItems( 
 
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_AddDependency( ISteamUGC* self, PublishedFileId_t nParentPublishedFileID, PublishedFileId_t nChildPublishedFileID )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4400,8 +4464,8 @@ STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_AddDependency( ISteamUGC* self, P
 
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_RemoveDependency( ISteamUGC* self, PublishedFileId_t nParentPublishedFileID, PublishedFileId_t nChildPublishedFileID )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4412,8 +4476,8 @@ STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_RemoveDependency( ISteamUGC* self
 
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_AddAppDependency( ISteamUGC* self, PublishedFileId_t nPublishedFileID, AppId_t nAppID )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4424,8 +4488,8 @@ STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_AddAppDependency( ISteamUGC* self
 
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_RemoveAppDependency( ISteamUGC* self, PublishedFileId_t nPublishedFileID, AppId_t nAppID )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4436,8 +4500,8 @@ STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_RemoveAppDependency( ISteamUGC* s
 
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_GetAppDependencies( ISteamUGC* self, PublishedFileId_t nPublishedFileID )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4448,8 +4512,8 @@ STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_GetAppDependencies( ISteamUGC* se
 
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_DeleteItem( ISteamUGC* self, PublishedFileId_t nPublishedFileID )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4460,8 +4524,8 @@ STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_DeleteItem( ISteamUGC* self, Publ
 
 STEAMAPI_API bool SteamAPI_ISteamUGC_ShowWorkshopEULA( ISteamUGC* self )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4472,8 +4536,8 @@ STEAMAPI_API bool SteamAPI_ISteamUGC_ShowWorkshopEULA( ISteamUGC* self )
 
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_GetWorkshopEULAStatus( ISteamUGC* self )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
     auto ptr = get_steam_client()->steam_gameserver_ugc;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_ugc;
@@ -4720,8 +4784,8 @@ STEAMAPI_API ISteamInventory *SteamAPI_SteamGameServerInventory_v003()
 
 STEAMAPI_API EResult SteamAPI_ISteamInventory_GetResultStatus( ISteamInventory* self, SteamInventoryResult_t resultHandle )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -4732,8 +4796,8 @@ STEAMAPI_API EResult SteamAPI_ISteamInventory_GetResultStatus( ISteamInventory* 
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_GetResultItems( ISteamInventory* self, SteamInventoryResult_t resultHandle, SteamItemDetails_t * pOutItemsArray, uint32 * punOutItemsArraySize )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -4744,8 +4808,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_GetResultItems( ISteamInventory* self
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_GetResultItemProperty( ISteamInventory* self, SteamInventoryResult_t resultHandle, uint32 unItemIndex, const char * pchPropertyName, char * pchValueBuffer, uint32 * punValueBufferSizeOut )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -4756,8 +4820,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_GetResultItemProperty( ISteamInventor
 
 STEAMAPI_API uint32 SteamAPI_ISteamInventory_GetResultTimestamp( ISteamInventory* self, SteamInventoryResult_t resultHandle )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -4768,8 +4832,8 @@ STEAMAPI_API uint32 SteamAPI_ISteamInventory_GetResultTimestamp( ISteamInventory
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_CheckResultSteamID( ISteamInventory* self, SteamInventoryResult_t resultHandle, uint64_steamid steamIDExpected )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -4780,8 +4844,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_CheckResultSteamID( ISteamInventory* 
 
 STEAMAPI_API void SteamAPI_ISteamInventory_DestroyResult( ISteamInventory* self, SteamInventoryResult_t resultHandle )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -4792,8 +4856,8 @@ STEAMAPI_API void SteamAPI_ISteamInventory_DestroyResult( ISteamInventory* self,
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_GetAllItems( ISteamInventory* self, SteamInventoryResult_t * pResultHandle )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -4804,8 +4868,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_GetAllItems( ISteamInventory* self, S
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_GetItemsByID( ISteamInventory* self, SteamInventoryResult_t * pResultHandle, const SteamItemInstanceID_t * pInstanceIDs, uint32 unCountInstanceIDs )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -4816,8 +4880,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_GetItemsByID( ISteamInventory* self, 
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_SerializeResult( ISteamInventory* self, SteamInventoryResult_t resultHandle, void * pOutBuffer, uint32 * punOutBufferSize )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -4828,8 +4892,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_SerializeResult( ISteamInventory* sel
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_DeserializeResult( ISteamInventory* self, SteamInventoryResult_t * pOutResultHandle, const void * pBuffer, uint32 unBufferSize, bool bRESERVED_MUST_BE_FALSE )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -4840,8 +4904,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_DeserializeResult( ISteamInventory* s
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_GenerateItems( ISteamInventory* self, SteamInventoryResult_t * pResultHandle, const SteamItemDef_t * pArrayItemDefs, const uint32 * punArrayQuantity, uint32 unArrayLength )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -4852,8 +4916,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_GenerateItems( ISteamInventory* self,
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_GrantPromoItems( ISteamInventory* self, SteamInventoryResult_t * pResultHandle )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -4864,8 +4928,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_GrantPromoItems( ISteamInventory* sel
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_AddPromoItem( ISteamInventory* self, SteamInventoryResult_t * pResultHandle, SteamItemDef_t itemDef )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -4876,8 +4940,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_AddPromoItem( ISteamInventory* self, 
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_AddPromoItems( ISteamInventory* self, SteamInventoryResult_t * pResultHandle, const SteamItemDef_t * pArrayItemDefs, uint32 unArrayLength )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -4888,8 +4952,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_AddPromoItems( ISteamInventory* self,
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_ConsumeItem( ISteamInventory* self, SteamInventoryResult_t * pResultHandle, SteamItemInstanceID_t itemConsume, uint32 unQuantity )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -4900,8 +4964,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_ConsumeItem( ISteamInventory* self, S
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_ExchangeItems( ISteamInventory* self, SteamInventoryResult_t * pResultHandle, const SteamItemDef_t * pArrayGenerate, const uint32 * punArrayGenerateQuantity, uint32 unArrayGenerateLength, const SteamItemInstanceID_t * pArrayDestroy, const uint32 * punArrayDestroyQuantity, uint32 unArrayDestroyLength )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -4912,8 +4976,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_ExchangeItems( ISteamInventory* self,
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_TransferItemQuantity( ISteamInventory* self, SteamInventoryResult_t * pResultHandle, SteamItemInstanceID_t itemIdSource, uint32 unQuantity, SteamItemInstanceID_t itemIdDest )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -4924,8 +4988,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_TransferItemQuantity( ISteamInventory
 
 STEAMAPI_API void SteamAPI_ISteamInventory_SendItemDropHeartbeat( ISteamInventory* self )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -4936,8 +5000,8 @@ STEAMAPI_API void SteamAPI_ISteamInventory_SendItemDropHeartbeat( ISteamInventor
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_TriggerItemDrop( ISteamInventory* self, SteamInventoryResult_t * pResultHandle, SteamItemDef_t dropListDefinition )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -4948,8 +5012,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_TriggerItemDrop( ISteamInventory* sel
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_TradeItems( ISteamInventory* self, SteamInventoryResult_t * pResultHandle, uint64_steamid steamIDTradePartner, const SteamItemInstanceID_t * pArrayGive, const uint32 * pArrayGiveQuantity, uint32 nArrayGiveLength, const SteamItemInstanceID_t * pArrayGet, const uint32 * pArrayGetQuantity, uint32 nArrayGetLength )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -4960,8 +5024,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_TradeItems( ISteamInventory* self, St
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_LoadItemDefinitions( ISteamInventory* self )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -4972,8 +5036,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_LoadItemDefinitions( ISteamInventory*
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_GetItemDefinitionIDs( ISteamInventory* self, SteamItemDef_t * pItemDefIDs, uint32 * punItemDefIDsArraySize )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -4984,8 +5048,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_GetItemDefinitionIDs( ISteamInventory
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_GetItemDefinitionProperty( ISteamInventory* self, SteamItemDef_t iDefinition, const char * pchPropertyName, char * pchValueBuffer, uint32 * punValueBufferSizeOut )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -4996,8 +5060,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_GetItemDefinitionProperty( ISteamInve
 
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamInventory_RequestEligiblePromoItemDefinitionsIDs( ISteamInventory* self, uint64_steamid steamID )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -5008,8 +5072,8 @@ STEAMAPI_API SteamAPICall_t SteamAPI_ISteamInventory_RequestEligiblePromoItemDef
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_GetEligiblePromoItemDefinitionIDs( ISteamInventory* self, uint64_steamid steamID, SteamItemDef_t * pItemDefIDs, uint32 * punItemDefIDsArraySize )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -5020,8 +5084,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_GetEligiblePromoItemDefinitionIDs( IS
 
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamInventory_StartPurchase( ISteamInventory* self, const SteamItemDef_t * pArrayItemDefs, const uint32 * punArrayQuantity, uint32 unArrayLength )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -5032,8 +5096,8 @@ STEAMAPI_API SteamAPICall_t SteamAPI_ISteamInventory_StartPurchase( ISteamInvent
 
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamInventory_RequestPrices( ISteamInventory* self )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -5044,8 +5108,8 @@ STEAMAPI_API SteamAPICall_t SteamAPI_ISteamInventory_RequestPrices( ISteamInvent
 
 STEAMAPI_API uint32 SteamAPI_ISteamInventory_GetNumItemsWithPrices( ISteamInventory* self )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -5056,8 +5120,8 @@ STEAMAPI_API uint32 SteamAPI_ISteamInventory_GetNumItemsWithPrices( ISteamInvent
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_GetItemsWithPrices( ISteamInventory* self, SteamItemDef_t * pArrayItemDefs, uint64 * pCurrentPrices, uint64 * pBasePrices, uint32 unArrayLength )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -5068,8 +5132,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_GetItemsWithPrices( ISteamInventory* 
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_GetItemPrice( ISteamInventory* self, SteamItemDef_t iDefinition, uint64 * pCurrentPrice, uint64 * pBasePrice )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -5080,8 +5144,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_GetItemPrice( ISteamInventory* self, 
 
 STEAMAPI_API SteamInventoryUpdateHandle_t SteamAPI_ISteamInventory_StartUpdateProperties( ISteamInventory* self )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -5092,8 +5156,8 @@ STEAMAPI_API SteamInventoryUpdateHandle_t SteamAPI_ISteamInventory_StartUpdatePr
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_RemoveProperty( ISteamInventory* self, SteamInventoryUpdateHandle_t handle, SteamItemInstanceID_t nItemID, const char * pchPropertyName )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -5104,8 +5168,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_RemoveProperty( ISteamInventory* self
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_SetProperty(intptr_t instancePtr, SteamInventoryUpdateHandle_t handle, SteamItemInstanceID_t nItemID, const char * pchPropertyName, const char * pchPropertyValue)
 {
-    int test1 = ((char *)instancePtr - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)instancePtr - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)instancePtr - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)instancePtr - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -5116,8 +5180,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_SetProperty(intptr_t instancePtr, Ste
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_SetProperty0(intptr_t instancePtr, SteamInventoryUpdateHandle_t handle, SteamItemInstanceID_t nItemID, const char * pchPropertyName, bool bValue)
 {
-    int test1 = ((char *)instancePtr - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)instancePtr - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)instancePtr - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)instancePtr - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -5128,8 +5192,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_SetProperty0(intptr_t instancePtr, St
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_SetProperty1(intptr_t instancePtr, SteamInventoryUpdateHandle_t handle, SteamItemInstanceID_t nItemID, const char * pchPropertyName, int64 nValue)
 {
-    int test1 = ((char *)instancePtr - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)instancePtr - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)instancePtr - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)instancePtr - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -5140,8 +5204,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_SetProperty1(intptr_t instancePtr, St
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_SetProperty2(intptr_t instancePtr, SteamInventoryUpdateHandle_t handle, SteamItemInstanceID_t nItemID, const char * pchPropertyName, float flValue)
 {
-    int test1 = ((char *)instancePtr - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)instancePtr - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)instancePtr - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)instancePtr - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -5152,8 +5216,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_SetProperty2(intptr_t instancePtr, St
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_SetPropertyString( ISteamInventory* self, SteamInventoryUpdateHandle_t handle, SteamItemInstanceID_t nItemID, const char * pchPropertyName, const char * pchPropertyValue )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -5164,8 +5228,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_SetPropertyString( ISteamInventory* s
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_SetPropertyBool( ISteamInventory* self, SteamInventoryUpdateHandle_t handle, SteamItemInstanceID_t nItemID, const char * pchPropertyName, bool bValue )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -5176,8 +5240,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_SetPropertyBool( ISteamInventory* sel
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_SetPropertyInt64( ISteamInventory* self, SteamInventoryUpdateHandle_t handle, SteamItemInstanceID_t nItemID, const char * pchPropertyName, int64 nValue )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -5188,8 +5252,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_SetPropertyInt64( ISteamInventory* se
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_SetPropertyFloat( ISteamInventory* self, SteamInventoryUpdateHandle_t handle, SteamItemInstanceID_t nItemID, const char * pchPropertyName, float flValue )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -5200,8 +5264,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_SetPropertyFloat( ISteamInventory* se
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_SubmitUpdateProperties( ISteamInventory* self, SteamInventoryUpdateHandle_t handle, SteamInventoryResult_t * pResultHandle )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -5212,8 +5276,8 @@ STEAMAPI_API bool SteamAPI_ISteamInventory_SubmitUpdateProperties( ISteamInvento
 
 STEAMAPI_API bool SteamAPI_ISteamInventory_InspectItem( ISteamInventory* self, SteamInventoryResult_t * pResultHandle, const char * pchItemToken )
 {
-    int test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
-    int test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_inventory);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_inventory);
     auto ptr = get_steam_client()->steam_gameserver_inventory;
     if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
         ptr = get_steam_client()->steam_inventory;
@@ -5412,6 +5476,16 @@ STEAMAPI_API ESteamNetworkingConnectionState SteamAPI_ISteamNetworkingMessages_G
     return self->GetSessionConnectionInfo(identityRemote, pConnectionInfo, pQuickStatus);
 }
 
+STEAMAPI_API ISteamNetworkingSockets *SteamAPI_SteamNetworkingSockets_SteamAPI_v012()
+{
+    return (ISteamNetworkingSockets *)get_steam_client()->GetISteamGenericInterface(flat_hsteamuser(), flat_hsteampipe(), "SteamNetworkingSockets012");
+}
+
+STEAMAPI_API ISteamNetworkingSockets *SteamAPI_SteamGameServerNetworkingSockets_SteamAPI_v012()
+{
+    return (ISteamNetworkingSockets *)get_steam_client()->GetISteamGenericInterface(flat_gs_hsteamuser(), flat_gs_hsteampipe(), "SteamNetworkingSockets012");
+}
+
 STEAMAPI_API ISteamNetworkingSockets *SteamAPI_SteamNetworkingSockets_SteamAPI_v011()
 {
     return (ISteamNetworkingSockets *)get_steam_client()->GetISteamGenericInterface(flat_hsteamuser(), flat_hsteampipe(), "SteamNetworkingSockets011");
@@ -5454,207 +5528,581 @@ STEAMAPI_API ISteamNetworkingSockets *SteamAPI_SteamGameServerNetworkingSockets_
 
 STEAMAPI_API HSteamListenSocket SteamAPI_ISteamNetworkingSockets_CreateListenSocketIP( ISteamNetworkingSockets* self, const SteamNetworkingIPAddr & localAddress, int nOptions, const SteamNetworkingConfigValue_t * pOptions )
 {
-    return self->CreateListenSocketIP(localAddress, nOptions, pOptions);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->CreateListenSocketIP(localAddress, nOptions, pOptions);
 }
 
 STEAMAPI_API HSteamNetConnection SteamAPI_ISteamNetworkingSockets_ConnectByIPAddress( ISteamNetworkingSockets* self, const SteamNetworkingIPAddr & address, int nOptions, const SteamNetworkingConfigValue_t * pOptions )
 {
-    return self->ConnectByIPAddress(address, nOptions, pOptions);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->ConnectByIPAddress(address, nOptions, pOptions);
 }
 
-STEAMAPI_API HSteamListenSocket SteamAPI_ISteamNetworkingSockets_CreateListenSocketP2P( ISteamNetworkingSockets* self, int nVirtualPort, int nOptions, const SteamNetworkingConfigValue_t * pOptions )
+STEAMAPI_API HSteamListenSocket SteamAPI_ISteamNetworkingSockets_CreateListenSocketP2P( ISteamNetworkingSockets* self, int nLocalVirtualPort, int nOptions, const SteamNetworkingConfigValue_t * pOptions )
 {
-    return self->CreateListenSocketP2P(nVirtualPort, nOptions, pOptions);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->CreateListenSocketP2P(nLocalVirtualPort, nOptions, pOptions);
 }
 
-STEAMAPI_API HSteamNetConnection SteamAPI_ISteamNetworkingSockets_ConnectP2P( ISteamNetworkingSockets* self, const SteamNetworkingIdentity & identityRemote, int nVirtualPort, int nOptions, const SteamNetworkingConfigValue_t * pOptions )
+STEAMAPI_API HSteamNetConnection SteamAPI_ISteamNetworkingSockets_ConnectP2P( ISteamNetworkingSockets* self, const SteamNetworkingIdentity & identityRemote, int nRemoteVirtualPort, int nOptions, const SteamNetworkingConfigValue_t * pOptions )
 {
-    return self->ConnectP2P(identityRemote, nVirtualPort, nOptions, pOptions);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->ConnectP2P(identityRemote, nRemoteVirtualPort, nOptions, pOptions);
 }
 
 STEAMAPI_API EResult SteamAPI_ISteamNetworkingSockets_AcceptConnection( ISteamNetworkingSockets* self, HSteamNetConnection hConn )
 {
-    return self->AcceptConnection(hConn);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->AcceptConnection(hConn);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingSockets_CloseConnection( ISteamNetworkingSockets* self, HSteamNetConnection hPeer, int nReason, const char * pszDebug, bool bEnableLinger )
 {
-    return self->CloseConnection(hPeer, nReason, pszDebug, bEnableLinger);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->CloseConnection(hPeer, nReason, pszDebug, bEnableLinger);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingSockets_CloseListenSocket( ISteamNetworkingSockets* self, HSteamListenSocket hSocket )
 {
-    return self->CloseListenSocket(hSocket);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->CloseListenSocket(hSocket);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingSockets_SetConnectionUserData( ISteamNetworkingSockets* self, HSteamNetConnection hPeer, int64 nUserData )
 {
-    return self->SetConnectionUserData(hPeer, nUserData);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->SetConnectionUserData(hPeer, nUserData);
 }
 
 STEAMAPI_API int64 SteamAPI_ISteamNetworkingSockets_GetConnectionUserData( ISteamNetworkingSockets* self, HSteamNetConnection hPeer )
 {
-    return self->GetConnectionUserData(hPeer);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->GetConnectionUserData(hPeer);
 }
 
 STEAMAPI_API void SteamAPI_ISteamNetworkingSockets_SetConnectionName( ISteamNetworkingSockets* self, HSteamNetConnection hPeer, const char * pszName )
 {
-    return self->SetConnectionName(hPeer, pszName);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->SetConnectionName(hPeer, pszName);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingSockets_GetConnectionName( ISteamNetworkingSockets* self, HSteamNetConnection hPeer, char * pszName, int nMaxLen )
 {
-    return self->GetConnectionName(hPeer, pszName, nMaxLen);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->GetConnectionName(hPeer, pszName, nMaxLen);
 }
 
 STEAMAPI_API EResult SteamAPI_ISteamNetworkingSockets_SendMessageToConnection( ISteamNetworkingSockets* self, HSteamNetConnection hConn, const void * pData, uint32 cbData, int nSendFlags, int64 * pOutMessageNumber )
 {
-    return self->SendMessageToConnection(hConn, pData, cbData, nSendFlags, pOutMessageNumber);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->SendMessageToConnection(hConn, pData, cbData, nSendFlags, pOutMessageNumber);
 }
 
 STEAMAPI_API void SteamAPI_ISteamNetworkingSockets_SendMessages( ISteamNetworkingSockets* self, int nMessages, SteamNetworkingMessage_t *const * pMessages, int64 * pOutMessageNumberOrResult )
 {
-    return self->SendMessages(nMessages, pMessages, pOutMessageNumberOrResult);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->SendMessages(nMessages, pMessages, pOutMessageNumberOrResult);
 }
 
 STEAMAPI_API EResult SteamAPI_ISteamNetworkingSockets_FlushMessagesOnConnection( ISteamNetworkingSockets* self, HSteamNetConnection hConn )
 {
-    return self->FlushMessagesOnConnection(hConn);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->FlushMessagesOnConnection(hConn);
 }
 
 STEAMAPI_API int SteamAPI_ISteamNetworkingSockets_ReceiveMessagesOnConnection( ISteamNetworkingSockets* self, HSteamNetConnection hConn, SteamNetworkingMessage_t ** ppOutMessages, int nMaxMessages )
 {
-    return self->ReceiveMessagesOnConnection(hConn, ppOutMessages, nMaxMessages);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->ReceiveMessagesOnConnection(hConn, ppOutMessages, nMaxMessages);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingSockets_GetConnectionInfo( ISteamNetworkingSockets* self, HSteamNetConnection hConn, SteamNetConnectionInfo_t * pInfo )
 {
-    return self->GetConnectionInfo(hConn, pInfo);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->GetConnectionInfo(hConn, pInfo);
 }
 
-STEAMAPI_API bool SteamAPI_ISteamNetworkingSockets_GetQuickConnectionStatus( ISteamNetworkingSockets* self, HSteamNetConnection hConn, SteamNetworkingQuickConnectionStatus * pStats )
+STEAMAPI_API bool SteamAPI_ISteamNetworkingSockets_GetQuickConnectionStatus( ISteamNetworkingSockets009* self, HSteamNetConnection hConn, SteamNetworkingQuickConnectionStatus * pStats )
 {
-    return self->GetQuickConnectionStatus(hConn, pStats);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->GetQuickConnectionStatus(hConn, pStats);
+}
+
+STEAMAPI_API EResult SteamAPI_ISteamNetworkingSockets_GetConnectionRealTimeStatus( ISteamNetworkingSockets* self, HSteamNetConnection hConn, SteamNetConnectionRealTimeStatus_t * pStatus, int nLanes, SteamNetConnectionRealTimeLaneStatus_t * pLanes )
+{
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->GetConnectionRealTimeStatus(hConn, pStatus, nLanes, pLanes);
 }
 
 STEAMAPI_API int SteamAPI_ISteamNetworkingSockets_GetDetailedConnectionStatus( ISteamNetworkingSockets* self, HSteamNetConnection hConn, char * pszBuf, int cbBuf )
 {
-    return self->GetDetailedConnectionStatus(hConn, pszBuf, cbBuf);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->GetDetailedConnectionStatus(hConn, pszBuf, cbBuf);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingSockets_GetListenSocketAddress( ISteamNetworkingSockets* self, HSteamListenSocket hSocket, SteamNetworkingIPAddr * address )
 {
-    return self->GetListenSocketAddress(hSocket, address);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->GetListenSocketAddress(hSocket, address);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingSockets_CreateSocketPair( ISteamNetworkingSockets* self, HSteamNetConnection * pOutConnection1, HSteamNetConnection * pOutConnection2, bool bUseNetworkLoopback, const SteamNetworkingIdentity * pIdentity1, const SteamNetworkingIdentity * pIdentity2 )
 {
-    return self->CreateSocketPair(pOutConnection1, pOutConnection2, bUseNetworkLoopback, pIdentity1, pIdentity2);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->CreateSocketPair(pOutConnection1, pOutConnection2, bUseNetworkLoopback, pIdentity1, pIdentity2);
+}
+
+STEAMAPI_API EResult SteamAPI_ISteamNetworkingSockets_ConfigureConnectionLanes( ISteamNetworkingSockets* self, HSteamNetConnection hConn, int nNumLanes, const int * pLanePriorities, const uint16 * pLaneWeights )
+{
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->ConfigureConnectionLanes(hConn, nNumLanes, pLanePriorities, pLaneWeights);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingSockets_GetIdentity( ISteamNetworkingSockets* self, SteamNetworkingIdentity * pIdentity )
 {
-    return self->GetIdentity(pIdentity);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->GetIdentity(pIdentity);
 }
 
 STEAMAPI_API ESteamNetworkingAvailability SteamAPI_ISteamNetworkingSockets_InitAuthentication( ISteamNetworkingSockets* self )
 {
-    return self->InitAuthentication();
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->InitAuthentication();
 }
 
 STEAMAPI_API ESteamNetworkingAvailability SteamAPI_ISteamNetworkingSockets_GetAuthenticationStatus( ISteamNetworkingSockets* self, SteamNetAuthenticationStatus_t * pDetails )
 {
-    return self->GetAuthenticationStatus(pDetails);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->GetAuthenticationStatus(pDetails);
 }
 
 STEAMAPI_API HSteamNetPollGroup SteamAPI_ISteamNetworkingSockets_CreatePollGroup( ISteamNetworkingSockets* self )
 {
-    return self->CreatePollGroup();
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->CreatePollGroup();
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingSockets_DestroyPollGroup( ISteamNetworkingSockets* self, HSteamNetPollGroup hPollGroup )
 {
-    return self->DestroyPollGroup(hPollGroup);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->DestroyPollGroup(hPollGroup);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingSockets_SetConnectionPollGroup( ISteamNetworkingSockets* self, HSteamNetConnection hConn, HSteamNetPollGroup hPollGroup )
 {
-    return self->SetConnectionPollGroup(hConn, hPollGroup);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->SetConnectionPollGroup(hConn, hPollGroup);
 }
 
 STEAMAPI_API int SteamAPI_ISteamNetworkingSockets_ReceiveMessagesOnPollGroup( ISteamNetworkingSockets* self, HSteamNetPollGroup hPollGroup, SteamNetworkingMessage_t ** ppOutMessages, int nMaxMessages )
 {
-    return self->ReceiveMessagesOnPollGroup(hPollGroup, ppOutMessages, nMaxMessages);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->ReceiveMessagesOnPollGroup(hPollGroup, ppOutMessages, nMaxMessages);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingSockets_ReceivedRelayAuthTicket( ISteamNetworkingSockets* self, const void * pvTicket, int cbTicket, SteamDatagramRelayAuthTicket * pOutParsedTicket )
 {
-    return self->ReceivedRelayAuthTicket(pvTicket, cbTicket, pOutParsedTicket);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->ReceivedRelayAuthTicket(pvTicket, cbTicket, pOutParsedTicket);
 }
 
-STEAMAPI_API int SteamAPI_ISteamNetworkingSockets_FindRelayAuthTicketForServer( ISteamNetworkingSockets* self, const SteamNetworkingIdentity & identityGameServer, int nVirtualPort, SteamDatagramRelayAuthTicket * pOutParsedTicket )
+STEAMAPI_API int SteamAPI_ISteamNetworkingSockets_FindRelayAuthTicketForServer( ISteamNetworkingSockets* self, const SteamNetworkingIdentity & identityGameServer, int nRemoteVirtualPort, SteamDatagramRelayAuthTicket * pOutParsedTicket )
 {
-    return self->FindRelayAuthTicketForServer(identityGameServer, nVirtualPort, pOutParsedTicket);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->FindRelayAuthTicketForServer(identityGameServer, nRemoteVirtualPort, pOutParsedTicket);
 }
 
-STEAMAPI_API HSteamNetConnection SteamAPI_ISteamNetworkingSockets_ConnectToHostedDedicatedServer( ISteamNetworkingSockets* self, const SteamNetworkingIdentity & identityTarget, int nVirtualPort, int nOptions, const SteamNetworkingConfigValue_t * pOptions )
+STEAMAPI_API HSteamNetConnection SteamAPI_ISteamNetworkingSockets_ConnectToHostedDedicatedServer( ISteamNetworkingSockets* self, const SteamNetworkingIdentity & identityTarget, int nRemoteVirtualPort, int nOptions, const SteamNetworkingConfigValue_t * pOptions )
 {
-    return self->ConnectToHostedDedicatedServer(identityTarget, nVirtualPort, nOptions, pOptions);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->ConnectToHostedDedicatedServer(identityTarget, nRemoteVirtualPort, nOptions, pOptions);
 }
 
 STEAMAPI_API uint16 SteamAPI_ISteamNetworkingSockets_GetHostedDedicatedServerPort( ISteamNetworkingSockets* self )
 {
-    return self->GetHostedDedicatedServerPort();
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->GetHostedDedicatedServerPort();
 }
 
 STEAMAPI_API SteamNetworkingPOPID SteamAPI_ISteamNetworkingSockets_GetHostedDedicatedServerPOPID( ISteamNetworkingSockets* self )
 {
-    return self->GetHostedDedicatedServerPOPID();
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->GetHostedDedicatedServerPOPID();
 }
 
 STEAMAPI_API EResult SteamAPI_ISteamNetworkingSockets_GetHostedDedicatedServerAddress( ISteamNetworkingSockets* self, SteamDatagramHostedAddress * pRouting )
 {
-    return self->GetHostedDedicatedServerAddress(pRouting);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->GetHostedDedicatedServerAddress(pRouting);
 }
 
-STEAMAPI_API HSteamListenSocket SteamAPI_ISteamNetworkingSockets_CreateHostedDedicatedServerListenSocket( ISteamNetworkingSockets* self, int nVirtualPort, int nOptions, const SteamNetworkingConfigValue_t * pOptions )
+STEAMAPI_API HSteamListenSocket SteamAPI_ISteamNetworkingSockets_CreateHostedDedicatedServerListenSocket( ISteamNetworkingSockets* self, int nLocalVirtualPort, int nOptions, const SteamNetworkingConfigValue_t * pOptions )
 {
-    return self->CreateHostedDedicatedServerListenSocket(nVirtualPort, nOptions, pOptions);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->CreateHostedDedicatedServerListenSocket(nLocalVirtualPort, nOptions, pOptions);
 }
 
 STEAMAPI_API EResult SteamAPI_ISteamNetworkingSockets_GetGameCoordinatorServerLogin( ISteamNetworkingSockets* self, SteamDatagramGameCoordinatorServerLogin * pLoginInfo, int * pcbSignedBlob, void * pBlob )
 {
-    return self->GetGameCoordinatorServerLogin(pLoginInfo, pcbSignedBlob, pBlob);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->GetGameCoordinatorServerLogin(pLoginInfo, pcbSignedBlob, pBlob);
 }
 
+//TODO: implement old version if needed
+//I don't think anything actually uses this function, especially not in flat api form so I'll just leave it like this.
+//STEAMAPI_API HSteamNetConnection SteamAPI_ISteamNetworkingSockets_ConnectP2PCustomSignaling( ISteamNetworkingSockets* self, ISteamNetworkingConnectionCustomSignaling * pSignaling, const SteamNetworkingIdentity * pPeerIdentity, int nOptions, const SteamNetworkingConfigValue_t * pOptions );
 STEAMAPI_API HSteamNetConnection SteamAPI_ISteamNetworkingSockets_ConnectP2PCustomSignaling( ISteamNetworkingSockets* self, ISteamNetworkingConnectionCustomSignaling * pSignaling, const SteamNetworkingIdentity * pPeerIdentity, int nRemoteVirtualPort, int nOptions, const SteamNetworkingConfigValue_t * pOptions )
 {
-    return self->ConnectP2PCustomSignaling(pSignaling, pPeerIdentity, nRemoteVirtualPort, nOptions, pOptions);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->ConnectP2PCustomSignaling(pSignaling, pPeerIdentity, nRemoteVirtualPort, nOptions, pOptions);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingSockets_ReceivedP2PCustomSignal( ISteamNetworkingSockets* self, const void * pMsg, int cbMsg, ISteamNetworkingCustomSignalingRecvContext * pContext )
 {
-    return self->ReceivedP2PCustomSignal(pMsg, cbMsg, pContext);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->ReceivedP2PCustomSignal(pMsg, cbMsg, pContext);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingSockets_GetCertificateRequest( ISteamNetworkingSockets* self, int * pcbBlob, void * pBlob, SteamNetworkingErrMsg & errMsg )
 {
-    return self->GetCertificateRequest(pcbBlob, pBlob, errMsg);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->GetCertificateRequest(pcbBlob, pBlob, errMsg);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingSockets_SetCertificate( ISteamNetworkingSockets* self, const void * pCertificate, int cbCertificate, SteamNetworkingErrMsg & errMsg )
 {
-    return self->SetCertificate(pCertificate, cbCertificate, errMsg);
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->SetCertificate(pCertificate, cbCertificate, errMsg);
 }
 
-// STEAMAPI_API void SteamAPI_ISteamNetworkingSockets_ResetIdentity( ISteamNetworkingSockets* self, const SteamNetworkingIdentity * pIdentity )
-// {
-//     return self->ResetIdentity(pIdentity);
-// }
+STEAMAPI_API void SteamAPI_ISteamNetworkingSockets_ResetIdentity( ISteamNetworkingSockets* self, const SteamNetworkingIdentity * pIdentity )
+{
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->ResetIdentity(pIdentity);
+}
 
 STEAMAPI_API void SteamAPI_ISteamNetworkingSockets_RunCallbacks( ISteamNetworkingSockets* self )
 {
-    return self->RunCallbacks();
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->RunCallbacks();
+}
+
+STEAMAPI_API bool SteamAPI_ISteamNetworkingSockets_BeginAsyncRequestFakeIP( ISteamNetworkingSockets* self, int nNumPorts )
+{
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->BeginAsyncRequestFakeIP(nNumPorts);
+}
+
+STEAMAPI_API void SteamAPI_ISteamNetworkingSockets_GetFakeIP( ISteamNetworkingSockets* self, int idxFirstPort, SteamNetworkingFakeIPResult_t * pInfo )
+{
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->GetFakeIP(idxFirstPort, pInfo);
+}
+
+STEAMAPI_API HSteamListenSocket SteamAPI_ISteamNetworkingSockets_CreateListenSocketP2PFakeIP( ISteamNetworkingSockets* self, int idxFakePort, int nOptions, const SteamNetworkingConfigValue_t * pOptions )
+{
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->CreateListenSocketP2PFakeIP(idxFakePort, nOptions, pOptions);
+}
+
+STEAMAPI_API EResult SteamAPI_ISteamNetworkingSockets_GetRemoteFakeIPForConnection( ISteamNetworkingSockets* self, HSteamNetConnection hConn, SteamNetworkingIPAddr * pOutAddr )
+{
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->GetRemoteFakeIPForConnection(hConn, pOutAddr);
+}
+
+STEAMAPI_API ISteamNetworkingFakeUDPPort * SteamAPI_ISteamNetworkingSockets_CreateFakeUDPPort( ISteamNetworkingSockets* self, int idxFakeServerPort )
+{
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_networking_sockets);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_networking_sockets);
+    auto ptr = get_steam_client()->steam_gameserver_networking_sockets;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_networking_sockets;
+    }
+
+    return (ptr)->CreateFakeUDPPort(idxFakeServerPort);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingConnectionCustomSignaling_SendSignal( ISteamNetworkingConnectionCustomSignaling* self, HSteamNetConnection hConn, const SteamNetConnectionInfo_t & info, const void * pMsg, int cbMsg )
@@ -5694,187 +6142,215 @@ STEAMAPI_API ISteamNetworkingUtils *SteamAPI_SteamNetworkingUtils_v003()
 
 STEAMAPI_API SteamNetworkingMessage_t * SteamAPI_ISteamNetworkingUtils_AllocateMessage( ISteamNetworkingUtils* self, int cbAllocateBuffer )
 {
-    return self->AllocateMessage(cbAllocateBuffer);
+    return (get_steam_client()->steam_networking_utils)->AllocateMessage(cbAllocateBuffer);
 }
 
 STEAMAPI_API void SteamAPI_ISteamNetworkingUtils_InitRelayNetworkAccess( ISteamNetworkingUtils* self )
 {
-    return self->InitRelayNetworkAccess();
+    return ((ISteamNetworkingUtils*)get_steam_client()->steam_networking_utils)->InitRelayNetworkAccess();
 }
 
 STEAMAPI_API ESteamNetworkingAvailability SteamAPI_ISteamNetworkingUtils_GetRelayNetworkStatus( ISteamNetworkingUtils* self, SteamRelayNetworkStatus_t * pDetails )
 {
-    return self->GetRelayNetworkStatus(pDetails);
+    return (get_steam_client()->steam_networking_utils)->GetRelayNetworkStatus(pDetails);
 }
 
 STEAMAPI_API float SteamAPI_ISteamNetworkingUtils_GetLocalPingLocation( ISteamNetworkingUtils* self, SteamNetworkPingLocation_t & result )
 {
-    return self->GetLocalPingLocation(result);
+    return (get_steam_client()->steam_networking_utils)->GetLocalPingLocation(result);
 }
 
 STEAMAPI_API int SteamAPI_ISteamNetworkingUtils_EstimatePingTimeBetweenTwoLocations( ISteamNetworkingUtils* self, const SteamNetworkPingLocation_t & location1, const SteamNetworkPingLocation_t & location2 )
 {
-    return self->EstimatePingTimeBetweenTwoLocations(location1, location2);
+    return (get_steam_client()->steam_networking_utils)->EstimatePingTimeBetweenTwoLocations(location1, location2);
 }
 
 STEAMAPI_API int SteamAPI_ISteamNetworkingUtils_EstimatePingTimeFromLocalHost( ISteamNetworkingUtils* self, const SteamNetworkPingLocation_t & remoteLocation )
 {
-    return self->EstimatePingTimeFromLocalHost(remoteLocation);
+    return (get_steam_client()->steam_networking_utils)->EstimatePingTimeFromLocalHost(remoteLocation);
 }
 
 STEAMAPI_API void SteamAPI_ISteamNetworkingUtils_ConvertPingLocationToString( ISteamNetworkingUtils* self, const SteamNetworkPingLocation_t & location, char * pszBuf, int cchBufSize )
 {
-    return self->ConvertPingLocationToString(location, pszBuf, cchBufSize);
+    return (get_steam_client()->steam_networking_utils)->ConvertPingLocationToString(location, pszBuf, cchBufSize);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingUtils_ParsePingLocationString( ISteamNetworkingUtils* self, const char * pszString, SteamNetworkPingLocation_t & result )
 {
-    return self->ParsePingLocationString(pszString, result);
+    return (get_steam_client()->steam_networking_utils)->ParsePingLocationString(pszString, result);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingUtils_CheckPingDataUpToDate( ISteamNetworkingUtils* self, float flMaxAgeSeconds )
 {
-    return self->CheckPingDataUpToDate(flMaxAgeSeconds);
+    return (get_steam_client()->steam_networking_utils)->CheckPingDataUpToDate(flMaxAgeSeconds);
 }
 
 STEAMAPI_API int SteamAPI_ISteamNetworkingUtils_GetPingToDataCenter( ISteamNetworkingUtils* self, SteamNetworkingPOPID popID, SteamNetworkingPOPID * pViaRelayPoP )
 {
-    return self->GetPingToDataCenter(popID, pViaRelayPoP);
+    return (get_steam_client()->steam_networking_utils)->GetPingToDataCenter(popID, pViaRelayPoP);
 }
 
 STEAMAPI_API int SteamAPI_ISteamNetworkingUtils_GetDirectPingToPOP( ISteamNetworkingUtils* self, SteamNetworkingPOPID popID )
 {
-    return self->GetDirectPingToPOP(popID);
+    return (get_steam_client()->steam_networking_utils)->GetDirectPingToPOP(popID);
 }
 
 STEAMAPI_API int SteamAPI_ISteamNetworkingUtils_GetPOPCount( ISteamNetworkingUtils* self )
 {
-    return self->GetPOPCount();
+    return (get_steam_client()->steam_networking_utils)->GetPOPCount();
 }
 
 STEAMAPI_API int SteamAPI_ISteamNetworkingUtils_GetPOPList( ISteamNetworkingUtils* self, SteamNetworkingPOPID * list, int nListSz )
 {
-    return self->GetPOPList(list, nListSz);
+    return (get_steam_client()->steam_networking_utils)->GetPOPList(list, nListSz);
 }
 
 STEAMAPI_API SteamNetworkingMicroseconds SteamAPI_ISteamNetworkingUtils_GetLocalTimestamp( ISteamNetworkingUtils* self )
 {
-    return self->GetLocalTimestamp();
+    return (get_steam_client()->steam_networking_utils)->GetLocalTimestamp();
 }
 
 STEAMAPI_API void SteamAPI_ISteamNetworkingUtils_SetDebugOutputFunction( ISteamNetworkingUtils* self, ESteamNetworkingSocketsDebugOutputType eDetailLevel, FSteamNetworkingSocketsDebugOutput pfnFunc )
 {
-    return self->SetDebugOutputFunction(eDetailLevel, pfnFunc);
+    return (get_steam_client()->steam_networking_utils)->SetDebugOutputFunction(eDetailLevel, pfnFunc);
+}
+
+STEAMAPI_API bool SteamAPI_ISteamNetworkingUtils_IsFakeIPv4( ISteamNetworkingUtils* self, uint32 nIPv4 )
+{
+    return (get_steam_client()->steam_networking_utils)->IsFakeIPv4(nIPv4);
+}
+
+STEAMAPI_API ESteamNetworkingFakeIPType SteamAPI_ISteamNetworkingUtils_GetIPv4FakeIPType( ISteamNetworkingUtils* self, uint32 nIPv4 )
+{
+    return (get_steam_client()->steam_networking_utils)->GetIPv4FakeIPType(nIPv4);
+}
+
+STEAMAPI_API EResult SteamAPI_ISteamNetworkingUtils_GetRealIdentityForFakeIP( ISteamNetworkingUtils* self, const SteamNetworkingIPAddr & fakeIP, SteamNetworkingIdentity * pOutRealIdentity )
+{
+    return (get_steam_client()->steam_networking_utils)->GetRealIdentityForFakeIP(fakeIP, pOutRealIdentity);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingUtils_SetGlobalConfigValueInt32( ISteamNetworkingUtils* self, ESteamNetworkingConfigValue eValue, int32 val )
 {
-    return self->SetGlobalConfigValueInt32(eValue, val);
+    return ((ISteamNetworkingUtils*)get_steam_client()->steam_networking_utils)->SetGlobalConfigValueInt32(eValue, val);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingUtils_SetGlobalConfigValueFloat( ISteamNetworkingUtils* self, ESteamNetworkingConfigValue eValue, float val )
 {
-    return self->SetGlobalConfigValueFloat(eValue, val);
+    return ((ISteamNetworkingUtils*)get_steam_client()->steam_networking_utils)->SetGlobalConfigValueFloat(eValue, val);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingUtils_SetGlobalConfigValueString( ISteamNetworkingUtils* self, ESteamNetworkingConfigValue eValue, const char * val )
 {
-    return self->SetGlobalConfigValueString(eValue, val);
+    return ((ISteamNetworkingUtils*)get_steam_client()->steam_networking_utils)->SetGlobalConfigValueString(eValue, val);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingUtils_SetGlobalConfigValuePtr( ISteamNetworkingUtils* self, ESteamNetworkingConfigValue eValue, void * val )
 {
-    return self->SetGlobalConfigValuePtr(eValue, val);
+    return ((ISteamNetworkingUtils*)get_steam_client()->steam_networking_utils)->SetGlobalConfigValuePtr(eValue, val);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingUtils_SetConnectionConfigValueInt32( ISteamNetworkingUtils* self, HSteamNetConnection hConn, ESteamNetworkingConfigValue eValue, int32 val )
 {
-    return self->SetConnectionConfigValueInt32(hConn, eValue, val);
+    return ((ISteamNetworkingUtils*)get_steam_client()->steam_networking_utils)->SetConnectionConfigValueInt32(hConn, eValue, val);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingUtils_SetConnectionConfigValueFloat( ISteamNetworkingUtils* self, HSteamNetConnection hConn, ESteamNetworkingConfigValue eValue, float val )
 {
-    return self->SetConnectionConfigValueFloat(hConn, eValue, val);
+    return ((ISteamNetworkingUtils*)get_steam_client()->steam_networking_utils)->SetConnectionConfigValueFloat(hConn, eValue, val);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingUtils_SetConnectionConfigValueString( ISteamNetworkingUtils* self, HSteamNetConnection hConn, ESteamNetworkingConfigValue eValue, const char * val )
 {
-    return self->SetConnectionConfigValueString(hConn, eValue, val);
+    return ((ISteamNetworkingUtils*)get_steam_client()->steam_networking_utils)->SetConnectionConfigValueString(hConn, eValue, val);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingUtils_SetGlobalCallback_SteamNetConnectionStatusChanged( ISteamNetworkingUtils* self, FnSteamNetConnectionStatusChanged fnCallback )
 {
-    return self->SetGlobalCallback_SteamNetConnectionStatusChanged(fnCallback);
+    return ((ISteamNetworkingUtils*)get_steam_client()->steam_networking_utils)->SetGlobalCallback_SteamNetConnectionStatusChanged(fnCallback);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingUtils_SetGlobalCallback_SteamNetAuthenticationStatusChanged( ISteamNetworkingUtils* self, FnSteamNetAuthenticationStatusChanged fnCallback )
 {
-    return self->SetGlobalCallback_SteamNetAuthenticationStatusChanged(fnCallback);
+    return ((ISteamNetworkingUtils*)get_steam_client()->steam_networking_utils)->SetGlobalCallback_SteamNetAuthenticationStatusChanged(fnCallback);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingUtils_SetGlobalCallback_SteamRelayNetworkStatusChanged( ISteamNetworkingUtils* self, FnSteamRelayNetworkStatusChanged fnCallback )
 {
-    return self->SetGlobalCallback_SteamRelayNetworkStatusChanged(fnCallback);
+    return ((ISteamNetworkingUtils*)get_steam_client()->steam_networking_utils)->SetGlobalCallback_SteamRelayNetworkStatusChanged(fnCallback);
+}
+
+STEAMAPI_API bool SteamAPI_ISteamNetworkingUtils_SetGlobalCallback_FakeIPResult( ISteamNetworkingUtils* self, FnSteamNetworkingFakeIPResult fnCallback )
+{
+    return ((ISteamNetworkingUtils*)get_steam_client()->steam_networking_utils)->SetGlobalCallback_FakeIPResult(fnCallback);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingUtils_SetGlobalCallback_MessagesSessionRequest( ISteamNetworkingUtils* self, FnSteamNetworkingMessagesSessionRequest fnCallback )
 {
-    return self->SetGlobalCallback_MessagesSessionRequest(fnCallback);
+    return ((ISteamNetworkingUtils*)get_steam_client()->steam_networking_utils)->SetGlobalCallback_MessagesSessionRequest(fnCallback);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingUtils_SetGlobalCallback_MessagesSessionFailed( ISteamNetworkingUtils* self, FnSteamNetworkingMessagesSessionFailed fnCallback )
 {
-    return self->SetGlobalCallback_MessagesSessionFailed(fnCallback);
+    return ((ISteamNetworkingUtils*)get_steam_client()->steam_networking_utils)->SetGlobalCallback_MessagesSessionFailed(fnCallback);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingUtils_SetConfigValue( ISteamNetworkingUtils* self, ESteamNetworkingConfigValue eValue, ESteamNetworkingConfigScope eScopeType, intptr_t scopeObj, ESteamNetworkingConfigDataType eDataType, const void * pArg )
 {
-    return self->SetConfigValue(eValue, eScopeType, scopeObj, eDataType, pArg);
+    return (get_steam_client()->steam_networking_utils)->SetConfigValue(eValue, eScopeType, scopeObj, eDataType, pArg);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingUtils_SetConfigValueStruct( ISteamNetworkingUtils* self, const SteamNetworkingConfigValue_t & opt, ESteamNetworkingConfigScope eScopeType, intptr_t scopeObj )
 {
-    return self->SetConfigValueStruct(opt, eScopeType, scopeObj);
+    return ((ISteamNetworkingUtils*)get_steam_client()->steam_networking_utils)->SetConfigValueStruct(opt, eScopeType, scopeObj);
 }
 
 STEAMAPI_API ESteamNetworkingGetConfigValueResult SteamAPI_ISteamNetworkingUtils_GetConfigValue( ISteamNetworkingUtils* self, ESteamNetworkingConfigValue eValue, ESteamNetworkingConfigScope eScopeType, intptr_t scopeObj, ESteamNetworkingConfigDataType * pOutDataType, void * pResult, size_t * cbResult )
 {
-    return self->GetConfigValue(eValue, eScopeType, scopeObj, pOutDataType, pResult, cbResult);
+    return (get_steam_client()->steam_networking_utils)->GetConfigValue(eValue, eScopeType, scopeObj, pOutDataType, pResult, cbResult);
 }
 
-STEAMAPI_API bool SteamAPI_ISteamNetworkingUtils_GetConfigValueInfo( ISteamNetworkingUtils* self, ESteamNetworkingConfigValue eValue, const char ** pOutName, ESteamNetworkingConfigDataType * pOutDataType, ESteamNetworkingConfigScope * pOutScope, ESteamNetworkingConfigValue * pOutNextValue )
+//TODO: implement this once the GetConfigValueInfo does something other than return 0 or NULL
+//STEAMAPI_API bool SteamAPI_ISteamNetworkingUtils_GetConfigValueInfo( ISteamNetworkingUtils* self, ESteamNetworkingConfigValue eValue, const char ** pOutName, ESteamNetworkingConfigDataType * pOutDataType, ESteamNetworkingConfigScope * pOutScope, ESteamNetworkingConfigValue * pOutNextValue )
+STEAMAPI_API const char * SteamAPI_ISteamNetworkingUtils_GetConfigValueInfo( ISteamNetworkingUtils* self, ESteamNetworkingConfigValue eValue, ESteamNetworkingConfigDataType * pOutDataType, ESteamNetworkingConfigScope * pOutScope )
 {
-    return self->GetConfigValueInfo(eValue, pOutName, pOutDataType, pOutScope, pOutNextValue);
+    //return (get_steam_client()->steam_networking_utils)->GetConfigValueInfo(eValue, pOutDataType, pOutScope);
+    return NULL;
 }
-
-// STEAMAPI_API ESteamNetworkingConfigValue SteamAPI_ISteamNetworkingUtils_IterateGenericEditableConfigValues( ISteamNetworkingUtils* self, ESteamNetworkingConfigValue eCurrent, bool bEnumerateDevVars )
-// {
-//     return self->GetConfigValueInfo(eValue, pOutName, pOutDataType, pOutScope, pOutNextValue);
-// }
 
 STEAMAPI_API ESteamNetworkingConfigValue SteamAPI_ISteamNetworkingUtils_GetFirstConfigValue( ISteamNetworkingUtils* self )
 {
-    return self->GetFirstConfigValue();
+    return (get_steam_client()->steam_networking_utils)->GetFirstConfigValue();
+}
+
+STEAMAPI_API ESteamNetworkingConfigValue SteamAPI_ISteamNetworkingUtils_IterateGenericEditableConfigValues( ISteamNetworkingUtils* self, ESteamNetworkingConfigValue eCurrent, bool bEnumerateDevVars )
+{
+    return (get_steam_client()->steam_networking_utils)->IterateGenericEditableConfigValues(eCurrent, bEnumerateDevVars);
 }
 
 STEAMAPI_API void SteamAPI_ISteamNetworkingUtils_SteamNetworkingIPAddr_ToString( ISteamNetworkingUtils* self, const SteamNetworkingIPAddr & addr, char * buf, uint32 cbBuf, bool bWithPort )
 {
-    return self->SteamNetworkingIPAddr_ToString(addr, buf, cbBuf, bWithPort);
+    return (get_steam_client()->steam_networking_utils)->SteamNetworkingIPAddr_ToString(addr, buf, cbBuf, bWithPort);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingUtils_SteamNetworkingIPAddr_ParseString( ISteamNetworkingUtils* self, SteamNetworkingIPAddr * pAddr, const char * pszStr )
 {
-    return self->SteamNetworkingIPAddr_ParseString(pAddr, pszStr);
+    return (get_steam_client()->steam_networking_utils)->SteamNetworkingIPAddr_ParseString(pAddr, pszStr);
+}
+
+STEAMAPI_API ESteamNetworkingFakeIPType SteamAPI_ISteamNetworkingUtils_SteamNetworkingIPAddr_GetFakeIPType( ISteamNetworkingUtils* self, const SteamNetworkingIPAddr & addr )
+{
+    return (get_steam_client()->steam_networking_utils)->SteamNetworkingIPAddr_GetFakeIPType(addr);
 }
 
 STEAMAPI_API void SteamAPI_ISteamNetworkingUtils_SteamNetworkingIdentity_ToString( ISteamNetworkingUtils* self, const SteamNetworkingIdentity & identity, char * buf, uint32 cbBuf )
 {
-    return self->SteamNetworkingIdentity_ToString(identity, buf, cbBuf);
+    return (get_steam_client()->steam_networking_utils)->SteamNetworkingIdentity_ToString(identity, buf, cbBuf);
 }
 
 STEAMAPI_API bool SteamAPI_ISteamNetworkingUtils_SteamNetworkingIdentity_ParseString( ISteamNetworkingUtils* self, SteamNetworkingIdentity * pIdentity, const char * pszStr )
 {
-    return self->SteamNetworkingIdentity_ParseString(pIdentity, pszStr);
+    return (get_steam_client()->steam_networking_utils)->SteamNetworkingIdentity_ParseString(pIdentity, pszStr);
 }
 
 STEAMAPI_API ISteamGameServer *SteamAPI_SteamGameServer_v013()
@@ -6203,6 +6679,25 @@ STEAMAPI_API SteamAPICall_t SteamAPI_ISteamGameServerStats_StoreUserStats( IStea
     return self->StoreUserStats(steamIDUser);
 }
 
+STEAMAPI_API void SteamAPI_ISteamNetworkingFakeUDPPort_DestroyFakeUDPPort( ISteamNetworkingFakeUDPPort* self )
+{
+    return self->DestroyFakeUDPPort();
+}
+
+STEAMAPI_API EResult SteamAPI_ISteamNetworkingFakeUDPPort_SendMessageToFakeIP( ISteamNetworkingFakeUDPPort* self, const SteamNetworkingIPAddr & remoteAddress, const void * pData, uint32 cbData, int nSendFlags )
+{
+    return self->SendMessageToFakeIP(remoteAddress, pData, cbData, nSendFlags);
+}
+
+STEAMAPI_API int SteamAPI_ISteamNetworkingFakeUDPPort_ReceiveMessages( ISteamNetworkingFakeUDPPort* self, SteamNetworkingMessage_t ** ppOutMessages, int nMaxMessages )
+{
+    return self->ReceiveMessages(ppOutMessages, nMaxMessages);
+}
+
+STEAMAPI_API void SteamAPI_ISteamNetworkingFakeUDPPort_ScheduleCleanup( ISteamNetworkingFakeUDPPort* self, const SteamNetworkingIPAddr & remoteAddress )
+{
+    return self->ScheduleCleanup(remoteAddress);
+}
 
 STEAMAPI_API bool SteamAPI_SteamIPAddress_t_IsSet( SteamIPAddress_t* self )
 {
@@ -6344,6 +6839,16 @@ STEAMAPI_API bool SteamAPI_SteamNetworkingIPAddr_IsEqualTo( SteamNetworkingIPAdd
     return self->operator==(x);
 }
 
+STEAMAPI_API ESteamNetworkingFakeIPType SteamAPI_SteamNetworkingIPAddr_GetFakeIPType( SteamNetworkingIPAddr* self )
+{
+    return self->GetFakeIPType();
+}
+
+STEAMAPI_API bool SteamAPI_SteamNetworkingIPAddr_IsFakeIP( SteamNetworkingIPAddr* self )
+{
+    return self->IsFakeIP();
+}
+
 STEAMAPI_API void SteamAPI_SteamNetworkingIdentity_Clear( SteamNetworkingIdentity* self )
 {
     return self->Clear();
@@ -6412,6 +6917,29 @@ STEAMAPI_API void SteamAPI_SteamNetworkingIdentity_SetIPAddr( SteamNetworkingIde
 STEAMAPI_API const SteamNetworkingIPAddr * SteamAPI_SteamNetworkingIdentity_GetIPAddr( SteamNetworkingIdentity* self )
 {
     return self->GetIPAddr();
+}
+
+STEAMAPI_API void SteamAPI_SteamNetworkingIdentity_SetIPv4Addr( SteamNetworkingIdentity* self, uint32 nIPv4, uint16 nPort )
+{
+    SteamNetworkingIPAddr addr = {};
+    addr.SetIPv4(nIPv4, nPort);
+    self->SetIPAddr(addr);
+}
+
+STEAMAPI_API uint32 SteamAPI_SteamNetworkingIdentity_GetIPv4( SteamNetworkingIdentity* self )
+{
+    return self->GetIPAddr()->GetIPv4();
+}
+
+STEAMAPI_API ESteamNetworkingFakeIPType SteamAPI_SteamNetworkingIdentity_GetFakeIPType( SteamNetworkingIdentity* self )
+{
+    //return self->GetFakeIPType();
+    return self->GetIPAddr()->GetFakeIPType();
+}
+
+STEAMAPI_API bool SteamAPI_SteamNetworkingIdentity_IsFakeIP( SteamNetworkingIdentity* self )
+{
+    return self->GetIPAddr()->IsFakeIP();
 }
 
 STEAMAPI_API void SteamAPI_SteamNetworkingIdentity_SetLocalHost( SteamNetworkingIdentity* self )

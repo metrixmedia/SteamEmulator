@@ -175,10 +175,10 @@ ESteamAPICallFailure GetAPICallFailureReason( SteamAPICall_t hSteamAPICall )
 
 bool GetAPICallResult( SteamAPICall_t hSteamAPICall, void *pCallback, int cubCallback, int iCallbackExpected, bool *pbFailed )
 {
-    PRINT_DEBUG("GetAPICallResult %llu %i %i\n", hSteamAPICall, cubCallback, iCallbackExpected);
+    PRINT_DEBUG("GetAPICallResult %llu %i %i %p\n", hSteamAPICall, cubCallback, iCallbackExpected, pbFailed);
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
     if (callback_results->callback_result(hSteamAPICall, pCallback, cubCallback)) {
-        *pbFailed = false;
+        if (pbFailed) *pbFailed = false;
         PRINT_DEBUG("GetAPICallResult Succeeded\n");
         return true;
     } else {

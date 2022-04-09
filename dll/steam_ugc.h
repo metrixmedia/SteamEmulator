@@ -39,6 +39,7 @@ public ISteamUGC010,
 public ISteamUGC012,
 public ISteamUGC013,
 public ISteamUGC014,
+public ISteamUGC015,
 public ISteamUGC
 {
     class Settings *settings;
@@ -413,6 +414,17 @@ bool AddRequiredKeyValueTag( UGCQueryHandle_t handle, const char *pKey, const ch
     return true;
 }
 
+bool SetTimeCreatedDateRange( UGCQueryHandle_t handle, RTime32 rtStart, RTime32 rtEnd )
+{
+    PRINT_DEBUG("Steam_UGC::SetTimeCreatedDateRange\n");
+    return true;
+}
+
+bool SetTimeUpdatedDateRange( UGCQueryHandle_t handle, RTime32 rtStart, RTime32 rtEnd )
+{
+    PRINT_DEBUG("Steam_UGC::SetTimeUpdatedDateRange\n");
+    return true;
+}
 
 // DEPRECATED - Use CreateQueryUGCDetailsRequest call above instead!
 SteamAPICall_t RequestUGCDetails( PublishedFileId_t nPublishedFileID, uint32 unMaxAgeSeconds )

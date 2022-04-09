@@ -22,8 +22,11 @@
 static void
 randombytes(char * const buf, const size_t size)
 {
+    while (!RtlGenRandom((PVOID) buf, (ULONG) size)) {
+        PRINT_DEBUG("RtlGenRandom ERROR\n");
+        Sleep(100);
+    }
 
-    RtlGenRandom((PVOID) buf, (ULONG) size);
 }
 
 std::string get_env_variable(std::string name)
