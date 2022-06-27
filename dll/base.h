@@ -25,6 +25,7 @@
 extern std::recursive_mutex global_mutex;
 
 std::string get_env_variable(std::string name);
+bool set_env_variable(std::string name, std::string value);
 bool check_timedout(std::chrono::high_resolution_clock::time_point old, double timeout);
 
 class CCallbackMgr
@@ -456,7 +457,7 @@ public:
     }
 };
 
-void set_adapter_ips(uint32_t *from, uint32_t *to, unsigned num_ips);
+void set_whitelist_ips(uint32_t *from, uint32_t *to, unsigned num_ips);
 #ifdef EMU_EXPERIMENTAL_BUILD
 bool crack_SteamAPI_RestartAppIfNecessary(uint32 unOwnAppID);
 bool crack_SteamAPI_Init();

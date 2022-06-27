@@ -41,6 +41,11 @@ std::string get_env_variable(std::string name)
     return utf8_encode(env_variable);
 }
 
+bool set_env_variable(std::string name, std::string value)
+{
+    return SetEnvironmentVariableW(utf8_decode(name).c_str(), utf8_decode(value).c_str());
+}
+
 #else
 
 static int fd = -1;
@@ -79,6 +84,11 @@ std::string get_env_variable(std::string name)
     }
 
     return std::string(env);
+}
+
+bool set_env_variable(std::string name, std::string value)
+{
+    return setenv(name.c_str(), value.c_str(), 1) == 0;
 }
 
 #endif
@@ -138,7 +148,7 @@ CSteamID generate_steam_id_anonserver()
 
 CSteamID generate_steam_id_lobby()
 {
-    return CSteamID(generate_account_id(), k_unSteamUserDefaultInstance | k_EChatInstanceFlagLobby, k_EUniversePublic, k_EAccountTypeChat);
+    return CSteamID(generate_account_id(), k_EChatInstanceFlagLobby | k_EChatInstanceFlagMMSLobby, k_EUniversePublic, k_EAccountTypeChat);
 }
 
 bool check_timedout(std::chrono::high_resolution_clock::time_point old, double timeout)
@@ -519,11 +529,11 @@ struct ips_test {
     uint32_t ip_to;
 };
 
-static std::vector<struct ips_test> adapter_ips;
+static std::vector<struct ips_test> whitelist_ips;
 
-void set_adapter_ips(uint32_t *from, uint32_t *to, unsigned num_ips)
+void set_whitelist_ips(uint32_t *from, uint32_t *to, unsigned num_ips)
 {
-    adapter_ips.clear();
+    whitelist_ips.clear();
     for (unsigned i = 0; i < num_ips; ++i) {
         struct ips_test ip_a;
         PRINT_DEBUG("from: %hhu.%hhu.%hhu.%hhu\n", ((unsigned char *)&from[i])[0], ((unsigned char *)&from[i])[1], ((unsigned char *)&from[i])[2], ((unsigned char *)&from[i])[3]);
@@ -533,19 +543,19 @@ void set_adapter_ips(uint32_t *from, uint32_t *to, unsigned num_ips)
         if (ip_a.ip_to < ip_a.ip_from) continue;
         if ((ip_a.ip_to - ip_a.ip_from) > (1 << 25)) continue;
         PRINT_DEBUG("added\n");
-        adapter_ips.push_back(ip_a);
+        whitelist_ips.push_back(ip_a);
     }
 }
 
-static bool is_adapter_ip(unsigned char *ip)
+static bool is_whitelist_ip(unsigned char *ip)
 {
     uint32_t ip_temp = 0;
     memcpy(&ip_temp, ip, sizeof(ip_temp));
     ip_temp = ntohl(ip_temp);
 
-    for (auto &i : adapter_ips) {
+    for (auto &i : whitelist_ips) {
         if (i.ip_from <= ip_temp && ip_temp <= i.ip_to) {
-            PRINT_DEBUG("ADAPTER IP %hhu.%hhu.%hhu.%hhu\n", ip[0], ip[1], ip[2], ip[3]);
+            PRINT_DEBUG("WHITELISTED IP %hhu.%hhu.%hhu.%hhu\n", ip[0], ip[1], ip[2], ip[3]);
             return true;
         }
     }
@@ -562,7 +572,7 @@ static bool is_lan_ip(const sockaddr *addr, int namelen)
         unsigned char ip[4];
         memcpy(ip, &addr_in->sin_addr, sizeof(ip));
         PRINT_DEBUG("CHECK LAN IP %hhu.%hhu.%hhu.%hhu:%u\n", ip[0], ip[1], ip[2], ip[3], ntohs(addr_in->sin_port));
-        if (is_adapter_ip(ip)) return true;
+        if (is_whitelist_ip(ip)) return true;
         if (ip[0] == 127) return true;
         if (ip[0] == 10) return true;
         if (ip[0] == 192 && ip[1] == 168) return true;
@@ -838,13 +848,13 @@ BOOL WINAPI DllMain( HINSTANCE, DWORD dwReason, LPVOID ) {
     return TRUE;
 }
 #else
-void set_adapter_ips(uint32_t *from, uint32_t *to, unsigned num_ips)
+void set_whitelist_ips(uint32_t *from, uint32_t *to, unsigned num_ips)
 {
 
 }
 #endif
 #else
-void set_adapter_ips(uint32_t *from, uint32_t *to, unsigned num_ips)
+void set_whitelist_ips(uint32_t *from, uint32_t *to, unsigned num_ips)
 {
 
 }

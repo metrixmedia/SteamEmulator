@@ -380,7 +380,7 @@ bool InitFilterText( uint32 unFilterOptions )
 int FilterText( char* pchOutFilteredText, uint32 nByteSizeOutFilteredText, const char * pchInputMessage, bool bLegalOnly )
 {
     PRINT_DEBUG("FilterText old\n");
-    return 0;
+    return FilterText(k_ETextFilteringContextUnknown, CSteamID(), pchInputMessage, pchOutFilteredText, nByteSizeOutFilteredText );
 }
 
 // Filters the provided input message and places the filtered result into pchOutFilteredText, using legally required filtering and additional filtering based on the context and user settings
@@ -393,7 +393,16 @@ int FilterText( char* pchOutFilteredText, uint32 nByteSizeOutFilteredText, const
 int FilterText( ETextFilteringContext eContext, CSteamID sourceSteamID, const char *pchInputMessage, char *pchOutFilteredText, uint32 nByteSizeOutFilteredText )
 {
     PRINT_DEBUG("FilterText\n");
-    return 0;
+    if (!nByteSizeOutFilteredText) return 0;
+    unsigned len = strlen(pchInputMessage);
+    if (!len) return 0;
+    len += 1;
+    if (len > nByteSizeOutFilteredText) len = nByteSizeOutFilteredText;
+    len -= 1;
+
+    memcpy(pchOutFilteredText, pchInputMessage, len);
+    pchOutFilteredText[len] = 0;
+    return len;
 }
 
 

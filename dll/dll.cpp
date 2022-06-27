@@ -224,7 +224,7 @@ STEAMAPI_API void * S_CALLTYPE SteamInternal_ContextInit( void *pContextInitData
 // SteamAPI_Init must be called before using any other API functions. If it fails, an
 // error message will be output to the debugger (or stderr) with further information.
 static HSteamPipe user_steam_pipe;
-STEAMAPI_API bool S_CALLTYPE SteamAPI_Init()
+STEAMAPI_API steam_bool S_CALLTYPE SteamAPI_Init()
 {
     PRINT_DEBUG("SteamAPI_Init called\n");
     if (user_steam_pipe) return true;
@@ -240,7 +240,7 @@ STEAMAPI_API bool S_CALLTYPE SteamAPI_Init()
 }
 
 //TODO: not sure if this is the right signature for this function.
-STEAMAPI_API bool S_CALLTYPE SteamAPI_InitAnonymousUser()
+STEAMAPI_API steam_bool S_CALLTYPE SteamAPI_InitAnonymousUser()
 {
     PRINT_DEBUG("SteamAPI_InitAnonymousUser called\n");
     return SteamAPI_Init();
@@ -310,7 +310,7 @@ STEAMAPI_API void S_CALLTYPE SteamAPI_Shutdown()
 //
 // NOTE: If you use the Steam DRM wrapper on your primary executable file, this check is unnecessary
 // since the DRM wrapper will ensure that your application was launched properly through Steam.
-STEAMAPI_API bool S_CALLTYPE SteamAPI_RestartAppIfNecessary( uint32 unOwnAppID )
+STEAMAPI_API steam_bool S_CALLTYPE SteamAPI_RestartAppIfNecessary( uint32 unOwnAppID )
 {
     PRINT_DEBUG("SteamAPI_RestartAppIfNecessary %u\n", unOwnAppID);
 #ifdef EMU_EXPERIMENTAL_BUILD
@@ -440,7 +440,7 @@ STEAMAPI_API void *S_CALLTYPE SteamInternal_FindOrCreateGameServerInterface( HSt
 //----------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 // SteamAPI_IsSteamRunning() returns true if Steam is currently running
-STEAMAPI_API bool S_CALLTYPE SteamAPI_IsSteamRunning()
+STEAMAPI_API steam_bool S_CALLTYPE SteamAPI_IsSteamRunning()
 {
     PRINT_DEBUG("SteamAPI_IsSteamRunning\n");
     return true;
@@ -512,7 +512,7 @@ STEAMAPI_API HSteamUser GetHSteamUser()
 
 
 // exists only for backwards compat with code written against older SDKs
-STEAMAPI_API bool S_CALLTYPE SteamAPI_InitSafe()
+STEAMAPI_API steam_bool S_CALLTYPE SteamAPI_InitSafe()
 {
     PRINT_DEBUG("SteamAPI_InitSafe\n");
     SteamAPI_Init();
@@ -574,8 +574,8 @@ STEAMAPI_API HSteamUser S_CALLTYPE SteamGameServer_GetHSteamUser()
 }
 
 //See: SteamGameServer_Init
-//STEAMAPI_API bool S_CALLTYPE SteamGameServer_InitSafe(uint32 unIP, uint16 usSteamPort, uint16 usGamePort, uint16 usQueryPort, EServerMode eServerMode, const char *pchVersionString )
-STEAMAPI_API bool S_CALLTYPE SteamGameServer_InitSafe( uint32 unIP, uint16 usSteamPort, uint16 usGamePort, uint16 unknown, EServerMode eServerMode, void *unknown1, void *unknown2, void *unknown3 )
+//STEAMAPI_API steam_bool S_CALLTYPE SteamGameServer_InitSafe(uint32 unIP, uint16 usSteamPort, uint16 usGamePort, uint16 usQueryPort, EServerMode eServerMode, const char *pchVersionString )
+STEAMAPI_API steam_bool S_CALLTYPE SteamGameServer_InitSafe( uint32 unIP, uint16 usSteamPort, uint16 usGamePort, uint16 unknown, EServerMode eServerMode, void *unknown1, void *unknown2, void *unknown3 )
 {
     const char *pchVersionString;
     EServerMode serverMode;
@@ -604,7 +604,7 @@ STEAMAPI_API bool S_CALLTYPE SteamGameServer_InitSafe( uint32 unIP, uint16 usSte
 
 STEAMAPI_API ISteamClient *SteamGameServerClient();
 
-STEAMAPI_API bool S_CALLTYPE SteamInternal_GameServer_Init( uint32 unIP, uint16 usPort, uint16 usGamePort, uint16 usQueryPort, EServerMode eServerMode, const char *pchVersionString )
+STEAMAPI_API steam_bool S_CALLTYPE SteamInternal_GameServer_Init( uint32 unIP, uint16 usPort, uint16 usGamePort, uint16 usQueryPort, EServerMode eServerMode, const char *pchVersionString )
 {
     PRINT_DEBUG("SteamInternal_GameServer_Init %u %hu %hu %hu %u %s\n", unIP, usPort, usGamePort, usQueryPort, eServerMode, pchVersionString);
     load_old_interface_versions();
@@ -618,12 +618,12 @@ STEAMAPI_API bool S_CALLTYPE SteamInternal_GameServer_Init( uint32 unIP, uint16 
 }
 
 //SteamGameServer004 and before:
-//STEAMAPI_API bool SteamGameServer_Init( uint32 unIP, uint16 usPort, uint16 usGamePort, uint16 usSpectatorPort, uint16 usQueryPort, EServerMode eServerMode, int nGameAppId, const char *pchGameDir, const char *pchVersionString );
+//STEAMAPI_API steam_bool SteamGameServer_Init( uint32 unIP, uint16 usPort, uint16 usGamePort, uint16 usSpectatorPort, uint16 usQueryPort, EServerMode eServerMode, int nGameAppId, const char *pchGameDir, const char *pchVersionString );
 //SteamGameServer010 and before:
-//STEAMAPI_API bool SteamGameServer_Init( uint32 unIP, uint16 usPort, uint16 usGamePort, uint16 usSpectatorPort, uint16 usQueryPort, EServerMode eServerMode, const char *pchGameDir, const char *pchVersionString );
+//STEAMAPI_API steam_bool SteamGameServer_Init( uint32 unIP, uint16 usPort, uint16 usGamePort, uint16 usSpectatorPort, uint16 usQueryPort, EServerMode eServerMode, const char *pchGameDir, const char *pchVersionString );
 //SteamGameServer011 and later:
-//STEAMAPI_API bool SteamGameServer_Init( uint32 unIP, uint16 usSteamPort, uint16 usGamePort, uint16 usQueryPort, EServerMode eServerMode, const char *pchVersionString );
-STEAMAPI_API bool SteamGameServer_Init( uint32 unIP, uint16 usSteamPort, uint16 usGamePort, uint16 unknown, EServerMode eServerMode, void *unknown1, void *unknown2, void *unknown3 )
+//STEAMAPI_API steam_bool SteamGameServer_Init( uint32 unIP, uint16 usSteamPort, uint16 usGamePort, uint16 usQueryPort, EServerMode eServerMode, const char *pchVersionString );
+STEAMAPI_API steam_bool SteamGameServer_Init( uint32 unIP, uint16 usSteamPort, uint16 usGamePort, uint16 unknown, EServerMode eServerMode, void *unknown1, void *unknown2, void *unknown3 )
 {
     const char *pchVersionString;
     EServerMode serverMode;
@@ -686,7 +686,7 @@ STEAMAPI_API void SteamGameServer_RunCallbacks()
     get_steam_client()->RunCallbacks(false, true);
 }
 
-STEAMAPI_API bool SteamGameServer_BSecure()
+STEAMAPI_API steam_bool SteamGameServer_BSecure()
 {
     PRINT_DEBUG("SteamGameServer_BSecure\n");
     return get_steam_client()->steam_gameserver->BSecure();
@@ -897,7 +897,7 @@ STEAMAPI_API const char *VR_GetStringForHmdError( int error )
     return "";
 }
 
-STEAMAPI_API bool VR_IsHmdPresent()
+STEAMAPI_API steam_bool VR_IsHmdPresent()
 {
     return false;
 }
@@ -907,7 +907,7 @@ STEAMAPI_API void VR_Shutdown()
 
 }
 
-STEAMAPI_API bool SteamAPI_RestartApp( uint32 appid )
+STEAMAPI_API steam_bool SteamAPI_RestartApp( uint32 appid )
 {
     PRINT_DEBUG("SteamAPI_RestartApp %u\n", appid);
     return SteamAPI_RestartAppIfNecessary(appid);

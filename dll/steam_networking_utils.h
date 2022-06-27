@@ -68,6 +68,18 @@ Steam_Networking_Utils(class Settings *settings, class Networking *network, clas
     this->run_every_runcb->remove(&Steam_Networking_Utils::steam_run_every_runcb, this);
 }
 
+static void free_steam_message_data(SteamNetworkingMessage_t *pMsg)
+{
+    free(pMsg->m_pData);
+    pMsg->m_pData = NULL;
+}
+
+static void delete_steam_message(SteamNetworkingMessage_t *pMsg)
+{
+    if (pMsg->m_pfnFreeData) pMsg->m_pfnFreeData(pMsg);
+    delete pMsg;
+}
+
 /// Allocate and initialize a message object.  Usually the reason
 /// you call this is to pass it to ISteamNetworkingSockets::SendMessages.
 /// The returned object will have all of the relevant fields cleared to zero.
@@ -90,8 +102,17 @@ Steam_Networking_Utils(class Settings *settings, class Networking *network, clas
 SteamNetworkingMessage_t *AllocateMessage( int cbAllocateBuffer )
 {
     PRINT_DEBUG("Steam_Networking_Utils::AllocateMessage\n");
-    //TODO
-    return NULL;
+    SteamNetworkingMessage_t *pMsg = new SteamNetworkingMessage_t();
+    pMsg->m_pfnFreeData = &free_steam_message_data;
+    pMsg->m_pfnRelease = &delete_steam_message;
+    if (cbAllocateBuffer < 0)
+        cbAllocateBuffer = 0;
+
+    if (cbAllocateBuffer)
+        pMsg->m_pData = malloc(cbAllocateBuffer);
+
+    pMsg->m_cbSize = cbAllocateBuffer;
+    return pMsg;
 }
 
 bool InitializeRelayAccess()
@@ -337,8 +358,8 @@ bool SetConnectionConfigValueString( HSteamNetConnection hConn, ESteamNetworking
 bool SetConfigValue( ESteamNetworkingConfigValue eValue, ESteamNetworkingConfigScope eScopeType, intptr_t scopeObj,
     ESteamNetworkingConfigDataType eDataType, const void *pArg )
 {
-    PRINT_DEBUG("Steam_Networking_Utils::SetConfigValue\n");
-    return false;
+    PRINT_DEBUG("Steam_Networking_Utils::SetConfigValue %i %i %p %i %p\n", eValue, eScopeType, scopeObj, eDataType, pArg);
+    return true;
 }
 
 

@@ -62,9 +62,9 @@ const uint16 STEAMGAMESERVER_QUERY_PORT_SHARED = 0xffff;
 // - The version string should be in the form x.x.x.x, and is used by the master server to detect when the
 //		server is out of date.  (Only servers with the latest version will be listed.)
 #ifndef STEAM_API_EXPORTS
-S_API bool SteamGameServer_Init( uint32 unIP, uint16 usSteamPort, uint16 usGamePort, uint16 usQueryPort, EServerMode eServerMode, const char *pchVersionString );
+S_API steam_bool SteamGameServer_Init( uint32 unIP, uint16 usSteamPort, uint16 usGamePort, uint16 usQueryPort, EServerMode eServerMode, const char *pchVersionString );
 #endif
-S_API bool S_CALLTYPE SteamInternal_GameServer_Init( uint32 unIP, uint16 usPort, uint16 usGamePort, uint16 usQueryPort, EServerMode eServerMode, const char *pchVersionString );
+S_API steam_bool S_CALLTYPE SteamInternal_GameServer_Init( uint32 unIP, uint16 usPort, uint16 usGamePort, uint16 usQueryPort, EServerMode eServerMode, const char *pchVersionString );
 
 // Shutdown SteamGameSeverXxx interfaces, log out, and free resources.
 S_API void SteamGameServer_Shutdown();
@@ -76,7 +76,7 @@ S_API void SteamGameServer_Shutdown();
 // so single-threaded servers do not need to explicitly call this function.
 inline void SteamGameServer_ReleaseCurrentThreadMemory();
 
-S_API bool SteamGameServer_BSecure();
+S_API steam_bool SteamGameServer_BSecure();
 S_API uint64 SteamGameServer_GetSteamID();
 
 // Older SDKs exported this global pointer, but it is no longer supported.

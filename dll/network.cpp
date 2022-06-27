@@ -314,7 +314,13 @@ static bool send_broadcasts(sock_t sock, uint16 port, char *data, unsigned long 
     if (number_broadcasts < 0 || check_timedout(last_get_broadcast_info, 60.0)) {
         PRINT_DEBUG("get_broadcast_info\n");
         get_broadcast_info(port);
-        set_adapter_ips(lower_range_ips, upper_range_ips, number_broadcasts);
+        std::vector<uint32_t> lower_range(lower_range_ips, lower_range_ips + number_broadcasts), upper_range(upper_range_ips, upper_range_ips + number_broadcasts);
+        for(auto &addr : *custom_broadcasts) {
+            lower_range.push_back(addr.ip);
+            upper_range.push_back(addr.ip);
+        }
+
+        set_whitelist_ips(lower_range.data(), upper_range.data(), lower_range.size());
         last_get_broadcast_info = std::chrono::high_resolution_clock::now();
     }
 
@@ -1120,9 +1126,12 @@ void Networking::setAppID(uint32 appid)
 
 bool Networking::sendToIPPort(Common_Message *msg, uint32 ip, uint16 port, bool reliable)
 {
+    bool is_local_ip = ((ip >> 24) == 0x7F);
+    uint32_t local_ip = getIP(ids.front());
+    PRINT_DEBUG("sendToIPPort %X %u %X\n", ip, is_local_ip, local_ip);
     //TODO: actually send to ip/port
     for (auto &conn: connections) {
-        if (ntohl(conn.tcp_ip_port.ip) == ip) {
+        if (ntohl(conn.tcp_ip_port.ip) == ip || (is_local_ip && ntohl(conn.tcp_ip_port.ip) == local_ip)) {
             for (auto &steam_id : conn.ids) {
                 msg->set_dest_id(steam_id.ConvertToUint64());
                 sendTo(msg, reliable, &conn);
@@ -1146,6 +1155,9 @@ uint32 Networking::getIP(CSteamID id)
 bool Networking::sendTo(Common_Message *msg, bool reliable, Connection *conn)
 {
     if (!enabled) return false;
+
+    size_t size = msg->ByteSizeLong();
+    if (size >= 65000) reliable = true; //too big for UDP
 
     bool ret = false;
     CSteamID dest_id((uint64)msg->dest_id());
@@ -1172,7 +1184,6 @@ bool Networking::sendTo(Common_Message *msg, bool reliable, Connection *conn)
                 ret = true;
             }
         } else {
-            size_t size = msg->ByteSizeLong(); 
             char *buffer = new char[size];
             msg->SerializeToArray(buffer, size);
             send_packet_to(udp_socket, conn->udp_ip_port, buffer, size);

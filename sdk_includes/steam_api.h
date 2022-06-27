@@ -191,7 +191,7 @@
 
 // SteamAPI_Init must be called before using any other API functions. If it fails, an
 // error message will be output to the debugger (or stderr) with further information.
-S_API bool S_CALLTYPE SteamAPI_Init();
+S_API steam_bool S_CALLTYPE SteamAPI_Init();
 
 // SteamAPI_Shutdown should be called during process shutdown if possible.
 S_API void S_CALLTYPE SteamAPI_Shutdown();
@@ -206,7 +206,7 @@ S_API void S_CALLTYPE SteamAPI_Shutdown();
 //
 // NOTE: If you use the Steam DRM wrapper on your primary executable file, this check is unnecessary
 // since the DRM wrapper will ensure that your application was launched properly through Steam.
-S_API bool S_CALLTYPE SteamAPI_RestartAppIfNecessary( uint32 unOwnAppID );
+S_API steam_bool S_CALLTYPE SteamAPI_RestartAppIfNecessary( uint32 unOwnAppID );
 
 // Many Steam API functions allocate a small amount of thread-local memory for parameter storage.
 // SteamAPI_ReleaseCurrentThreadMemory() will free API memory associated with the calling thread.
@@ -226,7 +226,7 @@ S_API void S_CALLTYPE SteamAPI_SetMiniDumpComment( const char *pchMsg );
 //----------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 // SteamAPI_IsSteamRunning() returns true if Steam is currently running
-S_API bool S_CALLTYPE SteamAPI_IsSteamRunning();
+S_API steam_bool S_CALLTYPE SteamAPI_IsSteamRunning();
 
 // Pumps out all the steam messages, calling registered callbacks.
 // NOT THREADSAFE - do not call from multiple threads simultaneously.

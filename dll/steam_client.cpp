@@ -60,6 +60,11 @@ Steam_Client::Steam_Client()
 
     PRINT_DEBUG("steam client init: id: %llu server id: %llu appid: %u port: %u \n", settings_client->get_local_steam_id().ConvertToUint64(), settings_server->get_local_steam_id().ConvertToUint64(), appid, settings_server->get_port());
 
+    if (appid) {
+        set_env_variable("SteamAppId", std::to_string(appid));
+        set_env_variable("SteamGameId", std::to_string(appid));
+    }
+
     steam_overlay = new Steam_Overlay(settings_client, callback_results_client, callbacks_client, run_every_runcb, network);
 
     steam_user = new Steam_User(settings_client, local_storage, network, callback_results_client, callbacks_client);
@@ -159,6 +164,8 @@ void Steam_Client::setAppID(uint32 appid)
         settings_server->set_game_id(CGameID(appid));
         local_storage->setAppId(appid);
         network->setAppID(appid);
+        set_env_variable("SteamAppId", std::to_string(appid));
+        set_env_variable("SteamGameId", std::to_string(appid));
     }
 
     
@@ -305,6 +312,7 @@ ISteamGameServer *Steam_Client::GetISteamGameServer( HSteamUser hSteamUser, HSte
     } else if (strcmp(pchVersion, "SteamGameServer012") == 0) {
         return (ISteamGameServer *)(void *)(ISteamGameServer012 *)steam_gameserver;
     } else if (strcmp(pchVersion, "SteamGameServer013") == 0) {
+        gameserver_has_ipv6_functions = true;
         return (ISteamGameServer *)(void *)(ISteamGameServer013 *)steam_gameserver;
     } else if (strcmp(pchVersion, STEAMGAMESERVER_INTERFACE_VERSION) == 0) {
         gameserver_has_ipv6_functions = true;

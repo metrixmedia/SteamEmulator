@@ -107,7 +107,10 @@ google::protobuf::Map<std::string,std::string>::const_iterator caseinsensitive_f
 
 Lobby *get_lobby(CSteamID id)
 {
-    auto lobby = std::find_if(lobbies.begin(), lobbies.end(), [&id](Lobby const& item) { return item.room_id() == id.ConvertToUint64(); });
+    if (!id.IsLobby())
+        return NULL;
+
+    auto lobby = std::find_if(lobbies.begin(), lobbies.end(), [&id](Lobby const& item) { return (item.room_id() & 0xFFFFFFFF) == (id.GetAccountID()); });
     if (lobbies.end() == lobby)
         return NULL;
 
@@ -653,8 +656,8 @@ void LeaveLobby( CSteamID steamIDLobby )
     PRINT_DEBUG("LeaveLobby\n");
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
     PRINT_DEBUG("LeaveLobby pass mutex\n");
-    auto lobby = std::find_if(lobbies.begin(), lobbies.end(), [&steamIDLobby](Lobby const& item) { return item.room_id() == steamIDLobby.ConvertToUint64(); });
-    if (lobbies.end() != lobby) {
+    Lobby *lobby = get_lobby(steamIDLobby);
+    if (lobby) {
         if (!lobby->deleted()) {
             on_self_enter_leave_lobby((uint64)lobby->room_id(), lobby->type(), true);
             self_lobby_member_data.erase(lobby->room_id());
@@ -677,7 +680,6 @@ void LeaveLobby( CSteamID steamIDLobby )
                     send_clients_packet(steamIDLobby, message);
                     lobby->set_deleted(true);
                     lobby->set_time_deleted(std::chrono::duration_cast<std::chrono::duration<uint64>>(std::chrono::system_clock::now().time_since_epoch()).count());
-                    //lobbies.erase(lobby);
                 }
             }
         }

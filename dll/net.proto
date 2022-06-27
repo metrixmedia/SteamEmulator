@@ -125,6 +125,7 @@ message Networking_Sockets {
     uint64 connection_id = 3;
     uint64 connection_id_from = 4;
     bytes data = 5;
+    uint64 message_number = 7;
 }
 
 message Networking_Messages {

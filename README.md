@@ -24,9 +24,9 @@ You can download the latest git builds for Linux and Windows on [the Gitlab page
 
 One of the reasons I made this code open source is because I want contributions. Unless your code is related to the experimental stuff it needs to work on both Linux and Windows. Having accurate behavior is more important than making games work. Having inaccurate behavior might fix one game but it will break others.
 
-## IRC Channel
+## Matrix Channel
 
-[#goldberg_emulator@freenode](https://webchat.freenode.net/?channels=goldberg_emulator)
+[#goldberg:matrix.org](https://matrix.to/#/#goldberg:matrix.org)
 
 ## Building
 
