@@ -66,7 +66,7 @@ struct Controller_Action {
 
 struct Rumble_Thread_Data {
     std::condition_variable rumble_thread_cv;
-    std::atomic_bool kill_rumble_thread;
+    bool kill_rumble_thread;
     std::mutex rumble_mutex;
 
     struct Rumble_Data {
@@ -232,38 +232,21 @@ public:
 
 static void background_rumble(Rumble_Thread_Data *data)
 {
-    std::mutex mtx;
-    std::unique_lock<std::mutex> lck(mtx);
-    bool rumbled = false;
     while (true) {
-        bool new_data = false;
-        if (rumbled) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(20));
-            data->rumble_mutex.lock();
-            for (int i = 0; i < GAMEPAD_COUNT; ++i) {
-                if (data->data[i].new_data) {
-                    new_data = true;
-                    break;
-                }
-            }
-            data->rumble_mutex.unlock();
-
+        unsigned short left, right;
+        unsigned int rumble_length_ms;
+        int gamepad = -1;
+        while (gamepad == -1) {
+            std::unique_lock<std::mutex> lck(data->rumble_mutex);
             if (data->kill_rumble_thread) {
                 return;
             }
-        }
 
-        bool x = new_data || data->rumble_thread_cv.wait_for(lck, std::chrono::milliseconds(100)) != std::cv_status::timeout;
-        if (data->kill_rumble_thread) {
-            return;
-        }
+            data->rumble_thread_cv.wait_for(lck, std::chrono::milliseconds(1000));
+            if (data->kill_rumble_thread) {
+                return;
+            }
 
-        rumbled = false;
-        while (true) {
-            unsigned short left, right;
-            unsigned int rumble_length_ms;
-            int gamepad = -1;
-            data->rumble_mutex.lock();
             for (int i = 0; i < GAMEPAD_COUNT; ++i) {
                 if (data->data[i].new_data) {
                     left = data->data[i].left;
@@ -278,15 +261,9 @@ static void background_rumble(Rumble_Thread_Data *data)
                     }
                 }
             }
-
-            data->rumble_mutex.unlock();
-            if (gamepad == -1) {
-                break;
-            }
-
-            GamepadSetRumble((GAMEPAD_DEVICE)gamepad, ((double)left) / 65535.0, ((double)right) / 65535.0, rumble_length_ms);
-            rumbled = true;
         }
+
+        GamepadSetRumble((GAMEPAD_DEVICE)gamepad, ((double)left) / 65535.0, ((double)right) / 65535.0, rumble_length_ms);
     }
 }
 
@@ -370,7 +347,9 @@ bool Shutdown()
     }
 
     controllers = std::map<ControllerHandle_t, struct Controller_Action>();
+    rumble_thread_data->rumble_mutex.lock();
     rumble_thread_data->kill_rumble_thread = true;
+    rumble_thread_data->rumble_mutex.unlock();
     rumble_thread_data->rumble_thread_cv.notify_one();
     background_rumble_thread.join();
     delete rumble_thread_data;
@@ -1229,6 +1208,12 @@ uint16 GetSessionInputConfigurationSettings()
 {
     PRINT_DEBUG("TODO %s\n", __FUNCTION__);
     return 0;
+}
+
+// Set the trigger effect for a DualSense controller
+void SetDualSenseTriggerEffect( InputHandle_t inputHandle, const ScePadTriggerEffectParam *pParam )
+{
+    PRINT_DEBUG("TODO %s\n", __FUNCTION__);
 }
 
 void RunCallbacks()

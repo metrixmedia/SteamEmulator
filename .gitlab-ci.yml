@@ -16,7 +16,7 @@ protobuf_static_steamos:
       - echo $BASE_PREFIX_PATH
       - mkdir deps
       - cd deps
-      - git clone https://github.com/protocolbuffers/protobuf.git
+      - git clone --branch 21.x https://github.com/protocolbuffers/protobuf.git
       - cd protobuf
       - sh autogen.sh
       - ./configure "CC=gcc-4.9 -m32" "CXX=g++-4.9 -m32"  CPPFLAGS="-fPIC -Ofast" CXXFLAGS="-fPIC -Ofast" --prefix=$BASE_PREFIX_PATH/protobuf/prefix_x86/ --disable-shared --enable-static
@@ -56,10 +56,10 @@ build_steamos:
 
 build_windows:
   stage: build
-  image: fedora:29
+  image: fedora:35
 
   script:
-      - dnf -y install wine wget p7zip sed dos2unix
+      - dnf -y install wine wget p7zip sed dos2unix python
       - unix2dos *.txt
       - unix2dos files_example/*.txt files_example/*/*.txt
       - sed -i 's/..\\vcpkg\\installed\\/.\\protobuf_/g' build_set_protobuf_directories.bat
@@ -70,25 +70,11 @@ build_windows:
       - 7za x protobuf_x64-windows-static.7z -oprotobuf_x64-windows-static
       - 7za x sdk_standalone.7z -osdk_standalone
       - DLL_FILES="$(ls dll/*.cpp | tr "\n" " ")"; sed "s|dll/\*.cpp|$DLL_FILES|g" -i *.bat
-      - DLL_FILES="$(ls detours/*.cpp | tr "\n" " ")"; sed "s|detours/\*.cpp|$DLL_FILES|g" -i *.bat
-      - DLL_FILES="$(ls overlay_experimental/*.cpp | tr "\n" " ")"; sed "s|overlay_experimental/\*.cpp|$DLL_FILES|g" -i *.bat
-      - DLL_FILES="$(ls overlay_experimental/windows/*.cpp | tr "\n" " ")"; sed "s|overlay_experimental/windows/\*.cpp|$DLL_FILES|g" -i *.bat
-      - DLL_FILES="$(ls ImGui/*.cpp | tr "\n" " ")"; sed "s|ImGui/\*.cpp|$DLL_FILES|g" -i *.bat
-      - DLL_FILES="$(ls ImGui/impls/*.cpp | tr "\n" " ")"; sed "s|ImGui/impls/\*.cpp|$DLL_FILES|g" -i *.bat
-      - DLL_FILES="$(ls ImGui/impls/windows/*.cpp | tr "\n" " ")"; sed "s|ImGui/impls/windows/\*.cpp|$DLL_FILES|g" -i *.bat
       - DLL_FILES="$(ls dll/*.proto | tr "\n" " " | sed "s/.proto/.pb.cc/g")"; sed "s|dll/\*.cc|$DLL_FILES|g" -i *.bat
-      - DLL_FILES="$(ls steamclient_loader/*.cpp | tr "\n" " ")"; sed "s|steamclient_loader/\*.cpp|$DLL_FILES|g" -i *.bat
       - sed "s| /MP12 | /MP4 |g" -i *.bat
+      - python generate_build_win_bat.py
       - export WINEDEBUG=-all
-      - wine cmd /c build_win_debug_experimental.bat
-      - wine cmd /c build_win_release.bat
-      - mkdir release/debug_experimental
-      - mv steam_api.dll steam_api64.dll release/debug_experimental/
-      - rm -f steamclient.dll steamclient64.dll
-      - wine cmd /c build_win_debug_experimental_steamclient.bat
-      - mkdir release/debug_experimental_steamclient
-      - mv steamclient.dll steamclient64.dll release/debug_experimental_steamclient/
-      - cp Readme_debug.txt release/debug_experimental/Readme.txt
+      - wine cmd /c build_win_release_test.bat
   artifacts:
     paths:
       - release/

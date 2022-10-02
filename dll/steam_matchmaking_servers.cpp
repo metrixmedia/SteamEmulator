@@ -52,6 +52,7 @@ HServerListRequest Steam_Matchmaking_Servers::RequestLANServerList( AppId_t iApp
     struct Steam_Matchmaking_Request request;
     request.appid = iApp;
     request.callbacks = pRequestServersResponse;
+    request.old_callbacks = NULL;
     request.cancelled = false;
     request.completed = false;
     requests.push_back(request);
@@ -88,6 +89,71 @@ HServerListRequest Steam_Matchmaking_Servers::RequestSpectatorServerList( AppId_
     PRINT_DEBUG("RequestSpectatorServerList\n");
     //TODO
     return RequestLANServerList(iApp, pRequestServersResponse);
+}
+
+void Steam_Matchmaking_Servers::RequestOldServerList(AppId_t iApp, ISteamMatchmakingServerListResponse001 *pRequestServersResponse, EMatchMakingType type)
+{
+    PRINT_DEBUG("RequestOldServerList %u\n", iApp);
+    std::lock_guard<std::recursive_mutex> lock(global_mutex);
+    auto g = std::begin(requests);
+    while (g != std::end(requests)) {
+        if (g->id == ((void *)type)) {
+            return;
+        }
+
+        ++g;
+    }
+
+    struct Steam_Matchmaking_Request request;
+    request.appid = iApp;
+    request.callbacks = NULL;
+    request.old_callbacks = pRequestServersResponse;
+    request.cancelled = false;
+    request.completed = false;
+    requests.push_back(request);
+    requests[requests.size() - 1].id = (void *)type;
+}
+
+void Steam_Matchmaking_Servers::RequestInternetServerList( AppId_t iApp, MatchMakingKeyValuePair_t **ppchFilters, uint32 nFilters, ISteamMatchmakingServerListResponse001 *pRequestServersResponse )
+{
+    PRINT_DEBUG("%s old\n", __FUNCTION__);
+    //TODO
+    RequestOldServerList(iApp, pRequestServersResponse, eInternetServer);
+}
+
+void Steam_Matchmaking_Servers::RequestLANServerList( AppId_t iApp, ISteamMatchmakingServerListResponse001 *pRequestServersResponse )
+{
+    PRINT_DEBUG("%s old\n", __FUNCTION__);
+    //TODO
+    RequestOldServerList(iApp, pRequestServersResponse, eLANServer);
+}
+
+void Steam_Matchmaking_Servers::RequestFriendsServerList( AppId_t iApp, MatchMakingKeyValuePair_t **ppchFilters, uint32 nFilters, ISteamMatchmakingServerListResponse001 *pRequestServersResponse )
+{
+    PRINT_DEBUG("%s old\n", __FUNCTION__);
+    //TODO
+    RequestOldServerList(iApp, pRequestServersResponse, eFriendsServer);
+}
+
+void Steam_Matchmaking_Servers::RequestFavoritesServerList( AppId_t iApp, MatchMakingKeyValuePair_t **ppchFilters, uint32 nFilters, ISteamMatchmakingServerListResponse001 *pRequestServersResponse )
+{
+    PRINT_DEBUG("%s old\n", __FUNCTION__);
+    //TODO
+    RequestOldServerList(iApp, pRequestServersResponse, eFavoritesServer);
+}
+
+void Steam_Matchmaking_Servers::RequestHistoryServerList( AppId_t iApp, MatchMakingKeyValuePair_t **ppchFilters, uint32 nFilters, ISteamMatchmakingServerListResponse001 *pRequestServersResponse )
+{
+    PRINT_DEBUG("%s old\n", __FUNCTION__);
+    //TODO
+    RequestOldServerList(iApp, pRequestServersResponse, eHistoryServer);
+}
+
+void Steam_Matchmaking_Servers::RequestSpectatorServerList( AppId_t iApp, MatchMakingKeyValuePair_t **ppchFilters, uint32 nFilters, ISteamMatchmakingServerListResponse001 *pRequestServersResponse )
+{
+    PRINT_DEBUG("%s old\n", __FUNCTION__);
+    //TODO
+    RequestOldServerList(iApp, pRequestServersResponse, eSpectatorServer);
 }
 
 
@@ -410,6 +476,7 @@ void Steam_Matchmaking_Servers::RunCallbacks()
 
         r.gameservers_filtered.clear();
         for (auto &g : gameservers) {
+            PRINT_DEBUG("game_server_check %u %u\n", g.server.appid(), r.appid);
             if (g.server.appid() == r.appid) {
                 PRINT_DEBUG("REQUESTS server found\n");
                 r.gameservers_filtered.push_back(g);
@@ -438,6 +505,20 @@ void Steam_Matchmaking_Servers::RunCallbacks()
                 r.callbacks->RefreshComplete(r.id, eServerResponded);
             } else {
                 r.callbacks->RefreshComplete(r.id, eNoServersListedOnMasterServer);
+            }
+        }
+
+        if (r.old_callbacks) {
+            for (auto &g : r.gameservers_filtered) {
+                PRINT_DEBUG("old REQUESTS server responded cb %p\n", r.id);
+                r.old_callbacks->ServerResponded(i);
+                ++i;
+            }
+
+            if (i) {
+                r.old_callbacks->RefreshComplete(eServerResponded);
+            } else {
+                r.old_callbacks->RefreshComplete(eNoServersListedOnMasterServer);
             }
         }
     }

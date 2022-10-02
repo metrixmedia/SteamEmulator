@@ -44,6 +44,10 @@ If the DLC file is present, the emulator will only unlock the DLCs in that file.
 The contents of this file are: appid=DLC name
 See the steam_settings.EXAMPLE folder for an example.
 
+Languages:
+You can include a steam_settings\supported_languages.txt file with a list of languages that the game supports. If the global emu language setting is not in this list of languages the emu will default to the first language in the list.
+See the steam_settings.EXAMPLE folder for an example.
+
 Depots:
 This is pretty rare but some games might use depot ids to see if dlcs are installed. You can provide a list of installed depots to the game with a steam_settings\depots.txt file.
 See the steam_settings.EXAMPLE folder for an example.
@@ -88,6 +92,8 @@ You can use https://steamdb.info/ to list items and attributes they have and put
 Keep in mind that some item are not valid to have in your inventory. For example, in PayDay2 all items below item_id 50000 will make your game crash.
 items.json should contain all the item definitions for the game, default_items.json is the quantity of each item that you want a user to have initially in their inventory. By default the user will have no items.
 
+You can use the scripts\stats_schema_achievement_gen\achievements_gen.py script in the emu source code repo to generate a achievements config from a steam: appcache\stats\UserGameStatsSchema_{appid}.bin file.
+
 Leaderboards:
 By default the emulator assumes all leaderboards queried by the game (FindLeaderboard()) exist and creates them with the most common options (sort method descending, display type numeric)
 In some games this default behavior doesn't work and so you may need to tweak which leaderboards the game sees.
@@ -104,6 +110,8 @@ and expect a default value to be read when doing so. To set the type for each st
 The format is: STAT_NAME=type=default value
 The type can be: int, float or avgrate
 The default value is simply a number that represents the default value for the stat.
+
+You can use the scripts\stats_schema_achievement_gen\achievements_gen.py script in the emu source code repo to generate a stats config from a steam: appcache\stats\UserGameStatsSchema_{appid}.bin file.
 
 Build id:
 Add a steam_settings\build_id.txt with the build id if the game doesn't show the correct build id and you want the emu to give it the correct one.

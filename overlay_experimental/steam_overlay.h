@@ -70,8 +70,19 @@ struct Notification
     std::pair<const Friend, friend_window_state>* frd;
 };
 
-#ifdef EMU_OVERLAY
+struct Overlay_Achievement
+{
+    std::string name;
+    std::string title;
+    std::string description;
+    bool hidden;
+    bool achieved;
+    uint32 unlock_time;
+};
 
+#ifdef EMU_OVERLAY
+#include <future>
+#include "Renderer_Hook.h"
 class Steam_Overlay
 {
     Settings* settings;
@@ -88,16 +99,33 @@ class Steam_Overlay
     bool show_overlay;
     ENotificationPosition notif_position;
     int h_inset, v_inset;
+    std::string show_url;
+    std::vector<Overlay_Achievement> achievements;
+    bool show_achievements, show_settings;
+    void *fonts_atlas;
+
+    bool disable_forced, local_save, warning_forced;
+    uint32_t appid;
+
+    char username_text[256];
+    std::atomic_bool save_settings;
+
+    int current_language;
+
+    std::string warning_message;
 
     // Callback infos
     std::queue<Friend> has_friend_action;
     std::vector<Notification> notifications;
     std::recursive_mutex notifications_mutex;
+    std::atomic<bool> have_notifications;
 
     bool overlay_state_changed;
 
     std::recursive_mutex overlay_mutex;
     std::atomic<bool> i_have_lobby;
+    std::future<ingame_overlay::Renderer_Hook*> future_renderer;
+    ingame_overlay::Renderer_Hook* _renderer;
 
     Steam_Overlay(Steam_Overlay const&) = delete;
     Steam_Overlay(Steam_Overlay&&) = delete;
@@ -134,17 +162,20 @@ public:
 
     void SetNotificationInset(int nHorizontalInset, int nVerticalInset);
     void SetupOverlay();
+    void UnSetupOverlay();
 
-    void HookReady();
+    void HookReady(bool ready);
 
     void CreateFonts();
     void OverlayProc();
 
     void OpenOverlayInvite(CSteamID lobbyId);
     void OpenOverlay(const char* pchDialog);
+    void OpenOverlayWebpage(const char* pchURL);
 
     bool ShowOverlay() const;
     void ShowOverlay(bool state);
+    bool OpenOverlayHook(bool toggle);
 
     void SetLobbyInvite(Friend friendId, uint64 lobbyId);
     void SetRichInvite(Friend friendId, const char* connect_str);
@@ -173,17 +204,20 @@ public:
 
     void SetNotificationInset(int nHorizontalInset, int nVerticalInset) {}
     void SetupOverlay() {}
+    void UnSetupOverlay() {}
 
-    void HookReady() {}
+    void HookReady(bool ready) {}
 
     void CreateFonts() {}
     void OverlayProc() {}
 
     void OpenOverlayInvite(CSteamID lobbyId) {}
     void OpenOverlay(const char* pchDialog) {}
+    void OpenOverlayWebpage(const char* pchURL) {}
 
     bool ShowOverlay() const {}
     void ShowOverlay(bool state) {}
+    bool OpenOverlayHook(bool toggle) {}
 
     void SetLobbyInvite(Friend friendId, uint64 lobbyId) {}
     void SetRichInvite(Friend friendId, const char* connect_str) {}

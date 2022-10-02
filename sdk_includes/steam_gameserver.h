@@ -19,6 +19,7 @@
 #include "isteamgameserver009.h"
 #include "isteamgameserver008.h"
 #include "isteamgameserver005.h"
+#include "isteamgameserver004.h"
 #include "isteamgameserverstats.h"
 
 enum EServerMode

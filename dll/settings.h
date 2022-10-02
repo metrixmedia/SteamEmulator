@@ -92,7 +92,10 @@ public:
     CSteamID get_local_steam_id();
     CGameID get_local_game_id();
     const char *get_local_name();
+    void set_local_name(char *name);
     const char *get_language();
+    void set_language(char *language);
+
     void set_game_id(CGameID game_id);
     void set_lobby(CSteamID lobby_id);
     CSteamID get_lobby();
@@ -131,7 +134,7 @@ public:
 
     //stats
     std::map<std::string, Stat_config> getStats() { return stats; }
-    void setStatDefiniton(std::string name, struct Stat_config stat_config) {stats[name] = stat_config; }
+    void setStatDefiniton(std::string name, struct Stat_config stat_config) {stats[ascii_to_lowercase(name)] = stat_config; }
 
     //subscribed lobby/group ids
     std::set<uint64> subscribed_groups;
@@ -153,8 +156,17 @@ public:
     //app build id
     int build_id = 10;
 
+    //supported languages
+    std::set<std::string> supported_languages;
+
     //make lobby creation fail in the matchmaking interface
     bool disable_lobby_creation = false;
+
+    //warn people who use force_ settings
+    bool warn_forced = false;
+
+    //warn people who use local save
+    bool warn_local_save = false;
 };
 
 #endif

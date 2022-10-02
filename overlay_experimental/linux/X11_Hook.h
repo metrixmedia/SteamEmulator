@@ -1,63 +1,75 @@
-#ifndef __INCLUDED_X11_HOOK_H__
-#define __INCLUDED_X11_HOOK_H__
+/*
+ * Copyright (C) 2019-2020 Nemirtingas
+ * This file is part of the ingame overlay project
+ *
+ * The ingame overlay project is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ * 
+ * The ingame overlay project is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with the ingame overlay project; if not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 
-#include "../Base_Hook.h"
+#pragma once
 
-#ifdef __LINUX__
-#ifdef EMU_OVERLAY
+#include <ingame_overlay/Renderer_Hook.h>
+
+#include "../internal_includes.h"
 
 #include <X11/X.h> // XEvent types
 #include <X11/Xlib.h> // XEvent structure
+#include <X11/Xutil.h> // XEvent keysym
 
-extern "C" int XEventsQueued(Display *display, int mode);
-extern "C" int XPending(Display *display);
-
-class X11_Hook : public Base_Hook
+class X11_Hook :
+    public Base_Hook
 {
 public:
-    friend int XEventsQueued(Display *display, int mode);
-    friend int XPending(Display *display);
     static constexpr const char* DLL_NAME = "libX11.so";
 
 private:
     static X11_Hook* _inst;
 
     // Variables
-    bool hooked;
-    bool initialized;
-    Window game_wnd;
+    bool _Hooked;
+    bool _Initialized;
+    Window _GameWnd;
+
+    // In (bool): Is toggle wanted
+    // Out(bool): Is the overlay visible, if true, inputs will be disabled
+    std::function<bool(bool)> _KeyCombinationCallback;
+    std::set<uint32_t> _NativeKeyCombination;
+    bool _KeyCombinationPushed;
 
     // Functions
     X11_Hook();
-    int check_for_overlay(Display *d, int num_events);
+    int _CheckForOverlay(Display *d, int num_events);
 
     // Hook to X11 window messages
-    decltype(XEventsQueued)* _XEventsQueued;
-    decltype(XPeekEvent)* _XPeekEvent;
-    decltype(XNextEvent)* _XNextEvent;
-    decltype(XPending)* _XPending;
-    //decltype(XKeysymToKeycode)* _XKeysymToKeycode;
-    //decltype(XLookupKeysym)* _XLookupKeysym;
-    //decltype(XGetGeometry)* _XGetGeometry;
+    decltype(::XEventsQueued)* XEventsQueued;
+    decltype(::XPending)* XPending;
 
     static int MyXEventsQueued(Display * display, int mode);
-    static int MyXNextEvent(Display* display, XEvent *event);
-    static int MyXPeekEvent(Display* display, XEvent *event);
     static int MyXPending(Display* display);
 
 public:
+    std::string LibraryName;
+
     virtual ~X11_Hook();
 
-    void resetRenderState();
-    void prepareForOverlay(Display *display, Window wnd);
+    void ResetRenderState();
+    void SetInitialWindowSize(Display* display, Window wnd);
+    bool PrepareForOverlay(Display *display, Window wnd);
 
-    Window get_game_wnd() const{ return game_wnd; }
+    Window GetGameWnd() const{ return _GameWnd; }
 
-    bool start_hook();
+    bool StartHook(std::function<bool(bool)>& key_combination_callback, std::set<ingame_overlay::ToggleKey> const& toggle_keys);
     static X11_Hook* Inst();
-    virtual const char* get_lib_name() const;
+    virtual std::string GetLibraryName() const;
 };
-
-#endif//EMU_OVERLAY
-#endif//__LINUX__
-#endif//__INCLUDED_X11_HOOK_H__

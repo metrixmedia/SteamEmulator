@@ -90,7 +90,6 @@ struct Connection {
 
 class Networking {
     bool enabled = false;
-    bool alive;
     std::chrono::high_resolution_clock::time_point last_run;
     sock_t udp_socket, tcp_socket;
     uint16 udp_port, tcp_port;
@@ -126,6 +125,7 @@ public:
     //ex: 127.0.0.1 should be passed as 0x7F000001
     static std::set<IP_PORT> resolve_ip(std::string dns);
     Networking(CSteamID id, uint32 appid, uint16 port, std::set<IP_PORT> *custom_broadcasts, bool disable_sockets);
+    ~Networking();
     void addListenId(CSteamID id);
     void setAppID(uint32 appid);
     void Run();
@@ -137,9 +137,6 @@ public:
     bool setCallback(Callback_Ids id, CSteamID steam_id, void (*message_callback)(void *object, Common_Message *msg), void *object);
     uint32 getIP(CSteamID id);
     uint32 getOwnIP();
-
-    void shutDown();
-    bool isAlive();
 };
 
 #endif

@@ -24,6 +24,16 @@ Steam_Apps::Steam_Apps(Settings *settings, class SteamCallResults *callback_resu
     this->callback_results = callback_results;
 }
 
+// returns 0 if the key does not exist
+// this may be true on first call, since the app data may not be cached locally yet
+// If you expect it to exists wait for the AppDataChanged_t after the first failure and ask again
+int Steam_Apps::GetAppData( AppId_t nAppID, const char *pchKey, char *pchValue, int cchValueMax )
+{
+    //TODO
+    PRINT_DEBUG("GetAppData %u %s\n", nAppID, pchKey);
+    return 0;
+}
+
 bool Steam_Apps::BIsSubscribed()
 {
     PRINT_DEBUG("BIsSubscribed\n");
@@ -163,6 +173,8 @@ void Steam_Apps::RequestAppProofOfPurchaseKey( AppId_t nAppID )
 bool Steam_Apps::GetCurrentBetaName( char *pchName, int cchNameBufferSize )
 {
     PRINT_DEBUG("GetCurrentBetaName %i\n", cchNameBufferSize);
+    if (!pchName) return false;
+
     if (sizeof("public") > cchNameBufferSize) {
         return false;
     }
@@ -326,4 +338,11 @@ bool Steam_Apps::BIsTimedTrial( uint32* punSecondsAllowed, uint32* punSecondsPla
 {
     PRINT_DEBUG("BIsTimedTrial\n");
     return false;
+}
+
+// set current DLC AppID being played (or 0 if none). Allows Steam to track usage of major DLC extensions
+bool Steam_Apps::SetDlcContext( AppId_t nAppID )
+{
+    PRINT_DEBUG("SetDlcContext %u\n", nAppID);
+    return true;
 }

@@ -45,10 +45,17 @@ bool Steam_GameServer::InitGameServer( uint32 unIP, uint16 usGamePort, uint16 us
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
 
     if (logged_in) return false; // may not be changed after logged in.
+    if (!pchVersionString) pchVersionString = "";
+
     std::string version(pchVersionString);
     version.erase(std::remove(version.begin(), version.end(), ' '), version.end());
     version.erase(std::remove(version.begin(), version.end(), '.'), version.end());
-    server_data.set_version(stoi(version));
+    try {
+        server_data.set_version(std::stoi(version));
+    } catch (...) {
+        PRINT_DEBUG("InitGameServer: not a number: %s\n", pchVersionString);
+        server_data.set_version(0);
+    }
 
     server_data.set_ip(unIP);
     server_data.set_port(usGamePort);
@@ -285,7 +292,7 @@ void Steam_GameServer::ClearAllKeyValues()
 /// Call this to add/update a key/value pair.
 void Steam_GameServer::SetKeyValue( const char *pKey, const char *pValue )
 {
-    PRINT_DEBUG("SetKeyValue\n");
+    PRINT_DEBUG("SetKeyValue %s %s\n", pKey, pValue);
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
     (*server_data.mutable_values())[std::string(pKey)] = std::string(pValue);
 }
@@ -347,6 +354,10 @@ bool Steam_GameServer::SendUserConnectAndAuthenticate( uint32 unIPClient, const 
     return ticket_manager->SendUserConnectAndAuthenticate(unIPClient, pvAuthBlob, cubAuthBlobSize, pSteamIDUser);
 }
 
+void Steam_GameServer::SendUserConnectAndAuthenticate( CSteamID steamIDUser, uint32 unIPClient, void *pvAuthBlob, uint32 cubAuthBlobSize )
+{
+    SendUserConnectAndAuthenticate(unIPClient, pvAuthBlob, cubAuthBlobSize, NULL);
+}
 
 // Creates a fake user (ie, a bot) which will be listed as playing on the server, but skips validation.  
 // 
@@ -380,7 +391,7 @@ void Steam_GameServer::SendUserDisconnect( CSteamID steamIDUser )
 // Return Value: true if successful, false if failure (ie, steamIDUser wasn't for an active player)
 bool Steam_GameServer::BUpdateUserData( CSteamID steamIDUser, const char *pchPlayerName, uint32 uScore )
 {
-    PRINT_DEBUG("BUpdateUserData\n");
+    PRINT_DEBUG("BUpdateUserData %llu %s %u\n", steamIDUser.ConvertToUint64(), pchPlayerName, uScore);
     return true;
 }
 
@@ -418,6 +429,12 @@ bool Steam_GameServer::BSetServerType( uint32 unServerFlags, uint32 unGameIP, ui
 
     //TODO?
     return true;
+}
+
+bool Steam_GameServer::BSetServerType( int32 nGameAppId, uint32 unServerFlags, uint32 unGameIP, uint16 unGamePort, 
+									uint16 unSpectatorPort, uint16 usQueryPort, const char *pchGameDir, const char *pchVersion, bool bLANMode )
+{
+    return BSetServerType(unServerFlags, unGameIP, unGamePort, unSpectatorPort, usQueryPort, pchGameDir, pchVersion, bLANMode);
 }
 
 // Updates server status values which shows up in the server browser and matchmaking APIs

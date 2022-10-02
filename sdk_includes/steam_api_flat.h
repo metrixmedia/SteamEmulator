@@ -171,6 +171,10 @@ STEAMAPI_API int SteamAPI_ISteamFriends_GetNumChatsWithUnreadPriorityMessages( I
 STEAMAPI_API void SteamAPI_ISteamFriends_ActivateGameOverlayRemotePlayTogetherInviteDialog( ISteamFriends* self, uint64_steamid steamIDLobby );
 STEAMAPI_API steam_bool SteamAPI_ISteamFriends_RegisterProtocolInOverlayBrowser( ISteamFriends* self, const char * pchProtocol );
 STEAMAPI_API void SteamAPI_ISteamFriends_ActivateGameOverlayInviteDialogConnectString( ISteamFriends* self, const char * pchConnectString );
+STEAMAPI_API SteamAPICall_t SteamAPI_ISteamFriends_RequestEquippedProfileItems( ISteamFriends* self, uint64_steamid steamID );
+STEAMAPI_API bool SteamAPI_ISteamFriends_BHasEquippedProfileItem( ISteamFriends* self, uint64_steamid steamID, ECommunityProfileItemType itemType );
+STEAMAPI_API const char * SteamAPI_ISteamFriends_GetProfileItemPropertyString( ISteamFriends* self, uint64_steamid steamID, ECommunityProfileItemType itemType, ECommunityProfileItemProperty prop );
+STEAMAPI_API uint32 SteamAPI_ISteamFriends_GetProfileItemPropertyUint( ISteamFriends* self, uint64_steamid steamID, ECommunityProfileItemType itemType, ECommunityProfileItemProperty prop );
 
 // ISteamUtils
 STEAMAPI_API ISteamUtils *SteamAPI_SteamUtils_v010();
@@ -473,6 +477,8 @@ STEAMAPI_API SteamAPICall_t SteamAPI_ISteamApps_GetFileDetails( ISteamApps* self
 STEAMAPI_API int SteamAPI_ISteamApps_GetLaunchCommandLine( ISteamApps* self, char * pszCommandLine, int cubCommandLine );
 STEAMAPI_API steam_bool SteamAPI_ISteamApps_BIsSubscribedFromFamilySharing( ISteamApps* self );
 STEAMAPI_API steam_bool SteamAPI_ISteamApps_BIsTimedTrial( ISteamApps* self, uint32 * punSecondsAllowed, uint32 * punSecondsPlayed );
+STEAMAPI_API steam_bool SteamAPI_ISteamApps_SetDlcContext( ISteamApps* self, AppId_t nAppID );
+
 
 // ISteamNetworking
 STEAMAPI_API ISteamNetworking *SteamAPI_SteamNetworking_v006();
@@ -643,6 +649,7 @@ STEAMAPI_API EInputActionOrigin SteamAPI_ISteamInput_TranslateActionOrigin( ISte
 STEAMAPI_API steam_bool SteamAPI_ISteamInput_GetDeviceBindingRevision( ISteamInput* self, InputHandle_t inputHandle, int * pMajor, int * pMinor );
 STEAMAPI_API uint32 SteamAPI_ISteamInput_GetRemotePlaySessionID( ISteamInput* self, InputHandle_t inputHandle );
 STEAMAPI_API uint16 SteamAPI_ISteamInput_GetSessionInputConfigurationSettings( ISteamInput* self );
+STEAMAPI_API void SteamAPI_ISteamInput_SetDualSenseTriggerEffect( ISteamInput* self, InputHandle_t inputHandle, const ScePadTriggerEffectParam * pParam );
 
 // ISteamController
 STEAMAPI_API ISteamController *SteamAPI_SteamController_v007();

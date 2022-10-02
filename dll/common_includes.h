@@ -76,12 +76,6 @@
         #include <winhttp.h>
 
         #include "../detours/detours.h"
-
-        #ifdef DETOURS_64BIT
-            #define DLL_NAME "steam_api64.dll"
-        #else
-            #define DLL_NAME "steam_api.dll"
-        #endif
     #endif
 
 #include <string>
@@ -105,6 +99,11 @@ inline std::wstring utf8_decode(const std::string &str)
     return wstrTo;
 }
 
+inline void reset_LastError()
+{
+    SetLastError(0);
+}
+
 #elif defined(__LINUX__)
     #include <arpa/inet.h>
 
@@ -118,6 +117,7 @@ inline std::wstring utf8_decode(const std::string &str)
     #include <sys/time.h>
 
     #include <netinet/in.h>
+    #include <netinet/tcp.h>
     #include <linux/netdevice.h>
 
     #include <fcntl.h>
@@ -135,6 +135,7 @@ inline std::wstring utf8_decode(const std::string &str)
     #define PATH_SEPARATOR "/" 
 
     #define utf8_decode(a) a
+    #define reset_LastError()
 #endif
 //#define PRINT_DEBUG(...) fprintf(stdout, __VA_ARGS__)
 #ifdef EMU_RELEASE_BUILD
@@ -164,6 +165,12 @@ inline std::wstring utf8_decode(const std::string &str)
 
 #include <string.h>
 #include <stdio.h>
+
+inline std::string ascii_to_lowercase(std::string data) {
+    std::transform(data.begin(), data.end(), data.begin(),
+        [](unsigned char c){ return std::tolower(c); });
+    return data;
+}
 
 // Other libs includes
 #include "../json/json.hpp"

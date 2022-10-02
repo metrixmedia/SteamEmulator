@@ -76,6 +76,16 @@ const char *Settings::get_language()
     return language.c_str();
 }
 
+void Settings::set_local_name(char *name)
+{
+    this->name = name;
+}
+
+void Settings::set_language(char *language)
+{
+    this->language = language;
+}
+
 void Settings::set_game_id(CGameID game_id)
 {
     this->game_id = game_id;

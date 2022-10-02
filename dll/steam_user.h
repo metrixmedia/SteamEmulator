@@ -17,6 +17,8 @@
 
 #include "base.h"
 
+#include "appticket.h"
+
 class Steam_User :
 public ISteamUser009,
 public ISteamUser010,
@@ -367,7 +369,44 @@ SteamAPICall_t RequestEncryptedAppTicket( void *pDataToInclude, int cbDataToIncl
     EncryptedAppTicketResponse_t data;
 	data.m_eResult = k_EResultOK;
 
-    encrypted_app_ticket = std::string((char *)pDataToInclude, cbDataToInclude);
+    DecryptedAppTicket ticket;
+    ticket.TicketV1.Reset();
+    ticket.TicketV2.Reset();
+    ticket.TicketV4.Reset();
+
+    ticket.TicketV1.TicketVersion = 1;
+    if (pDataToInclude) {
+        ticket.TicketV1.UserData.assign((uint8_t*)pDataToInclude, (uint8_t*)pDataToInclude + cbDataToInclude);
+    }
+
+    ticket.TicketV2.TicketVersion = 4;
+    ticket.TicketV2.SteamID = settings->get_local_steam_id().ConvertToUint64();
+    ticket.TicketV2.TicketIssueTime = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    ticket.TicketV2.TicketValidityEnd = ticket.TicketV2.TicketIssueTime + (21 * 24 * 60 * 60);
+
+    for (int i = 0; i < 140; ++i)
+    {
+        AppId_t appid;
+        bool available;
+        std::string name;
+        if (!settings->getDLC(appid, appid, available, name)) break;
+        ticket.TicketV4.AppIDs.emplace_back(appid);
+    }
+
+    ticket.TicketV4.HasVACStatus = true;
+    ticket.TicketV4.VACStatus = 0;
+
+    auto serialized = ticket.SerializeTicket();
+
+    SteamAppTicket_pb pb;
+    pb.set_ticket_version_no(1);
+    pb.set_crc_encryptedticket(0); // TODO: Find out how to compute the CRC
+    pb.set_cb_encrypteduserdata(cbDataToInclude);
+    pb.set_cb_encrypted_appownershipticket(serialized.size() - 16);
+    pb.mutable_encrypted_ticket()->assign(serialized.begin(), serialized.end()); // TODO: Find how to encrypt datas
+
+    encrypted_app_ticket = pb.SerializeAsString();
+
     return callback_results->addCallResult(data.k_iCallback, &data, sizeof(data));
 }
 
@@ -375,21 +414,17 @@ SteamAPICall_t RequestEncryptedAppTicket( void *pDataToInclude, int cbDataToIncl
 bool GetEncryptedAppTicket( void *pTicket, int cbMaxTicket, uint32 *pcbTicket )
 {
     PRINT_DEBUG("Steam_User::GetEncryptedAppTicket %i\n", cbMaxTicket);
-    if (!pcbTicket) return false;
-    unsigned int ticket_size = encrypted_app_ticket.size() + 126;
+    unsigned int ticket_size = encrypted_app_ticket.size();
     if (!cbMaxTicket) {
+        if (!pcbTicket) return false;
         *pcbTicket = ticket_size;
         return true;
     }
 
     if (!pTicket) return false;
-
-    //TODO figure out exact sizes?
-    if (ticket_size < cbMaxTicket) cbMaxTicket = ticket_size;
-    char ticket_base[] = {0x08, 0x01};
-    memset(pTicket, 'g', cbMaxTicket);
-    memcpy(pTicket, ticket_base, sizeof(ticket_base));
-    *pcbTicket = cbMaxTicket;
+    if (ticket_size > cbMaxTicket) return false;
+    encrypted_app_ticket.copy((char *)pTicket, cbMaxTicket);
+    if (pcbTicket) *pcbTicket = ticket_size;
 
     return true;
 }

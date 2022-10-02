@@ -772,6 +772,26 @@ STEAMAPI_API void SteamAPI_ISteamFriends_ActivateGameOverlayInviteDialogConnectS
     return (get_steam_client()->steam_friends)->ActivateGameOverlayInviteDialogConnectString(pchConnectString);
 }
 
+STEAMAPI_API SteamAPICall_t SteamAPI_ISteamFriends_RequestEquippedProfileItems( ISteamFriends* self, uint64_steamid steamID )
+{
+    return (get_steam_client()->steam_friends)->RequestEquippedProfileItems(steamID);
+}
+
+STEAMAPI_API bool SteamAPI_ISteamFriends_BHasEquippedProfileItem( ISteamFriends* self, uint64_steamid steamID, ECommunityProfileItemType itemType )
+{
+    return (get_steam_client()->steam_friends)->BHasEquippedProfileItem(steamID, itemType);
+}
+
+STEAMAPI_API const char * SteamAPI_ISteamFriends_GetProfileItemPropertyString( ISteamFriends* self, uint64_steamid steamID, ECommunityProfileItemType itemType, ECommunityProfileItemProperty prop )
+{
+    return (get_steam_client()->steam_friends)->GetProfileItemPropertyString(steamID, itemType, prop);
+}
+
+STEAMAPI_API uint32 SteamAPI_ISteamFriends_GetProfileItemPropertyUint( ISteamFriends* self, uint64_steamid steamID, ECommunityProfileItemType itemType, ECommunityProfileItemProperty prop )
+{
+    return (get_steam_client()->steam_friends)->GetProfileItemPropertyUint(steamID, itemType, prop);
+}
+
 STEAMAPI_API ISteamUtils *SteamAPI_SteamUtils_v010()
 {
     return get_steam_client()->GetISteamUtils(flat_hsteampipe(), "SteamUtils010");
@@ -2477,6 +2497,11 @@ STEAMAPI_API steam_bool SteamAPI_ISteamApps_BIsTimedTrial( ISteamApps* self, uin
     return self->BIsTimedTrial(punSecondsAllowed, punSecondsPlayed);
 }
 
+STEAMAPI_API steam_bool SteamAPI_ISteamApps_SetDlcContext( ISteamApps* self, AppId_t nAppID )
+{
+    return self->SetDlcContext(nAppID);
+}
+
 STEAMAPI_API ISteamNetworking *SteamAPI_SteamNetworking_v006()
 {
     return get_steam_client()->GetISteamNetworking(flat_hsteamuser(), flat_hsteampipe(), "SteamNetworking006");
@@ -3266,6 +3291,11 @@ STEAMAPI_API uint32 SteamAPI_ISteamInput_GetRemotePlaySessionID( ISteamInput* se
 STEAMAPI_API uint16 SteamAPI_ISteamInput_GetSessionInputConfigurationSettings( ISteamInput* self )
 {
     return (get_steam_client()->steam_controller)->GetSessionInputConfigurationSettings();
+}
+
+STEAMAPI_API void SteamAPI_ISteamInput_SetDualSenseTriggerEffect( ISteamInput* self, InputHandle_t inputHandle, const ScePadTriggerEffectParam * pParam )
+{
+    return (get_steam_client()->steam_controller)->SetDualSenseTriggerEffect(inputHandle, pParam);
 }
 
 STEAMAPI_API ISteamController *SteamAPI_SteamController_v007()

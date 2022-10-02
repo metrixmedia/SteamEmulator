@@ -1,6 +1,7 @@
 #include "base.h"
 
 class Steam_Apps :
+public ISteamApps001,
 public ISteamApps002,
 public ISteamApps003,
 public ISteamApps004,
@@ -14,6 +15,11 @@ public ISteamApps
 
 public:
     Steam_Apps(Settings *settings, class SteamCallResults *callback_results);
+
+	// returns 0 if the key does not exist
+	// this may be true on first call, since the app data may not be cached locally yet
+	// If you expect it to exists wait for the AppDataChanged_t after the first failure and ask again
+	int GetAppData( AppId_t nAppID, const char *pchKey, char *pchValue, int cchValueMax );
 
 	bool BIsSubscribed();
 	bool BIsLowViolence();
@@ -100,4 +106,7 @@ public:
 
 	// check if game is a timed trial with limited playtime
 	bool BIsTimedTrial( uint32* punSecondsAllowed, uint32* punSecondsPlayed );
+
+	// set current DLC AppID being played (or 0 if none). Allows Steam to track usage of major DLC extensions
+    bool SetDlcContext( AppId_t nAppID );
 };

@@ -60,6 +60,10 @@ struct Chat_Entry {
 
 
 class Steam_Matchmaking :
+public ISteamMatchmaking002,
+public ISteamMatchmaking003,
+public ISteamMatchmaking004,
+public ISteamMatchmaking005,
 public ISteamMatchmaking006,
 public ISteamMatchmaking007,
 public ISteamMatchmaking008,
@@ -422,6 +426,11 @@ SteamAPICall_t RequestLobbyList()
     return search_call_api_id;
 }
 
+void RequestLobbyList_OLD()
+{
+    RequestLobbyList();
+}
+
 // filters for lobbies
 // this needs to be called before RequestLobbyList() to take effect
 // these are cleared on each call to RequestLobbyList()
@@ -507,6 +516,11 @@ void AddRequestLobbyListFilter( const char *pchKeyToMatch, const char *pchValueT
 void AddRequestLobbyListNumericalFilter( const char *pchKeyToMatch, int nValueToMatch, int nComparisonType )
 {
 	AddRequestLobbyListNumericalFilter(pchKeyToMatch, nValueToMatch, (ELobbyComparison) nComparisonType );
+}
+
+void AddRequestLobbyListSlotsAvailableFilter()
+{
+    
 }
 
 // returns the CSteamID of a lobby, as retrieved by a RequestLobbyList call
@@ -623,6 +637,16 @@ SteamAPICall_t CreateLobby( ELobbyType eLobbyType )
 	return CreateLobby(eLobbyType, 0);
 }
 
+void CreateLobby_OLD( ELobbyType eLobbyType )
+{
+    CreateLobby(eLobbyType);
+}
+
+void CreateLobby( bool bPrivate )
+{
+    CreateLobby(bPrivate ? k_ELobbyTypePrivate : k_ELobbyTypePublic);
+}
+
 // Joins an existing lobby
 // this is an asynchronous request
 // results will be returned by LobbyEnter_t callback & call result, check m_EChatRoomEnterResponse to see if was successful
@@ -647,6 +671,11 @@ SteamAPICall_t JoinLobby( CSteamID steamIDLobby )
     pending_join.message_sent = send_owner_packet(steamIDLobby, message);
 
     return pending_join.api_id;
+}
+
+void JoinLobby_OLD( CSteamID steamIDLobby )
+{
+    JoinLobby(steamIDLobby);
 }
 
 // Leave a lobby; this will take effect immediately on the client side
@@ -780,17 +809,20 @@ bool SetLobbyData( CSteamID steamIDLobby, const char *pchKey, const char *pchVal
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
 
     Lobby *lobby = get_lobby(steamIDLobby);
-    if (!lobby || lobby->owner() != settings->get_local_steam_id().ConvertToUint64() || lobby->deleted()) {
+    if (!lobby || lobby->deleted()) {
         return false;
     }
 
-    auto result = caseinsensitive_find(lobby->values(), pchKey);
     bool changed = true;
-    if (result == lobby->values().end()) {
-        (*lobby->mutable_values())[pchKey] = pchValue;
-    } else {
-        if (result->second == std::string(pchValue)) changed = false;
-        (*lobby->mutable_values())[result->first] = pchValue;
+    //callback is always triggered when setlobbydata is called from non owner however no data is actually changed.
+    if (lobby->owner() == settings->get_local_steam_id().ConvertToUint64()) {
+        auto result = caseinsensitive_find(lobby->values(), pchKey);
+        if (result == lobby->values().end()) {
+            (*lobby->mutable_values())[pchKey] = pchValue;
+        } else {
+            if (result->second == std::string(pchValue)) changed = false;
+            (*lobby->mutable_values())[result->first] = pchValue;
+        }
     }
 
     if (changed)
@@ -1071,6 +1103,10 @@ int GetLobbyMemberLimit( CSteamID steamIDLobby )
     return limit;
 }
 
+void SetLobbyVoiceEnabled( CSteamID steamIDLobby, bool bVoiceEnabled )
+{
+    PRINT_DEBUG("SetLobbyVoiceEnabled\n");
+}
 
 // updates which type of lobby it is
 // only lobbies that are k_ELobbyTypePublic or k_ELobbyTypeInvisible, and are set to joinable, will be returned by RequestLobbyList() calls
@@ -1131,6 +1167,23 @@ CSteamID GetLobbyOwner( CSteamID steamIDLobby )
     return (uint64)lobby->owner();
 }
 
+// asks the Steam servers for a list of lobbies that friends are in
+// returns results by posting one RequestFriendsLobbiesResponse_t callback per friend/lobby pair
+// if no friends are in lobbies, RequestFriendsLobbiesResponse_t will be posted but with 0 results
+// filters don't apply to lobbies (currently)
+bool RequestFriendsLobbies()
+{
+    PRINT_DEBUG("RequestFriendsLobbies\n");
+    RequestFriendsLobbiesResponse_t data = {};
+    callbacks->addCBResult(data.k_iCallback, &data, sizeof(data));
+    return true;
+}
+
+float GetLobbyDistance( CSteamID steamIDLobby )
+{
+    PRINT_DEBUG("GetLobbyDistance %llu\n", steamIDLobby.ConvertToUint64());
+    return 0.0;
+}
 
 // changes who the lobby owner is
 // you must be the lobby owner for this to succeed, and steamIDNewOwner must be in the lobby

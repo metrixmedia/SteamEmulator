@@ -282,7 +282,7 @@ uint32 GetResultTimestamp( SteamInventoryResult_t resultHandle )
 STEAM_METHOD_DESC(Returns true if the result belongs to the target steam ID or false if the result does not. This is important when using DeserializeResult to verify that a remote player is not pretending to have a different users inventory.)
 bool CheckResultSteamID( SteamInventoryResult_t resultHandle, CSteamID steamIDExpected )
 {
-    PRINT_DEBUG("CheckResultSteamID\n");
+    PRINT_DEBUG("CheckResultSteamID %llu\n", steamIDExpected.ConvertToUint64());
     //TODO
     return true;
 }
@@ -496,8 +496,35 @@ bool AddPromoItems( SteamInventoryResult_t *pResultHandle, STEAM_ARRAY_COUNT(unA
 STEAM_METHOD_DESC(ConsumeItem() removes items from the inventory permanently.)
 bool ConsumeItem( SteamInventoryResult_t *pResultHandle, SteamItemInstanceID_t itemConsume, uint32 unQuantity )
 {
-    PRINT_DEBUG("ConsumeItem\n");
-    return false;
+    PRINT_DEBUG("ConsumeItem %llu %u\n", itemConsume, unQuantity);
+    std::lock_guard<std::recursive_mutex> lock(global_mutex);
+
+    auto it = user_items.find(std::to_string(itemConsume));
+    if (it != user_items.end()) {
+        try
+        {
+            uint32 current = it->get<int>();
+            PRINT_DEBUG("ConsumeItem previous %u\n", current);
+            if (current < unQuantity) unQuantity = current;
+            uint32 result = current - unQuantity;
+            if (result == 0) {
+                user_items.erase(it);
+            } else {
+                *it = result;
+            }
+        }
+        catch (...) {}
+
+    } else {
+        return false;
+    }
+
+    struct Steam_Inventory_Requests* request = new_inventory_result(false, &itemConsume, 1);
+
+    if (pResultHandle != nullptr)
+        *pResultHandle = request->inventory_result;
+
+    return true;
 }
 
 

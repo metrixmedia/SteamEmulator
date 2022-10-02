@@ -261,6 +261,7 @@ static std::vector<struct File_Data> get_filenames_recursive_w(std::wstring base
         //printf("Failed to find path: %s", strPath.c_str());
     }
 
+    reset_LastError();
     return output;
 }
 
@@ -569,6 +570,7 @@ int Local_Storage::get_file_data(std::string full_path, char *data, unsigned int
     myfile.seekg (offset, std::ios::beg);
     myfile.read (data, max_length);
     myfile.close();
+    reset_LastError();
     return myfile.gcount();
 }
 
@@ -726,6 +728,7 @@ bool Local_Storage::load_json(std::string full_path, nlohmann::json& json)
         PRINT_DEBUG("Couldn't open file \"%s\" to read json\n", full_path.c_str());
     }
 
+    reset_LastError();
     return false;
 }
 
@@ -759,6 +762,7 @@ bool Local_Storage::write_json_file(std::string folder, std::string const&file, 
     
     PRINT_DEBUG("Couldn't open file \"%s\" to write json\n", full_path.c_str());
 
+    reset_LastError();
     return false;
 }
 
@@ -774,6 +778,8 @@ std::vector<image_pixel_t> Local_Storage::load_image(std::string const& image_pa
 
         stbi_image_free(img);
     }
+
+    reset_LastError();
     return res;
 }
 

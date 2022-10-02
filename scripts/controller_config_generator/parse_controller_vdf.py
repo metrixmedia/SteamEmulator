@@ -53,125 +53,128 @@ def add_input_bindings(group, bindings, force_binding=None, keymap=keymap_digita
                                         bindings[action_name] = [binding]
     return bindings
 
-if len(sys.argv) < 2:
-    print("format: {} xbox_controller_config.vdf".format(sys.argv[0]))
-    exit(0)
 
-with open(sys.argv[1], 'rb') as f:
-    t = f.read().decode('utf-8')
+def generate_controller_config(controller_vdf, config_dir):
+    d = vdf.loads(controller_vdf, mapper=vdf.VDFDict, merge_duplicate_keys=False)
 
-d = vdf.loads(t, mapper=vdf.VDFDict, merge_duplicate_keys=False)
+    controller_mappings = d["controller_mappings"]
 
-controller_mappings = d["controller_mappings"]
+    groups = controller_mappings.get_all_for("group")
+    groups_byid = {}
+    for g in groups:
+        groups_byid[g["id"]] = g
 
-groups = controller_mappings.get_all_for("group")
-groups_byid = {}
-for g in groups:
-    groups_byid[g["id"]] = g
+    actions = controller_mappings.get_all_for("actions")
+    action_list = []
+    for a in actions:
+        for k in a:
+            action_list.append(k)
 
-actions = controller_mappings.get_all_for("actions")
-action_list = []
-for a in actions:
-    for k in a:
-        action_list.append(k)
-
-presets = controller_mappings.get_all_for("preset")
-all_bindings = {}
-for p in presets:
-    name = p["name"]
-    if name not in action_list:
-        continue
-    group_bindings = p["group_source_bindings"]
-    bindings = {}
-    for number in group_bindings:
-        s = group_bindings[number].split()
-        if s[1] != "active":
+    presets = controller_mappings.get_all_for("preset")
+    all_bindings = {}
+    for p in presets:
+        name = p["name"]
+        if name not in action_list:
             continue
+        group_bindings = p["group_source_bindings"]
+        bindings = {}
+        for number in group_bindings:
+            s = group_bindings[number].split()
+            if s[1] != "active":
+                continue
 
-        #print(s)
-        if s[0] in ["switch", "button_diamond", "dpad"]:
-            group = groups_byid[number]
-            #print(group)
-            bindings = add_input_bindings(group, bindings)
+            #print(s)
+            if s[0] in ["switch", "button_diamond", "dpad"]:
+                group = groups_byid[number]
+                #print(group)
+                bindings = add_input_bindings(group, bindings)
 
-        if s[0] in ["left_trigger", "right_trigger"]:
-            group = groups_byid[number]
-            if group["mode"] == "trigger":
-                for g in group:
-                    if g == "gameactions":
-                        #print(group)
-                        action_name = group["gameactions"][name]
-                        if s[0] == "left_trigger":
-                            binding = "LTRIGGER"
-                        else:
-                            binding = "RTRIGGER"
-                        if action_name in bindings:
-                            if binding not in bindings[action_name] and (binding + "=trigger") not in bindings[action_name]:
-                                bindings[action_name].insert(0, binding)
-                        else:
-                            bindings[action_name] = [binding + "=trigger"]
-                    if g == "inputs":
-                        if s[0] == "left_trigger":
-                            binding = "DLTRIGGER"
-                        else:
-                            binding = "DRTRIGGER"
-                        bindings = add_input_bindings(group, bindings, binding)
+            if s[0] in ["left_trigger", "right_trigger"]:
+                group = groups_byid[number]
+                if group["mode"] == "trigger":
+                    for g in group:
+                        if g == "gameactions":
+                            #print(group)
+                            action_name = group["gameactions"][name]
+                            if s[0] == "left_trigger":
+                                binding = "LTRIGGER"
+                            else:
+                                binding = "RTRIGGER"
+                            if action_name in bindings:
+                                if binding not in bindings[action_name] and (binding + "=trigger") not in bindings[action_name]:
+                                    bindings[action_name].insert(0, binding)
+                            else:
+                                bindings[action_name] = [binding + "=trigger"]
+                        if g == "inputs":
+                            if s[0] == "left_trigger":
+                                binding = "DLTRIGGER"
+                            else:
+                                binding = "DRTRIGGER"
+                            bindings = add_input_bindings(group, bindings, binding)
 
-            else:
-                print("unhandled trigger mode", group["mode"])
-        if s[0] in ["joystick", "right_joystick", "dpad"]:
-            group = groups_byid[number]
-            if group["mode"] == "joystick_move":
-                for g in group:
-                    if g == "gameactions":
-                        #print(group)
-                        action_name = group["gameactions"][name]
-                        if s[0] == "joystick":
-                            binding = "LJOY"
-                        elif s[0] == "right_joystick":
-                            binding = "RJOY"
-                        elif s[0] == "dpad":
-                            binding = "DPAD"
-                        else:
-                            print("could not handle", s[0])
-                        if action_name in bindings:
-                            if binding not in bindings[action_name] and (binding + "=joystick_move") not in bindings[action_name]:
-                                bindings[action_name].insert(0, binding)
-                        else:
-                            bindings[action_name] = [binding + "=joystick_move"]
-                    if g == "inputs":
-                        if s[0] == "joystick":
-                            binding = "LSTICK"
-                        else:
-                            binding = "RSTICK"
-                        bindings = add_input_bindings(group, bindings, binding)
-
-            elif group["mode"] == "dpad":
-                if s[0] == "joystick":
-                    binding_map = {"dpad_north":"DLJOYUP", "dpad_south": "DLJOYDOWN", "dpad_west": "DLJOYLEFT", "dpad_east": "DLJOYRIGHT", "click": "LSTICK"}
-                    bindings = add_input_bindings(group, bindings, keymap=binding_map)
-                elif s[0] == "right_joystick":
-                    binding_map = {"dpad_north":"DRJOYUP", "dpad_south": "DRJOYDOWN", "dpad_west": "DRJOYLEFT", "dpad_east": "DRJOYRIGHT", "click": "RSTICK"}
-                    bindings = add_input_bindings(group, bindings, keymap=binding_map)
                 else:
-                    if s[0] != "dpad":
-                        print("no pad", s[0])
-            else:
-                print("unhandled joy mode", group["mode"])
+                    print("unhandled trigger mode", group["mode"])
+            if s[0] in ["joystick", "right_joystick", "dpad"]:
+                group = groups_byid[number]
+                if group["mode"] == "joystick_move":
+                    for g in group:
+                        if g == "gameactions":
+                            #print(group)
+                            action_name = group["gameactions"][name]
+                            if s[0] == "joystick":
+                                binding = "LJOY"
+                            elif s[0] == "right_joystick":
+                                binding = "RJOY"
+                            elif s[0] == "dpad":
+                                binding = "DPAD"
+                            else:
+                                print("could not handle", s[0])
+                            if action_name in bindings:
+                                if binding not in bindings[action_name] and (binding + "=joystick_move") not in bindings[action_name]:
+                                    bindings[action_name].insert(0, binding)
+                            else:
+                                bindings[action_name] = [binding + "=joystick_move"]
+                        if g == "inputs":
+                            if s[0] == "joystick":
+                                binding = "LSTICK"
+                            else:
+                                binding = "RSTICK"
+                            bindings = add_input_bindings(group, bindings, binding)
 
-    all_bindings[name] = bindings
+                elif group["mode"] == "dpad":
+                    if s[0] == "joystick":
+                        binding_map = {"dpad_north":"DLJOYUP", "dpad_south": "DLJOYDOWN", "dpad_west": "DLJOYLEFT", "dpad_east": "DLJOYRIGHT", "click": "LSTICK"}
+                        bindings = add_input_bindings(group, bindings, keymap=binding_map)
+                    elif s[0] == "right_joystick":
+                        binding_map = {"dpad_north":"DRJOYUP", "dpad_south": "DRJOYDOWN", "dpad_west": "DRJOYLEFT", "dpad_east": "DRJOYRIGHT", "click": "RSTICK"}
+                        bindings = add_input_bindings(group, bindings, keymap=binding_map)
+                    else:
+                        if s[0] != "dpad":
+                            print("no pad", s[0])
+                else:
+                    print("unhandled joy mode", group["mode"])
+
+        all_bindings[name] = bindings
+
+    #print(controller_mappings["preset"][(0, "group_source_bindings")])
+
+    #print(all_bindings)
+
+    if not os.path.exists(config_dir):
+        os.makedirs(config_dir)
+
+    for k in all_bindings:
+        with open(os.path.join(config_dir, k + '.txt'), 'w') as f:
+            for b in all_bindings[k]:
+                f.write(b + "=" + ','.join(all_bindings[k][b]) + "\n")
 
 
+if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        print("format: {} xbox_controller_config.vdf".format(sys.argv[0]))
+        exit(0)
 
-#print(controller_mappings["preset"][(0, "group_source_bindings")])
+    with open(sys.argv[1], 'rb') as f:
+        t = f.read().decode('utf-8')
 
-#print(all_bindings)
-
-config_directory = sys.argv[1] + "_config/steam_settings" + "/controller/"
-if not os.path.exists(config_directory):
-    os.makedirs(config_directory)
-
-for k in all_bindings:
-    with open(config_directory + k + '.txt', 'w') as f:
-        for b in all_bindings[k]:
-            f.write(b + "=" + ','.join(all_bindings[k][b]) + "\n")
+    generate_controller_config(t, os.path.join(sys.argv[1] + "_config/steam_settings", "controller"))

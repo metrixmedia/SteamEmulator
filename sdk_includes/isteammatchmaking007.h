@@ -191,4 +191,118 @@ public:
 	virtual bool SetLobbyOwner( CSteamID steamIDLobby, CSteamID steamIDNewOwner ) = 0;
 };
 
+//-----------------------------------------------------------------------------
+// Callback interfaces for server list functions (see ISteamMatchmakingServers below)
+//
+// The idea here is that your game code implements objects that implement these
+// interfaces to receive callback notifications after calling asynchronous functions
+// inside the ISteamMatchmakingServers() interface below.
+//
+// This is different than normal Steam callback handling due to the potentially
+// large size of server lists.
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// Purpose: Callback interface for receiving responses after a server list refresh
+// or an individual server update.
+//
+// Since you get these callbacks after requesting full list refreshes you will
+// usually implement this interface inside an object like CServerBrowser.  If that
+// object is getting destructed you should use ISteamMatchMakingServers()->CancelQuery()
+// to cancel any in-progress queries so you don't get a callback into the destructed
+// object and crash.
+//-----------------------------------------------------------------------------
+class ISteamMatchmakingServerListResponse001
+{
+public:
+	// Server has responded ok with updated data
+	virtual void ServerResponded( int iServer ) = 0; 
+
+	// Server has failed to respond
+	virtual void ServerFailedToRespond( int iServer ) = 0; 
+
+	// A list refresh you had initiated is now 100% completed
+	virtual void RefreshComplete( EMatchMakingServerResponse response ) = 0; 
+};
+
+enum EMatchMakingType
+{
+	eInternetServer = 0,
+	eLANServer,
+	eFriendsServer,
+	eFavoritesServer,
+	eHistoryServer,
+	eSpectatorServer,
+	eInvalidServer 
+};
+
+//-----------------------------------------------------------------------------
+// Purpose: Functions for match making services for clients to get to game lists and details
+//-----------------------------------------------------------------------------
+class ISteamMatchmakingServers001
+{
+public:
+	// Request a new list of servers of a particular type.  These calls each correspond to one of the EMatchMakingType values.
+	virtual void RequestInternetServerList( AppId_t iApp, MatchMakingKeyValuePair_t **ppchFilters, uint32 nFilters, ISteamMatchmakingServerListResponse001 *pRequestServersResponse ) = 0;
+	virtual void RequestLANServerList( AppId_t iApp, ISteamMatchmakingServerListResponse001 *pRequestServersResponse ) = 0;
+	virtual void RequestFriendsServerList( AppId_t iApp, MatchMakingKeyValuePair_t **ppchFilters, uint32 nFilters, ISteamMatchmakingServerListResponse001 *pRequestServersResponse ) = 0;
+	virtual void RequestFavoritesServerList( AppId_t iApp, MatchMakingKeyValuePair_t **ppchFilters, uint32 nFilters, ISteamMatchmakingServerListResponse001 *pRequestServersResponse ) = 0;
+	virtual void RequestHistoryServerList( AppId_t iApp, MatchMakingKeyValuePair_t **ppchFilters, uint32 nFilters, ISteamMatchmakingServerListResponse001 *pRequestServersResponse ) = 0;
+	virtual void RequestSpectatorServerList( AppId_t iApp, MatchMakingKeyValuePair_t **ppchFilters, uint32 nFilters, ISteamMatchmakingServerListResponse001 *pRequestServersResponse ) = 0;
+
+	/* the filters that are available in the ppchFilters params are:
+
+		"map"		- map the server is running, as set in the dedicated server api
+		"dedicated" - reports bDedicated from the API
+		"secure"	- VAC-enabled
+		"full"		- not full
+		"empty"		- not empty
+		"noplayers" - is empty
+		"proxy"		- a relay server
+
+	*/
+
+	// Get details on a given server in the list, you can get the valid range of index
+	// values by calling GetServerCount().  You will also receive index values in 
+	// ISteamMatchmakingServerListResponse::ServerResponded() callbacks
+	virtual gameserveritem_t *GetServerDetails( EMatchMakingType eType, int iServer ) = 0; 
+
+	// Cancel an request which is operation on the given list type.  You should call this to cancel
+	// any in-progress requests before destructing a callback object that may have been passed 
+	// to one of the above list request calls.  Not doing so may result in a crash when a callback
+	// occurs on the destructed object.
+	virtual void CancelQuery( EMatchMakingType eType ) = 0; 
+
+	// Ping every server in your list again but don't update the list of servers
+	virtual void RefreshQuery( EMatchMakingType eType ) = 0; 
+
+	// Returns true if the list is currently refreshing its server list
+	virtual bool IsRefreshing( EMatchMakingType eType ) = 0; 
+
+	// How many servers in the given list, GetServerDetails above takes 0... GetServerCount() - 1
+	virtual int GetServerCount( EMatchMakingType eType ) = 0; 
+
+	// Refresh a single server inside of a query (rather than all the servers )
+	virtual void RefreshServer( EMatchMakingType eType, int iServer ) = 0; 
+
+
+	//-----------------------------------------------------------------------------
+	// Queries to individual servers directly via IP/Port
+	//-----------------------------------------------------------------------------
+
+	// Request updated ping time and other details from a single server
+	virtual HServerQuery PingServer( uint32 unIP, uint16 usPort, ISteamMatchmakingPingResponse *pRequestServersResponse ) = 0; 
+
+	// Request the list of players currently playing on a server
+	virtual HServerQuery PlayerDetails( uint32 unIP, uint16 usPort, ISteamMatchmakingPlayersResponse *pRequestServersResponse ) = 0;
+
+	// Request the list of rules that the server is running (See ISteamMasterServerUpdater->SetKeyValue() to set the rules server side)
+	virtual HServerQuery ServerRules( uint32 unIP, uint16 usPort, ISteamMatchmakingRulesResponse *pRequestServersResponse ) = 0; 
+
+	// Cancel an outstanding Ping/Players/Rules query from above.  You should call this to cancel
+	// any in-progress requests before destructing a callback object that may have been passed 
+	// to one of the above calls to avoid crashing when callbacks occur.
+	virtual void CancelServerQuery( HServerQuery hServerQuery ) = 0; 
+};
+
 #endif // ISTEAMMATCHMAKING007_H

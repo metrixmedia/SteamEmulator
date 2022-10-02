@@ -29,6 +29,7 @@ struct Gameserver_Outgoing_Packet {
 };
 
 class Steam_GameServer : 
+public ISteamGameServer004,
 public ISteamGameServer005,
 public ISteamGameServer008,
 public ISteamGameServer009,
@@ -189,6 +190,7 @@ public:
 	// If the call succeeds then you should expect a GSClientApprove_t or GSClientDeny_t callback which will tell you whether authentication
 	// for the user has succeeded or failed (the steamid in the callback will match the one returned by this call)
 	bool SendUserConnectAndAuthenticate( uint32 unIPClient, const void *pvAuthBlob, uint32 cubAuthBlobSize, CSteamID *pSteamIDUser );
+	void SendUserConnectAndAuthenticate( CSteamID steamIDUser, uint32 unIPClient, void *pvAuthBlob, uint32 cubAuthBlobSize );
 
 	// Creates a fake user (ie, a bot) which will be listed as playing on the server, but skips validation.  
 	// 
@@ -226,6 +228,9 @@ public:
 	// and stop calling it in SteamGameServer_Init()?
 	bool BSetServerType( uint32 unServerFlags, uint32 unGameIP, uint16 unGamePort, 
 								uint16 unSpectatorPort, uint16 usQueryPort, const char *pchGameDir, const char *pchVersion, bool bLANMode );
+
+	bool BSetServerType( int32 nGameAppId, uint32 unServerFlags, uint32 unGameIP, uint16 unGamePort, 
+									uint16 unSpectatorPort, uint16 usQueryPort, const char *pchGameDir, const char *pchVersion, bool bLANMode );
 
 	// Updates server status values which shows up in the server browser and matchmaking APIs
 	void UpdateServerStatus( int cPlayers, int cPlayersMax, int cBotPlayers, 

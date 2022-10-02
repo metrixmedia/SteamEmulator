@@ -21,10 +21,40 @@
 #include "base.h"
 #include "../overlay_experimental/steam_overlay.h"
 
+struct Steam_Leaderboard_Score {
+    CSteamID steam_id;
+    int32 score = 0;
+    std::vector<int32> score_details;
+};
+
 struct Steam_Leaderboard {
     std::string name;
     ELeaderboardSortMethod sort_method;
     ELeaderboardDisplayType display_type;
+    Steam_Leaderboard_Score self_score;
+};
+
+struct achievement_trigger {
+    std::string name;
+    std::string value_operation;
+    std::string min_value;
+    std::string max_value;
+
+    bool check_triggered(float stat) {
+        try {
+            if (std::stof(max_value) <= stat) return true;
+        } catch (...) {}
+
+        return false;
+    }
+
+    bool check_triggered(int32 stat) {
+        try {
+            if (std::stoi(max_value) <= stat) return true;
+        } catch (...) {}
+
+        return false;
+    }
 };
 
 class Steam_User_Stats :
@@ -58,6 +88,7 @@ private:
     std::map<std::string, int32> stats_cache_int;
     std::map<std::string, float> stats_cache_float;
 
+    std::map<std::string, std::vector<achievement_trigger>> achievement_stat_trigger;
 
 unsigned int find_leaderboard(std::string name)
 {
@@ -97,6 +128,96 @@ void save_achievements()
     local_storage->write_json_file("", achievements_user_file, user_achievements);
 }
 
+void save_leaderboard_score(Steam_Leaderboard *leaderboard)
+{
+    std::vector<uint32_t> output;
+    uint64_t steam_id = leaderboard->self_score.steam_id.ConvertToUint64();
+    output.push_back(steam_id & 0xFFFFFFFF);
+    output.push_back(steam_id >> 32);
+
+    output.push_back(leaderboard->self_score.score);
+    output.push_back(leaderboard->self_score.score_details.size());
+    for (auto &s : leaderboard->self_score.score_details) {
+        output.push_back(s);
+    }
+
+    std::string leaderboard_name = ascii_to_lowercase(leaderboard->name);
+    local_storage->store_data(Local_Storage::leaderboard_storage_folder, leaderboard_name, (char* )output.data(), sizeof(uint32_t) * output.size());
+}
+
+std::vector<Steam_Leaderboard_Score> load_leaderboard_scores(std::string name)
+{
+    std::vector<Steam_Leaderboard_Score> out;
+
+    std::string leaderboard_name = ascii_to_lowercase(name);
+    unsigned size = local_storage->file_size(Local_Storage::leaderboard_storage_folder, leaderboard_name);
+    if (size == 0 || (size % sizeof(uint32_t)) != 0) return out;
+
+    std::vector<uint32_t> output(size / sizeof(uint32_t));
+    if (local_storage->get_data(Local_Storage::leaderboard_storage_folder, leaderboard_name, (char* )output.data(), size) != size) return out;
+
+    unsigned i = 0;
+    while (true) {
+        if ((i + 4) > output.size()) break;
+
+        Steam_Leaderboard_Score score;
+        score.steam_id = CSteamID((uint64)output[i] + (((uint64)output[i + 1]) << 32));
+        i += 2;
+        score.score = output[i];
+        i += 1;
+        unsigned count = output[i];
+        i += 1;
+
+        if ((i + count) > output.size()) break;
+
+        for (unsigned j = 0; j < count; ++j) {
+            score.score_details.push_back(output[i]);
+            i += 1;
+        }
+
+        PRINT_DEBUG("loaded leaderboard score %llu %u\n", score.steam_id.ConvertToUint64(), score.score);
+        out.push_back(score);
+    }
+
+    return out;
+}
+
+std::string get_value_for_language(nlohmann::json &json, std::string key, std::string language)
+{
+    auto x = json.find(key);
+    if (x == json.end()) return "";
+    if (x.value().is_string()) {
+        return x.value().get<std::string>();
+    } else if (x.value().is_object()) {
+        auto l = x.value().find(language);
+        if (l != x.value().end()) {
+            return l.value().get<std::string>();
+        }
+
+        l = x.value().find("english");
+        if (l != x.value().end()) {
+            return l.value().get<std::string>();
+        }
+
+        l = x.value().begin();
+        if (l != x.value().end()) {
+            if (l.key() == "token") {
+                std::string token_value = l.value().get<std::string>();
+                l++;
+                if (l != x.value().end()) {
+                    return l.value().get<std::string>();
+                }
+
+                return token_value;
+            }
+
+            return l.value().get<std::string>();
+        }
+    }
+
+    return "";
+}
+
 public:
 Steam_User_Stats(Settings *settings, Local_Storage *local_storage, class SteamCallResults *callback_results, class SteamCallBacks *callbacks, Steam_Overlay* overlay):
     settings(settings),
@@ -110,6 +231,16 @@ Steam_User_Stats(Settings *settings, Local_Storage *local_storage, class SteamCa
     load_achievements_db(); // achievements db
     load_achievements(); // achievements per user
 
+    auto x = defined_achievements.begin();
+    while (x != defined_achievements.end()) {
+
+        if (!x->contains("name")) {
+            x = defined_achievements.erase(x);
+        } else {
+            ++x;
+        }
+    }
+
     for (auto & it : defined_achievements) {
         try {
             std::string name = static_cast<std::string const&>(it["name"]);
@@ -118,11 +249,22 @@ Steam_User_Stats(Settings *settings, Local_Storage *local_storage, class SteamCa
                 user_achievements[name]["earned"] = false;
                 user_achievements[name]["earned_time"] = static_cast<uint32>(0);
             }
+
+            achievement_trigger trig;
+            trig.name = name;
+            trig.value_operation = static_cast<std::string const&>(it["progress"]["value"]["operation"]);
+            std::string stat_name = ascii_to_lowercase(static_cast<std::string const&>(it["progress"]["value"]["operand1"]));
+            trig.min_value = static_cast<std::string const&>(it["progress"]["min_val"]);
+            trig.max_value = static_cast<std::string const&>(it["progress"]["max_val"]);
+            achievement_stat_trigger[stat_name].push_back(trig);
         } catch (...) {}
 
         try {
             it["hidden"] = std::to_string(it["hidden"].get<int>());
         } catch (...) {}
+
+        it["displayName"] = get_value_for_language(it, "displayName", settings->get_language());
+        it["description"] = get_value_for_language(it, "description", settings->get_language());
     }
 
     //TODO: not sure if the sort is actually case insensitive, ach names seem to be treated by steam as case insensitive so I assume they are.
@@ -154,18 +296,31 @@ bool GetStat( const char *pchName, int32 *pData )
 {
     PRINT_DEBUG("GetStat int32 %s\n", pchName);
     if (!pchName || !pData) return false;
+    std::string stat_name = ascii_to_lowercase(pchName);
+
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
     auto stats_config = settings->getStats();
-    auto stats_data = stats_config.find(pchName);
+    auto stats_data = stats_config.find(stat_name);
     if (stats_data != stats_config.end()) {
         if (stats_data->second.type != Stat_Type::STAT_TYPE_INT) return false;
     }
 
-    int read_data = local_storage->get_data(Local_Storage::stats_storage_folder, pchName, (char* )pData, sizeof(*pData));
-    if (read_data == sizeof(int32))
+    auto cached_stat = stats_cache_int.find(stat_name);
+    if (cached_stat != stats_cache_int.end()) {
+        *pData = cached_stat->second;
         return true;
+    }
+
+    int32 output = 0;
+    int read_data = local_storage->get_data(Local_Storage::stats_storage_folder, stat_name, (char* )&output, sizeof(output));
+    if (read_data == sizeof(int32)) {
+        stats_cache_int[stat_name] = output;
+        *pData = output;
+        return true;
+    }
 
     if (stats_data != stats_config.end()) {
+        stats_cache_int[stat_name] = stats_data->second.default_value_int;
         *pData = stats_data->second.default_value_int;
         return true;
     }
@@ -177,18 +332,31 @@ bool GetStat( const char *pchName, float *pData )
 {
     PRINT_DEBUG("GetStat float %s\n", pchName);
     if (!pchName || !pData) return false;
+    std::string stat_name = ascii_to_lowercase(pchName);
+
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
     auto stats_config = settings->getStats();
-    auto stats_data = stats_config.find(pchName);
+    auto stats_data = stats_config.find(stat_name);
     if (stats_data != stats_config.end()) {
         if (stats_data->second.type == Stat_Type::STAT_TYPE_INT) return false;
     }
 
-    int read_data = local_storage->get_data(Local_Storage::stats_storage_folder, pchName, (char* )pData, sizeof(*pData));
-    if (read_data == sizeof(float))
+    auto cached_stat = stats_cache_float.find(stat_name);
+    if (cached_stat != stats_cache_float.end()) {
+        *pData = cached_stat->second;
         return true;
+    }
+
+    float output = 0.0;
+    int read_data = local_storage->get_data(Local_Storage::stats_storage_folder, stat_name, (char* )&output, sizeof(output));
+    if (read_data == sizeof(float)) {
+        stats_cache_float[stat_name] = output;
+        *pData = output;
+        return true;
+    }
 
     if (stats_data != stats_config.end()) {
+        stats_cache_float[stat_name] = stats_data->second.default_value_float;
         *pData = stats_data->second.default_value_float;
         return true;
     }
@@ -202,14 +370,25 @@ bool SetStat( const char *pchName, int32 nData )
 {
     PRINT_DEBUG("SetStat int32 %s\n", pchName);
     if (!pchName) return false;
+    std::string stat_name = ascii_to_lowercase(pchName);
+
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
-    auto cached_stat = stats_cache_int.find(pchName);
+    auto cached_stat = stats_cache_int.find(stat_name);
     if (cached_stat != stats_cache_int.end()) {
         if (cached_stat->second == nData) return true;
     }
 
-    if (local_storage->store_data(Local_Storage::stats_storage_folder, pchName, (char* )&nData, sizeof(nData)) == sizeof(nData)) {
-        stats_cache_int[pchName] = nData;
+    auto stat_trigger = achievement_stat_trigger.find(stat_name);
+    if (stat_trigger != achievement_stat_trigger.end()) {
+        for (auto &t : stat_trigger->second) {
+            if (t.check_triggered(nData)) {
+                SetAchievement(t.name.c_str());
+            }
+        }
+    }
+
+    if (local_storage->store_data(Local_Storage::stats_storage_folder, stat_name, (char* )&nData, sizeof(nData)) == sizeof(nData)) {
+        stats_cache_int[stat_name] = nData;
         return true;
     }
 
@@ -220,14 +399,25 @@ bool SetStat( const char *pchName, float fData )
 {
     PRINT_DEBUG("SetStat float %s\n", pchName);
     if (!pchName) return false;
+    std::string stat_name = ascii_to_lowercase(pchName);
+
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
-    auto cached_stat = stats_cache_float.find(pchName);
+    auto cached_stat = stats_cache_float.find(stat_name);
     if (cached_stat != stats_cache_float.end()) {
         if (cached_stat->second == fData) return true;
     }
 
-    if (local_storage->store_data(Local_Storage::stats_storage_folder, pchName, (char* )&fData, sizeof(fData)) == sizeof(fData)) {
-        stats_cache_float[pchName] = fData;
+    auto stat_trigger = achievement_stat_trigger.find(stat_name);
+    if (stat_trigger != achievement_stat_trigger.end()) {
+        for (auto &t : stat_trigger->second) {
+            if (t.check_triggered(fData)) {
+                SetAchievement(t.name.c_str());
+            }
+        }
+    }
+
+    if (local_storage->store_data(Local_Storage::stats_storage_folder, stat_name, (char* )&fData, sizeof(fData)) == sizeof(fData)) {
+        stats_cache_float[stat_name] = fData;
         return true;
     }
 
@@ -237,10 +427,13 @@ bool SetStat( const char *pchName, float fData )
 bool UpdateAvgRateStat( const char *pchName, float flCountThisSession, double dSessionLength )
 {
     PRINT_DEBUG("UpdateAvgRateStat %s\n", pchName);
+    if (!pchName) return false;
+    std::string stat_name = ascii_to_lowercase(pchName);
+
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
 
     char data[sizeof(float) + sizeof(float) + sizeof(double)];
-    int read_data = local_storage->get_data(Local_Storage::stats_storage_folder, pchName, (char* )data, sizeof(*data));
+    int read_data = local_storage->get_data(Local_Storage::stats_storage_folder, stat_name, (char* )data, sizeof(*data));
     float oldcount = 0;
     double oldsessionlength = 0;
     if (read_data == sizeof(data)) {
@@ -256,7 +449,12 @@ bool UpdateAvgRateStat( const char *pchName, float flCountThisSession, double dS
     memcpy(data + sizeof(float), &oldcount, sizeof(oldcount));
     memcpy(data + sizeof(float) * 2, &oldsessionlength, sizeof(oldsessionlength));
 
-    return local_storage->store_data(Local_Storage::stats_storage_folder, pchName, data, sizeof(data)) == sizeof(data);
+    if (local_storage->store_data(Local_Storage::stats_storage_folder, stat_name, data, sizeof(data)) == sizeof(data)) {
+        stats_cache_float[stat_name] = average;
+        return true;
+    }
+
+    return false;
 }
 
 
@@ -633,6 +831,14 @@ SteamAPICall_t FindOrCreateLeaderboard( const char *pchLeaderboardName, ELeaderb
         leaderboard.name = std::string(pchLeaderboardName);
         leaderboard.sort_method = eLeaderboardSortMethod;
         leaderboard.display_type = eLeaderboardDisplayType;
+
+        std::vector<Steam_Leaderboard_Score> scores = load_leaderboard_scores(pchLeaderboardName);
+        for (auto &s : scores) {
+            if (s.steam_id == settings->get_local_steam_id()) {
+                leaderboard.self_score = s;
+            }
+        }
+
         leaderboards.push_back(leaderboard);
         leader = leaderboards.size();
     }
@@ -725,10 +931,12 @@ SteamAPICall_t DownloadLeaderboardEntries( SteamLeaderboard_t hSteamLeaderboard,
 {
     PRINT_DEBUG("DownloadLeaderboardEntries %llu %i %i %i\n", hSteamLeaderboard, eLeaderboardDataRequest, nRangeStart, nRangeEnd);
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
+    if (hSteamLeaderboard > leaderboards.size() || hSteamLeaderboard <= 0) return k_uAPICallInvalid; //might return callresult even if hSteamLeaderboard is invalid
+
     LeaderboardScoresDownloaded_t data;
     data.m_hSteamLeaderboard = hSteamLeaderboard;
-    data.m_hSteamLeaderboardEntries = 123;
-    data.m_cEntryCount = 0;
+    data.m_hSteamLeaderboardEntries = hSteamLeaderboard;
+    data.m_cEntryCount = leaderboards[hSteamLeaderboard - 1].self_score.steam_id.IsValid();
     return callback_results->addCallResult(data.k_iCallback, &data, sizeof(data));
 }
 
@@ -742,10 +950,19 @@ SteamAPICall_t DownloadLeaderboardEntriesForUsers( SteamLeaderboard_t hSteamLead
 {
     PRINT_DEBUG("DownloadLeaderboardEntriesForUsers %i %llu\n", cUsers, cUsers > 0 ? prgUsers[0].ConvertToUint64() : 0);
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
+    if (hSteamLeaderboard > leaderboards.size() || hSteamLeaderboard <= 0) return k_uAPICallInvalid; //might return callresult even if hSteamLeaderboard is invalid
+
+    bool get_for_current_id = false;
+    for (int i = 0; i < cUsers; ++i) {
+        if (prgUsers[i] == settings->get_local_steam_id()) {
+            get_for_current_id = true;
+        }
+    }
+
     LeaderboardScoresDownloaded_t data;
     data.m_hSteamLeaderboard = hSteamLeaderboard;
-    data.m_hSteamLeaderboardEntries = 123;
-    data.m_cEntryCount = 0;
+    data.m_hSteamLeaderboardEntries = hSteamLeaderboard;
+    data.m_cEntryCount = get_for_current_id && leaderboards[hSteamLeaderboard - 1].self_score.steam_id.IsValid();
     return callback_results->addCallResult(data.k_iCallback, &data, sizeof(data));
 }
 
@@ -767,7 +984,20 @@ SteamAPICall_t DownloadLeaderboardEntriesForUsers( SteamLeaderboard_t hSteamLead
 bool GetDownloadedLeaderboardEntry( SteamLeaderboardEntries_t hSteamLeaderboardEntries, int index, LeaderboardEntry_t *pLeaderboardEntry, int32 *pDetails, int cDetailsMax )
 {
     PRINT_DEBUG("GetDownloadedLeaderboardEntry\n");
-    return false;
+    std::lock_guard<std::recursive_mutex> lock(global_mutex);
+    if (hSteamLeaderboardEntries > leaderboards.size() || hSteamLeaderboardEntries <= 0) return false;
+    if (index > 0) return false;
+
+    LeaderboardEntry_t entry = {};
+    entry.m_steamIDUser = leaderboards[hSteamLeaderboardEntries - 1].self_score.steam_id;
+    entry.m_nGlobalRank = 1;
+    entry.m_nScore = leaderboards[hSteamLeaderboardEntries - 1].self_score.score;
+    for (int i = 0; i < leaderboards[hSteamLeaderboardEntries - 1].self_score.score_details.size() && i < cDetailsMax; ++i) {
+        pDetails[i] = leaderboards[hSteamLeaderboardEntries - 1].self_score.score_details[i];
+    }
+
+    *pLeaderboardEntry = entry;
+    return true;
 }
 
 
@@ -778,17 +1008,39 @@ bool GetDownloadedLeaderboardEntry( SteamLeaderboardEntries_t hSteamLeaderboardE
 STEAM_CALL_RESULT( LeaderboardScoreUploaded_t )
 SteamAPICall_t UploadLeaderboardScore( SteamLeaderboard_t hSteamLeaderboard, ELeaderboardUploadScoreMethod eLeaderboardUploadScoreMethod, int32 nScore, const int32 *pScoreDetails, int cScoreDetailsCount )
 {
-    PRINT_DEBUG("UploadLeaderboardScore\n");
+    PRINT_DEBUG("UploadLeaderboardScore %i\n", nScore);
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
+    if (hSteamLeaderboard > leaderboards.size() || hSteamLeaderboard <= 0) return k_uAPICallInvalid; //TODO: might return callresult even if hSteamLeaderboard is invalid
+
+    Steam_Leaderboard_Score score;
+    score.score = nScore;
+    score.steam_id = settings->get_local_steam_id();
+    for (int i = 0; i < cScoreDetailsCount; ++i) {
+        score.score_details.push_back(pScoreDetails[i]);
+    }
+
+    bool changed = false;
+    if (eLeaderboardUploadScoreMethod == k_ELeaderboardUploadScoreMethodKeepBest) {
+        if (leaderboards[hSteamLeaderboard - 1].self_score.score <= score.score) {
+            leaderboards[hSteamLeaderboard - 1].self_score = score;
+            changed = true;
+        }
+    } else {
+        if (leaderboards[hSteamLeaderboard - 1].self_score.score != score.score) changed = true;
+        leaderboards[hSteamLeaderboard - 1].self_score = score;
+    }
+
+    if (changed) {
+        save_leaderboard_score(&(leaderboards[hSteamLeaderboard - 1]));
+    }
+
     LeaderboardScoreUploaded_t data;
     data.m_bSuccess = 1; //needs to be success or DOA6 freezes when uploading score.
     //data.m_bSuccess = 0;
     data.m_hSteamLeaderboard = hSteamLeaderboard;
     data.m_nScore = nScore;
-    //data.m_bScoreChanged = 1;
-    data.m_bScoreChanged = 0;
-    //data.m_nGlobalRankNew = 1;
-    data.m_nGlobalRankNew = 0;
+    data.m_bScoreChanged = changed;
+    data.m_nGlobalRankNew = 1;
     data.m_nGlobalRankPrevious = 0;
     return callback_results->addCallResult(data.k_iCallback, &data, sizeof(data));
 }

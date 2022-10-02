@@ -9,7 +9,13 @@ if exist "%VS_Base_Path%\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Bui
 if exist "%VS_Base_Path%\Microsoft Visual Studio 14.0\VC\bin\amd64_x86\vcvarsamd64_x86.bat" goto vs14
 if exist "%VS_Base_Path%\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvars32.bat" goto vs2019_bt
 if exist "%VS_Base_Path%\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvars32.bat" goto vs2017_bt
+if exist "%VS_Base_Path%\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars32.bat" goto vs2022
+if exist "%VS_Base_Path%\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars32.bat" goto vs2022_bt
 if exist ".\sdk_standalone\set_vars32.bat" goto gitlabci
+
+:vs2022
+call "%VS_Base_Path%\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars32.bat"
+goto batend
 
 :vs2019
 call "%VS_Base_Path%\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars32.bat"
@@ -21,6 +27,10 @@ goto batend
 
 :vs14
 call "%VS_Base_Path%\Microsoft Visual Studio 14.0\VC\bin\amd64_x86\vcvarsamd64_x86.bat"
+goto batend
+
+:vs2022_bt
+call "%VS_Base_Path%\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars32.bat"
 goto batend
 
 :vs2019_bt

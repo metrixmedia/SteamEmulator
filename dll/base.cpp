@@ -563,6 +563,23 @@ static bool is_whitelist_ip(unsigned char *ip)
     return false;
 }
 
+static bool is_lan_ipv4(unsigned char *ip)
+{
+    PRINT_DEBUG("CHECK LAN IP %hhu.%hhu.%hhu.%hhu\n", ip[0], ip[1], ip[2], ip[3]);
+    if (is_whitelist_ip(ip)) return true;
+    if (ip[0] == 127) return true;
+    if (ip[0] == 10) return true;
+    if (ip[0] == 192 && ip[1] == 168) return true;
+    if (ip[0] == 169 && ip[1] == 254 && ip[2] != 0) return true;
+    if (ip[0] == 172 && ip[1] >= 16 && ip[1] <= 31) return true;
+    if ((ip[0] == 100) && ((ip[1] & 0xC0) == 0x40)) return true;
+    if (ip[0] == 239) return true; //multicast
+    if (ip[0] == 0) return true; //Current network
+    if (ip[0] == 192 && (ip[1] == 18 || ip[1] == 19)) return true; //Used for benchmark testing of inter-network communications between two separate subnets.
+    if (ip[0] >= 224) return true; //ip multicast (224 - 239) future use (240.0.0.0 - 255.255.255.254) broadcast (255.255.255.255)
+    return false;
+}
+
 static bool is_lan_ip(const sockaddr *addr, int namelen)
 {
     if (!namelen) return false;
@@ -571,24 +588,13 @@ static bool is_lan_ip(const sockaddr *addr, int namelen)
         struct sockaddr_in *addr_in = (struct sockaddr_in *)addr;
         unsigned char ip[4];
         memcpy(ip, &addr_in->sin_addr, sizeof(ip));
-        PRINT_DEBUG("CHECK LAN IP %hhu.%hhu.%hhu.%hhu:%u\n", ip[0], ip[1], ip[2], ip[3], ntohs(addr_in->sin_port));
-        if (is_whitelist_ip(ip)) return true;
-        if (ip[0] == 127) return true;
-        if (ip[0] == 10) return true;
-        if (ip[0] == 192 && ip[1] == 168) return true;
-        if (ip[0] == 169 && ip[1] == 254 && ip[2] != 0) return true;
-        if (ip[0] == 172 && ip[1] >= 16 && ip[1] <= 31) return true;
-        if ((ip[0] == 100) && ((ip[1] & 0xC0) == 0x40)) return true;
-        if (ip[0] == 239) return true; //multicast
-        if (ip[0] == 0) return true; //Current network
-        if (ip[0] == 192 && (ip[1] == 18 || ip[1] == 19)) return true; //Used for benchmark testing of inter-network communications between two separate subnets.
-        if (ip[0] >= 224) return true; //ip multicast (224 - 239) future use (240.0.0.0–255.255.255.254) broadcast (255.255.255.255)
+        if (is_lan_ipv4(ip)) return true;
     } else if (addr->sa_family == AF_INET6) {
         struct sockaddr_in6 *addr_in6 = (struct sockaddr_in6 *)addr;
         unsigned char ip[16];
         unsigned char zeroes[16] = {};
         memcpy(ip, &addr_in6->sin6_addr, sizeof(ip));
-        PRINT_DEBUG("CHECK LAN IP6 %hhu.%hhu.%hhu.%hhu.%hhu.%hhu.%hhu.%hhu...%hhu\n", ip[0], ip[1], ip[2], ip[3], ip[4], ip[5], ip[6], ip[7], ip[15]);
+        PRINT_DEBUG("CHECK LAN IP6 %hhu.%hhu.%hhu.%hhu.%hhu.%hhu.%hhu.%hhu.%hhu.%hhu.%hhu.%hhu.%hhu.%hhu.%hhu.%hhu\n", ip[0], ip[1], ip[2], ip[3], ip[4], ip[5], ip[6], ip[7], ip[8], ip[9], ip[10], ip[11], ip[12], ip[13], ip[14], ip[15]);
         if (((ip[0] == 0xFF) && (ip[1] < 3) && (ip[15] == 1)) ||
         ((ip[0] == 0xFE) && ((ip[1] & 0xC0) == 0x80))) return true;
         if (memcmp(zeroes, ip, sizeof(ip)) == 0) return true;
@@ -596,7 +602,13 @@ static bool is_lan_ip(const sockaddr *addr, int namelen)
         if (ip[0] == 0xff) return true; //multicast
         if (ip[0] == 0xfc) return true; //unique local
         if (ip[0] == 0xfd) return true; //unique local
-        //TODO: ipv4 mapped?
+
+        unsigned char ipv4_mapped[12] = {};
+        ipv4_mapped[10] = 0xFF;
+        ipv4_mapped[11] = 0xFF;
+        if (memcmp(ipv4_mapped, ip, sizeof(ipv4_mapped)) == 0) {
+            if (is_lan_ipv4(ip + 12)) return true;
+        }
     }
 
     PRINT_DEBUG("NOT LAN IP\n");
@@ -642,6 +654,12 @@ inline bool file_exists (const std::string& name) {
   struct stat buffer;   
   return (stat (name.c_str(), &buffer) == 0); 
 }
+
+#ifdef DETOURS_64BIT
+    #define DLL_NAME "steam_api64.dll"
+#else
+    #define DLL_NAME "steam_api.dll"
+#endif
 
 HMODULE (WINAPI *Real_GetModuleHandleA)(LPCSTR lpModuleName) = GetModuleHandleA;
 HMODULE WINAPI Mine_GetModuleHandleA(LPCSTR lpModuleName)
@@ -806,7 +824,7 @@ static bool network_functions_attached = false;
 BOOL WINAPI DllMain( HINSTANCE, DWORD dwReason, LPVOID ) {
     switch ( dwReason ) {
         case DLL_PROCESS_ATTACH:
-            if (!file_exists(get_full_program_path() + "disable_lan_only.txt")) {
+            if (!file_exists(get_full_program_path() + "disable_lan_only.txt") && !file_exists(get_full_program_path() + "\\steam_settings\\disable_lan_only.txt")) {
                 PRINT_DEBUG("Hooking lan only functions\n");
                 DetourTransactionBegin();
                 DetourUpdateThread( GetCurrentThread() );

@@ -6,7 +6,7 @@ Then use my emu like you normally would. (Don't forget to put a steam_appid.txt)
 
 
 For the LAN only connections feature:
-If for some reason you want to disable this feature create a file named: disable_lan_only.txt beside the steam_api dll.
+If for some reason you want to disable this feature create a file named: disable_lan_only.txt beside the steam_api dll or inside the steam_settings folder beside the steam api dll.
 
 I noticed a lot of games seem to connect to analytics services and other crap that I hate. 
 

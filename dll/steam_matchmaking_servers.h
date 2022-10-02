@@ -40,11 +40,13 @@ struct Steam_Matchmaking_Request {
     AppId_t appid;
     HServerListRequest id;
     ISteamMatchmakingServerListResponse *callbacks;
+	ISteamMatchmakingServerListResponse001 *old_callbacks;
     bool completed, cancelled, released;
     std::vector <struct Steam_Matchmaking_Servers_Gameserver> gameservers_filtered;
 };
 
-class Steam_Matchmaking_Servers : public ISteamMatchmakingServers
+class Steam_Matchmaking_Servers : public ISteamMatchmakingServers,
+public ISteamMatchmakingServers001
 {
     class Settings *settings;
     class Networking *network;
@@ -52,6 +54,7 @@ class Steam_Matchmaking_Servers : public ISteamMatchmakingServers
     std::vector <struct Steam_Matchmaking_Servers_Gameserver> gameservers;
     std::vector <struct Steam_Matchmaking_Request> requests;
     std::vector <struct Steam_Matchmaking_Servers_Direct_IP_Request> direct_ip_requests;
+	void RequestOldServerList(AppId_t iApp, ISteamMatchmakingServerListResponse001 *pRequestServersResponse, EMatchMakingType type);
 public:
     Steam_Matchmaking_Servers(class Settings *settings, class Networking *network);
 	// Request a new list of servers of a particular type.  These calls each correspond to one of the EMatchMakingType values.
@@ -63,6 +66,13 @@ public:
 	HServerListRequest RequestFavoritesServerList( AppId_t iApp, STEAM_ARRAY_COUNT(nFilters) MatchMakingKeyValuePair_t **ppchFilters, uint32 nFilters, ISteamMatchmakingServerListResponse *pRequestServersResponse );
 	HServerListRequest RequestHistoryServerList( AppId_t iApp, STEAM_ARRAY_COUNT(nFilters) MatchMakingKeyValuePair_t **ppchFilters, uint32 nFilters, ISteamMatchmakingServerListResponse *pRequestServersResponse );
 	HServerListRequest RequestSpectatorServerList( AppId_t iApp, STEAM_ARRAY_COUNT(nFilters) MatchMakingKeyValuePair_t **ppchFilters, uint32 nFilters, ISteamMatchmakingServerListResponse *pRequestServersResponse );
+
+	void RequestInternetServerList( AppId_t iApp, MatchMakingKeyValuePair_t **ppchFilters, uint32 nFilters, ISteamMatchmakingServerListResponse001 *pRequestServersResponse );
+	void RequestLANServerList( AppId_t iApp, ISteamMatchmakingServerListResponse001 *pRequestServersResponse );
+	void RequestFriendsServerList( AppId_t iApp, MatchMakingKeyValuePair_t **ppchFilters, uint32 nFilters, ISteamMatchmakingServerListResponse001 *pRequestServersResponse );
+	void RequestFavoritesServerList( AppId_t iApp, MatchMakingKeyValuePair_t **ppchFilters, uint32 nFilters, ISteamMatchmakingServerListResponse001 *pRequestServersResponse );
+	void RequestHistoryServerList( AppId_t iApp, MatchMakingKeyValuePair_t **ppchFilters, uint32 nFilters, ISteamMatchmakingServerListResponse001 *pRequestServersResponse );
+	void RequestSpectatorServerList( AppId_t iApp, MatchMakingKeyValuePair_t **ppchFilters, uint32 nFilters, ISteamMatchmakingServerListResponse001 *pRequestServersResponse );
 
 	// Releases the asynchronous request object and cancels any pending query on it if there's a pending query in progress.
 	// RefreshComplete callback is not posted when request is released.
@@ -167,6 +177,28 @@ public:
 	// Refresh a single server inside of a query (rather than all the servers )
 	void RefreshServer( HServerListRequest hRequest, int iServer ); 
 
+	// Get details on a given server in the list, you can get the valid range of index
+	// values by calling GetServerCount().  You will also receive index values in 
+	// ISteamMatchmakingServerListResponse::ServerResponded() callbacks
+	gameserveritem_t *GetServerDetails( EMatchMakingType eType, int iServer ) { return GetServerDetails((HServerListRequest) eType , iServer ); }
+
+	// Cancel an request which is operation on the given list type.  You should call this to cancel
+	// any in-progress requests before destructing a callback object that may have been passed 
+	// to one of the above list request calls.  Not doing so may result in a crash when a callback
+	// occurs on the destructed object.
+	void CancelQuery( EMatchMakingType eType ) { return CancelQuery((HServerListRequest) eType); }
+
+	// Ping every server in your list again but don't update the list of servers
+	void RefreshQuery( EMatchMakingType eType ) { return RefreshQuery((HServerListRequest) eType); }
+
+	// Returns true if the list is currently refreshing its server list
+	bool IsRefreshing( EMatchMakingType eType ) { return IsRefreshing((HServerListRequest) eType); }
+
+	// How many servers in the given list, GetServerDetails above takes 0... GetServerCount() - 1
+	int GetServerCount( EMatchMakingType eType ) { return GetServerCount((HServerListRequest) eType); }
+
+	// Refresh a single server inside of a query (rather than all the servers )
+	void RefreshServer( EMatchMakingType eType, int iServer ) { return RefreshServer((HServerListRequest) eType, iServer); }
 
 	//-----------------------------------------------------------------------------
 	// Queries to individual servers directly via IP/Port

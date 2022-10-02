@@ -180,10 +180,13 @@ uint32 create_localstorage_settings(Settings **settings_client_out, Settings **s
         }
     }
 
+    bool local_save = false;
+
     {
         char array[33] = {};
         if (Local_Storage::get_file_data(program_path + "local_save.txt", array, sizeof(array) - 1) != -1) {
             save_path = program_path + Settings::sanitize(array);
+            local_save = true;
         }
     }
 
@@ -257,11 +260,48 @@ uint32 create_localstorage_settings(Settings **settings_client_out, Settings **s
         local_storage->store_data_settings("user_steam_id.txt", temp_text, strlen(temp_text));
     }
 
+    std::set<std::string> supported_languages;
+
+    {
+        std::string lang_config_path = Local_Storage::get_game_settings_path() + "supported_languages.txt";
+        std::ifstream input( utf8_decode(lang_config_path) );
+
+        std::string first_language;
+        if (input.is_open()) {
+            consume_bom(input);
+            for( std::string line; getline( input, line ); ) {
+                if (!line.empty() && line[line.length()-1] == '\n') {
+                    line.pop_back();
+                }
+
+                if (!line.empty() && line[line.length()-1] == '\r') {
+                    line.pop_back();
+                }
+
+                try {
+                    std::string lang = line;
+                    if (!first_language.size()) first_language = lang;
+                    supported_languages.insert(lang);
+                    PRINT_DEBUG("Added supported_language %s\n", lang.c_str());
+                } catch (...) {}
+            }
+        }
+
+        if (!supported_languages.count(language)) {
+            if (first_language.size()) {
+                memset(language, 0, sizeof(language));
+                first_language.copy(language, sizeof(language) - 1);
+            }
+        }
+    }
+
     bool steam_offline_mode = false;
     bool disable_networking = false;
     bool disable_overlay = false;
     bool disable_lobby_creation = false;
     int build_id = 10;
+
+    bool warn_forced = false;
 
     {
         std::string steam_settings_path = Local_Storage::get_game_settings_path();
@@ -279,22 +319,32 @@ uint32 create_localstorage_settings(Settings **settings_client_out, Settings **s
                 disable_lobby_creation = true;
             } else if (p == "force_language.txt") {
                 int len = Local_Storage::get_file_data(steam_settings_path + "force_language.txt", language, sizeof(language) - 1);
-                if (len > 0) language[len] = 0;
+                if (len > 0) {
+                    language[len] = 0;
+                    warn_forced = true;
+                }
             } else if (p == "force_steamid.txt") {
                 char steam_id_text[32] = {};
                 if (Local_Storage::get_file_data(steam_settings_path + "force_steamid.txt", steam_id_text, sizeof(steam_id_text) - 1) > 0) {
                     CSteamID temp_id = CSteamID((uint64)std::atoll(steam_id_text));
                     if (temp_id.IsValid()) {
                         user_id = temp_id;
+                        warn_forced = true;
                     }
                 }
             } else if (p == "force_account_name.txt") {
                 int len = Local_Storage::get_file_data(steam_settings_path + "force_account_name.txt", name, sizeof(name) - 1);
-                if (len > 0) name[len] = 0;
+                if (len > 0) {
+                    name[len] = 0;
+                    warn_forced = true;
+                }
             } else if (p == "force_listen_port.txt") {
                 char array_port[10] = {};
                 int len = Local_Storage::get_file_data(steam_settings_path + "force_listen_port.txt", array_port, sizeof(array_port) - 1);
-                if (len > 0) port = std::stoi(array_port);
+                if (len > 0) {
+                    port = std::stoi(array_port);
+                    warn_forced = true;
+                }
             } else if (p == "build_id.txt") {
                 char array_id[10] = {};
                 int len = Local_Storage::get_file_data(steam_settings_path + "build_id.txt", array_id, sizeof(array_id) - 1);
@@ -317,6 +367,12 @@ uint32 create_localstorage_settings(Settings **settings_client_out, Settings **s
     settings_server->disable_lobby_creation = disable_lobby_creation;
     settings_client->build_id = build_id;
     settings_server->build_id = build_id;
+    settings_client->warn_forced = warn_forced;
+    settings_server->warn_forced = warn_forced;
+    settings_client->warn_local_save = local_save;
+    settings_server->warn_local_save = local_save;
+    settings_client->supported_languages = supported_languages;
+    settings_server->supported_languages = supported_languages;
 
     {
         std::string dlc_config_path = Local_Storage::get_game_settings_path() + "DLC.txt";
@@ -569,5 +625,12 @@ uint32 create_localstorage_settings(Settings **settings_client_out, Settings **s
     *settings_server_out = settings_server;
     *local_storage_out = local_storage;
 
+    reset_LastError();
     return appid;
+}
+
+void save_global_settings(Local_Storage *local_storage, char *name, char *language)
+{
+    local_storage->store_data_settings("account_name.txt", name, strlen(name));
+    local_storage->store_data_settings("language.txt", language, strlen(language));
 }

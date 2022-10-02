@@ -9,6 +9,7 @@
 #include <imgui.h>
 
 #include "../dll/dll.h"
+#include "../dll/settings_parser.h"
 
 #include "Renderer_Detector.h"
 
@@ -16,6 +17,40 @@ static constexpr int max_window_id = 10000;
 static constexpr int base_notif_window_id  = 0 * max_window_id;
 static constexpr int base_friend_window_id = 1 * max_window_id;
 static constexpr int base_friend_item_id   = 2 * max_window_id;
+
+static constexpr char *valid_languages[] = {
+    "english",
+    "arabic",
+    "bulgarian",
+    "schinese",
+    "tchinese",
+    "czech",
+    "danish",
+    "dutch",
+    "finnish",
+    "french",
+    "german",
+    "greek",
+    "hungarian",
+    "italian",
+    "japanese",
+    "koreana",
+    "norwegian",
+    "polish",
+    "portuguese",
+    "brazilian",
+    "romanian",
+    "russian",
+    "spanish",
+    "latam",
+    "swedish",
+    "thai",
+    "turkish",
+    "ukrainian",
+    "vietnamese"
+};
+
+#define URL_WINDOW_NAME "URL Window"
 
 int find_free_id(std::vector<int> & ids, int base)
 {
@@ -90,8 +125,41 @@ Steam_Overlay::Steam_Overlay(Settings* settings, SteamCallResults* callback_resu
     h_inset(0),
     v_inset(0),
     overlay_state_changed(false),
-    i_have_lobby(false)
+    i_have_lobby(false),
+    show_achievements(false),
+    show_settings(false),
+    _renderer(nullptr),
+    fonts_atlas(nullptr)
 {
+    strncpy(username_text, settings->get_local_name(), sizeof(username_text));
+
+    if (settings->warn_forced) {
+        this->disable_forced = true;
+        this->warning_forced = true;
+    } else {
+        this->disable_forced = false;
+        this->warning_forced = false;
+    }
+
+    if (settings->warn_local_save) {
+        this->local_save = true;
+    } else {
+        this->local_save = false;
+    }
+
+    current_language = 0;
+    const char *language = settings->get_language();
+
+    int i = 0;
+    for (auto l : valid_languages) {
+        if (strcmp(l, language) == 0) {
+            current_language = i;
+            break;
+        }
+
+        ++i;
+    }
+
     run_every_runcb->add(&Steam_Overlay::steam_overlay_run_every_runcb, this);
     this->network->setCallback(CALLBACK_ID_STEAM_MESSAGES, settings->get_local_steam_id(), &Steam_Overlay::steam_overlay_callback, this);
 }
@@ -129,21 +197,35 @@ void Steam_Overlay::SetupOverlay()
     if (!setup_overlay_called)
     {
         setup_overlay_called = true;
-        Renderer_Detector::Inst().find_renderer();
+        future_renderer = ingame_overlay::DetectRenderer();
     }
 }
 
-void Steam_Overlay::HookReady()
+
+void Steam_Overlay::UnSetupOverlay()
 {
-    if (!is_ready)
+    ingame_overlay::StopRendererDetection();
+    if (!Ready() && future_renderer.valid()) {
+        if (future_renderer.wait_for(std::chrono::milliseconds{500}) ==  std::future_status::ready) {
+            future_renderer.get();
+            ingame_overlay::FreeDetector();
+        }
+    }
+}
+
+void Steam_Overlay::HookReady(bool ready)
+{
+    PRINT_DEBUG("%s %u\n", __FUNCTION__, ready);
     {
         // TODO: Uncomment this and draw our own cursor (cosmetics)
-        //ImGuiIO &io = ImGui::GetIO();
+        ImGuiIO &io = ImGui::GetIO();
         //io.WantSetMousePos = false;
         //io.MouseDrawCursor = false;
         //io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
 
-        is_ready = true;
+        io.IniFilename = NULL;
+
+        is_ready = ready;
     }
 }
 
@@ -158,8 +240,23 @@ void Steam_Overlay::OpenOverlay(const char* pchDialog)
     ShowOverlay(true);
 }
 
+void Steam_Overlay::OpenOverlayWebpage(const char* pchURL)
+{
+    show_url = pchURL;
+    ShowOverlay(true);
+}
+
 bool Steam_Overlay::ShowOverlay() const
 {
+    return show_overlay;
+}
+
+bool Steam_Overlay::OpenOverlayHook(bool toggle)
+{
+    if (toggle) {
+        ShowOverlay(!show_overlay);
+    }
+
     return show_overlay;
 }
 
@@ -310,6 +407,7 @@ void Steam_Overlay::AddMessageNotification(std::string const& message)
         notif.message = message;
         notif.start_time = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch());
         notifications.emplace_back(notif);
+        have_notifications = true;
     }
     else
         PRINT_DEBUG("No more free id to create a notification window\n");
@@ -328,9 +426,21 @@ void Steam_Overlay::AddAchievementNotification(nlohmann::json const& ach)
         notif.message = ach["displayName"].get<std::string>() + "\n" + ach["description"].get<std::string>();
         notif.start_time = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch());
         notifications.emplace_back(notif);
+        have_notifications = true;
     }
     else
         PRINT_DEBUG("No more free id to create a notification window\n");
+
+    std::string ach_name = ach.value("name", "");
+    for (auto &a : achievements) {
+        if (a.name == ach_name) {
+            bool achieved = false;
+            uint32 unlock_time = 0;
+            get_steam_client()->steam_user_stats->GetAchievementAndUnlockTime(a.name.c_str(), &achieved, &unlock_time);
+            a.achieved = achieved;
+            a.unlock_time = unlock_time;
+        }
+    }
 }
 
 void Steam_Overlay::AddInviteNotification(std::pair<const Friend, friend_window_state>& wnd_state)
@@ -346,6 +456,7 @@ void Steam_Overlay::AddInviteNotification(std::pair<const Friend, friend_window_
         notif.message = wnd_state.first.name() + " invited you to join a game";
         notif.start_time = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch());
         notifications.emplace_back(notif);
+        have_notifications = true;
     }
     else
         PRINT_DEBUG("No more free id to create a notification window\n");
@@ -457,7 +568,7 @@ void Steam_Overlay::BuildFriendWindow(Friend const& frd, friend_window_state& st
             }
         }
 
-        ImGui::InputTextMultiline("##chat_history", &state.chat_history[0], state.chat_history.length(), { -1.0f, 0 }, ImGuiInputTextFlags_ReadOnly);
+        ImGui::InputTextMultiline("##chat_history", &state.chat_history[0], state.chat_history.length(), { -1.0f, -2.0f * ImGui::GetFontSize() }, ImGuiInputTextFlags_ReadOnly);
         // TODO: Fix the layout of the chat line + send button.
         // It should be like this: chat input should fill the window size minus send button size (button size is fixed)
         // |------------------------------|
@@ -486,6 +597,7 @@ void Steam_Overlay::BuildFriendWindow(Friend const& frd, friend_window_state& st
         if (ImGui::InputText("##chat_line", state.chat_input, max_chat_len, ImGuiInputTextFlags_EnterReturnsTrue))
         {
             send_chat_msg = true;
+            ImGui::SetKeyboardFocusHere(-1);
         }
         ImGui::PopItemWidth();
 
@@ -584,6 +696,8 @@ void Steam_Overlay::BuildNotifications(int width, int height)
         notifications.erase(std::remove_if(notifications.begin(), notifications.end(), [&now](Notification &item) {
             return (now - item.start_time) > Notification::show_time;
         }), notifications.end());
+
+        have_notifications = !notifications.empty();
     }
 
     if (!friend_actions_temp.empty()) {
@@ -597,21 +711,64 @@ void Steam_Overlay::BuildNotifications(int width, int height)
 
 void Steam_Overlay::CreateFonts()
 {
-    ImGuiIO& io = ImGui::GetIO();
+    if (fonts_atlas) return;
+
+    ImFontAtlas *Fonts = new ImFontAtlas();
+
     ImFontConfig fontcfg;
 
+    float font_size = 16.0;
     fontcfg.OversampleH = fontcfg.OversampleV = 1;
     fontcfg.PixelSnapH = true;
-    fontcfg.GlyphRanges = io.Fonts->GetGlyphRangesDefault();
+    fontcfg.SizePixels = font_size;
 
-    fontcfg.SizePixels = std::round(io.DisplaySize.y / 68);
-    font_default = io.Fonts->AddFontDefault(&fontcfg);
+    ImFontGlyphRangesBuilder font_builder;
+    for (auto & x : achievements) {
+        font_builder.AddText(x.title.c_str());
+        font_builder.AddText(x.description.c_str());
+    }
 
-    fontcfg.SizePixels = std::round(io.DisplaySize.y / 60);
-    font_notif = io.Fonts->AddFontDefault(&fontcfg);
+    font_builder.AddRanges(Fonts->GetGlyphRangesDefault());
 
-    ImGuiStyle& style = ImGui::GetStyle();
-    style.WindowRounding = 0.0; // Disable round window
+    ImVector<ImWchar> ranges;
+    font_builder.BuildRanges(&ranges);
+
+    bool need_extra_fonts = false;
+    for (auto &x : ranges) {
+        if (x > 0xFF) {
+            need_extra_fonts = true;
+            break;
+        }
+    }
+
+    fontcfg.GlyphRanges = ranges.Data;
+    ImFont *font = NULL;
+
+#if defined(__WINDOWS__)
+    font = Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\micross.ttf", font_size, &fontcfg);
+#endif
+
+    if (!font) {
+        font = Fonts->AddFontDefault(&fontcfg);
+    }
+
+    font_notif = font_default = font;
+
+    if (need_extra_fonts) {
+        PRINT_DEBUG("loading extra fonts\n");
+        fontcfg.MergeMode = true;
+#if defined(__WINDOWS__)
+        Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\simsun.ttc", font_size, &fontcfg);
+        Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\malgun.ttf", font_size, &fontcfg);
+#endif
+    }
+
+    Fonts->Build();
+    fonts_atlas = (void *)Fonts;
+
+    // ImGuiStyle& style = ImGui::GetStyle();
+    // style.WindowRounding = 0.0; // Disable round window
+    reset_LastError();
 }
 
 // Try to make this function as short as possible or it might affect game's fps.
@@ -622,9 +779,11 @@ void Steam_Overlay::OverlayProc()
 
     ImGuiIO& io = ImGui::GetIO();
 
-    ImGui::PushFont(font_notif);
-    BuildNotifications(io.DisplaySize.x, io.DisplaySize.y);
-    ImGui::PopFont();
+    if (have_notifications) {
+        ImGui::PushFont(font_notif);
+        BuildNotifications(io.DisplaySize.x, io.DisplaySize.y);
+        ImGui::PopFont();
+    }
 
     if (show_overlay)
     {
@@ -647,9 +806,21 @@ void Steam_Overlay::OverlayProc()
                 settings->get_local_steam_id().ConvertToUint64(),
                 settings->get_local_game_id().AppID());
             ImGui::SameLine();
-            Base_Hook* hook = Renderer_Detector::Inst().get_renderer();
-            ImGui::LabelText("##label", "Renderer: %s", (hook == nullptr ? "Unknown" : hook->get_lib_name()));
 
+            ImGui::LabelText("##label", "Renderer: %s", (_renderer == nullptr ? "Unknown" : _renderer->GetLibraryName().c_str()));
+
+            ImGui::Spacing();
+            if (ImGui::Button("Show Achievements")) {
+                show_achievements = true;
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("Settings")) {
+                show_settings = true;
+            }
+
+            ImGui::Spacing();
             ImGui::Spacing();
 
             ImGui::LabelText("##label", "Friends");
@@ -676,6 +847,123 @@ void Steam_Overlay::OverlayProc()
                     ImGui::ListBoxFooter();
                 }
             }
+
+            if (show_achievements && achievements.size()) {
+                ImGui::SetNextWindowSizeConstraints(ImVec2(ImGui::GetFontSize() * 32, ImGui::GetFontSize() * 32), ImVec2(8192, 8192));
+                bool show = show_achievements;
+                if (ImGui::Begin("Achievement Window", &show)) {
+                    ImGui::Text("List of achievements");
+                    ImGui::BeginChild("Achievements");
+                    for (auto & x : achievements) {
+                        bool achieved = x.achieved;
+                        bool hidden = x.hidden && !achieved;
+
+                        ImGui::Separator();
+                        ImGui::Text("%s", x.title.c_str());
+                        if (hidden) {
+                            ImGui::Text("hidden achievement");
+                        } else {
+                            ImGui::TextWrapped("%s", x.description.c_str());
+                        }
+
+                        if (achieved) {
+                            char buffer[80] = {};
+                            time_t unlock_time = (time_t)x.unlock_time;
+                            std::strftime(buffer, 80, "%Y-%m-%d at %H:%M:%S", std::localtime(&unlock_time));
+
+                            ImGui::TextColored(ImVec4(0, 255, 0, 255), "achieved on %s", buffer);
+                        } else {
+                            ImGui::TextColored(ImVec4(255, 0, 0, 255), "not achieved");
+                        }
+                        ImGui::Separator();
+                    }
+                    ImGui::EndChild();
+                }
+                ImGui::End();
+                show_achievements = show;
+            }
+
+            if (show_settings) {
+                if (ImGui::Begin("Global Settings Window", &show_settings)) {
+                    ImGui::Text("These are global emulator settings and will apply to all games.");
+
+                    ImGui::Separator();
+
+                    ImGui::Text("Username:");
+                    ImGui::SameLine();
+                    ImGui::InputText("##username", username_text, sizeof(username_text), disable_forced ? ImGuiInputTextFlags_ReadOnly : 0);
+
+                    ImGui::Separator();
+
+                    ImGui::Text("Language:");
+
+                    if (ImGui::ListBox("##language", &current_language, valid_languages, sizeof(valid_languages) / sizeof(char *), 7)) {
+
+                    }
+
+                    ImGui::Text("Selected Language: %s", valid_languages[current_language]);
+
+                    ImGui::Separator();
+
+                    if (!disable_forced) {
+                        ImGui::Text("You may have to restart the game for these to apply.");
+                        if (ImGui::Button("Save")) {
+                            save_settings = true;
+                            show_settings = false;
+                        }
+                    } else {
+                        ImGui::TextColored(ImVec4(255, 0, 0, 255), "WARNING WARNING WARNING");
+                        ImGui::TextWrapped("Some steam_settings/force_*.txt files have been detected. Please delete them if you want this menu to work.");
+                        ImGui::TextColored(ImVec4(255, 0, 0, 255), "WARNING WARNING WARNING");
+                    }
+                }
+
+                ImGui::End();
+            }
+
+            std::string url = show_url;
+            if (url.size()) {
+                bool show = true;
+                if (ImGui::Begin(URL_WINDOW_NAME, &show)) {
+                    ImGui::Text("The game tried to get the steam overlay to open this url:");
+                    ImGui::Spacing();
+                    ImGui::PushItemWidth(ImGui::CalcTextSize(url.c_str()).x + 20);
+                    ImGui::InputText("##url_copy", (char *)url.data(), url.size(), ImGuiInputTextFlags_ReadOnly);
+                    ImGui::PopItemWidth();
+                    ImGui::Spacing();
+                    if (ImGui::Button("Close") || !show)
+                        show_url = "";
+                    // ImGui::SetWindowSize(ImVec2(ImGui::CalcTextSize(url.c_str()).x + 10, 0));
+                }
+                ImGui::End();
+            }
+
+            bool show_warning = local_save || warning_forced || appid == 0;
+            if (show_warning) {
+                ImGui::SetNextWindowSizeConstraints(ImVec2(ImGui::GetFontSize() * 32, ImGui::GetFontSize() * 32), ImVec2(8192, 8192));
+                ImGui::SetNextWindowFocus();
+                if (ImGui::Begin("WARNING", &show_warning)) {
+                    if (appid == 0) {
+                        ImGui::TextColored(ImVec4(255, 0, 0, 255), "WARNING WARNING WARNING");
+                        ImGui::TextWrapped("AppID is 0, please create a steam_appid.txt with the right appid and restart the game.");
+                        ImGui::TextColored(ImVec4(255, 0, 0, 255), "WARNING WARNING WARNING");
+                    }
+                    if (local_save) {
+                        ImGui::TextColored(ImVec4(255, 0, 0, 255), "WARNING WARNING WARNING");
+                        ImGui::TextWrapped("local_save.txt detected, the emu is saving locally to the game folder. Please delete it if you don't want this.");
+                        ImGui::TextColored(ImVec4(255, 0, 0, 255), "WARNING WARNING WARNING");
+                    }
+                    if (warning_forced) {
+                        ImGui::TextColored(ImVec4(255, 0, 0, 255), "WARNING WARNING WARNING");
+                        ImGui::TextWrapped("Some steam_settings/force_*.txt files have been detected. You will not be able to save some settings.");
+                        ImGui::TextColored(ImVec4(255, 0, 0, 255), "WARNING WARNING WARNING");
+                    }
+                }
+                ImGui::End();
+                if (!show_warning) {
+                    local_save = warning_forced = false;
+                }
+            }
         }
         ImGui::End();
 
@@ -700,7 +988,7 @@ void Steam_Overlay::Callback(Common_Message *msg)
         {
             Steam_Messages const& steam_message = msg->steam_messages();
             // Change color to cyan for friend
-            friend_info->second.chat_history.append(steam_message.message()).append("\n", 1);
+            friend_info->second.chat_history.append(friend_info->first.name() + ": " + steam_message.message()).append("\n", 1);
             if (!(friend_info->second.window_state & window_state_show))
             {
                 friend_info->second.window_state |= window_state_need_attention;
@@ -714,6 +1002,59 @@ void Steam_Overlay::Callback(Common_Message *msg)
 
 void Steam_Overlay::RunCallbacks()
 {
+    if (!achievements.size()) {
+        Steam_User_Stats* steamUserStats = get_steam_client()->steam_user_stats;
+        uint32 achievements_num = steamUserStats->GetNumAchievements();
+        if (achievements_num) {
+            PRINT_DEBUG("POPULATE OVERLAY ACHIEVEMENTS\n");
+            for (unsigned i = 0; i < achievements_num; ++i) {
+                Overlay_Achievement ach;
+                ach.name = steamUserStats->GetAchievementName(i);
+                ach.title = steamUserStats->GetAchievementDisplayAttribute(ach.name.c_str(), "name");
+                ach.description = steamUserStats->GetAchievementDisplayAttribute(ach.name.c_str(), "desc");
+                const char *hidden = steamUserStats->GetAchievementDisplayAttribute(ach.name.c_str(), "hidden");
+                if (strlen(hidden) && hidden[0] == '1') {
+                    ach.hidden = true;
+                } else {
+                    ach.hidden = false;
+                }
+
+                bool achieved = false;
+                uint32 unlock_time = 0;
+                if (steamUserStats->GetAchievementAndUnlockTime(ach.name.c_str(), &achieved, &unlock_time)) {
+                    ach.achieved = achieved;
+                    ach.unlock_time = unlock_time;
+                } else {
+                    ach.achieved = false;
+                    ach.unlock_time = 0;
+                }
+
+                achievements.push_back(ach);
+            }
+
+            PRINT_DEBUG("POPULATE OVERLAY ACHIEVEMENTS DONE\n");
+        }
+    }
+
+    if (!Ready() && future_renderer.valid()) {
+        if (future_renderer.wait_for(std::chrono::milliseconds{0}) ==  std::future_status::ready) {
+            _renderer = future_renderer.get();
+            PRINT_DEBUG("got renderer %p\n", _renderer);
+            CreateFonts();
+        }
+    }
+
+    if (!Ready() && _renderer) {
+            _renderer->OverlayHookReady = std::bind(&Steam_Overlay::HookReady, this, std::placeholders::_1);
+            _renderer->OverlayProc = std::bind(&Steam_Overlay::OverlayProc, this);
+            auto callback = std::bind(&Steam_Overlay::OpenOverlayHook, this, std::placeholders::_1);
+            PRINT_DEBUG("start renderer\n", _renderer);
+            std::set<ingame_overlay::ToggleKey> keys = {ingame_overlay::ToggleKey::SHIFT, ingame_overlay::ToggleKey::TAB};
+            _renderer->ImGuiFontAtlas = fonts_atlas;
+            bool started = _renderer->StartHook(callback, keys);
+            PRINT_DEBUG("tried to start renderer %u\n", started);
+    }
+
     if (overlay_state_changed)
     {
         GameOverlayActivated_t data = { 0 };
@@ -725,6 +1066,19 @@ void Steam_Overlay::RunCallbacks()
 
     Steam_Friends* steamFriends = get_steam_client()->steam_friends;
     Steam_Matchmaking* steamMatchmaking = get_steam_client()->steam_matchmaking;
+
+    if (save_settings) {
+        char *language_text = valid_languages[current_language];
+        save_global_settings(get_steam_client()->local_storage, username_text, language_text);
+        get_steam_client()->settings_client->set_local_name(username_text);
+        get_steam_client()->settings_server->set_local_name(username_text);
+        get_steam_client()->settings_client->set_language(language_text);
+        get_steam_client()->settings_server->set_language(language_text);
+        steamFriends->resend_friend_data();
+        save_settings = false;
+    }
+
+    appid = settings->get_local_game_id().AppID();
 
     i_have_lobby = IHaveLobby();
     std::lock_guard<std::recursive_mutex> lock(overlay_mutex);
@@ -760,7 +1114,7 @@ void Steam_Overlay::RunCallbacks()
                     msg.set_dest_id(friend_id);
                     network->sendTo(&msg, true);
 
-                    friend_info->second.chat_history.append(input).append("\n", 1);
+                    friend_info->second.chat_history.append(get_steam_client()->settings_client->get_local_name()).append(": ").append(input).append("\n", 1);
                 }
                 *input = 0; // Reset the input field
                 friend_info->second.window_state &= ~window_state_send_message;

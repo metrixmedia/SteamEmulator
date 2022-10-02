@@ -235,3 +235,13 @@ message Common_Message {
     uint32 source_ip = 128;
     uint32 source_port = 129;
 }
+
+//Non networking related protobufs
+
+message SteamAppTicket_pb {
+	uint32 ticket_version_no = 1;
+	uint32 crc_encryptedticket = 2;
+	uint32 cb_encrypteduserdata = 3;
+	uint32 cb_encrypted_appownershipticket = 4;
+	bytes encrypted_ticket = 5;
+}

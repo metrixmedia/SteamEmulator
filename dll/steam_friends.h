@@ -30,6 +30,7 @@ struct Avatar_Numbers {
 };
 
 class Steam_Friends : 
+public ISteamFriends003,
 public ISteamFriends004,
 public ISteamFriends005,
 public ISteamFriends006,
@@ -130,6 +131,11 @@ static void steam_friends_run_every_runcb(void *object)
 
     Steam_Friends *steam_friends = (Steam_Friends *)object;
     steam_friends->RunCallbacks();
+}
+
+void resend_friend_data()
+{
+    modified = true;
 }
 
 Steam_Friends(Settings* settings, Networking* network, SteamCallResults* callback_results, SteamCallBacks* callbacks, RunEveryRunCB* run_every_runcb, Steam_Overlay* overlay):
@@ -549,7 +555,8 @@ void ActivateGameOverlayToUser( const char *pchDialog, CSteamID steamID )
 // full address with protocol type is required, e.g. http://www.steamgames.com/
 void ActivateGameOverlayToWebPage( const char *pchURL, EActivateGameOverlayToWebPageMode eMode = k_EActivateGameOverlayToWebPageMode_Default )
 {
-    PRINT_DEBUG("Steam_Friends::ActivateGameOverlayToWebPage\n");
+    PRINT_DEBUG("Steam_Friends::ActivateGameOverlayToWebPage %s %u\n", pchURL, eMode);
+    overlay->OpenOverlayWebpage(pchURL);
 }
 
 void ActivateGameOverlayToWebPage( const char *pchURL )
@@ -627,6 +634,12 @@ int GetFriendAvatar( CSteamID steamIDFriend, int eAvatarSize )
 	} else {
 		return 0;
 	}
+}
+
+int GetFriendAvatar(CSteamID steamIDFriend)
+{
+    PRINT_DEBUG("Steam_Friends::GetFriendAvatar old\n");
+    return GetFriendAvatar(steamIDFriend, k_EAvatarSize32x32);
 }
 
 // requests information about a user - persona name & avatar
@@ -714,13 +727,13 @@ bool SetRichPresence( const char *pchKey, const char *pchValue )
         auto prev_value = (*us.mutable_rich_presence()).find(pchKey);
         if (prev_value == (*us.mutable_rich_presence()).end() || prev_value->second != pchValue) {
             (*us.mutable_rich_presence())[pchKey] = pchValue;
-            modified = true;
+            resend_friend_data();
         }
     } else {
         auto to_remove = us.mutable_rich_presence()->find(pchKey);
         if (to_remove != us.mutable_rich_presence()->end()) {
             us.mutable_rich_presence()->erase(to_remove);
-            modified = true;
+            resend_friend_data();
         }
     }
 
@@ -732,7 +745,7 @@ void ClearRichPresence()
     PRINT_DEBUG("Steam_Friends::ClearRichPresence\n");
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
     us.mutable_rich_presence()->clear();
-    modified = true;
+    resend_friend_data();
     
 }
 
@@ -1014,12 +1027,39 @@ void ActivateGameOverlayInviteDialogConnectString( const char *pchConnectString 
     PRINT_DEBUG("Steam_Friends::ActivateGameOverlayInviteDialogConnectString\n");
 }
 
+// Steam Community items equipped by a user on their profile
+// You can register for EquippedProfileItemsChanged_t to know when a friend has changed their equipped profile items
+STEAM_CALL_RESULT( EquippedProfileItems_t )
+SteamAPICall_t RequestEquippedProfileItems( CSteamID steamID )
+{
+    PRINT_DEBUG("Steam_Friends::RequestEquippedProfileItems\n");
+    return 0;
+}
+
+bool BHasEquippedProfileItem( CSteamID steamID, ECommunityProfileItemType itemType )
+{
+    PRINT_DEBUG("Steam_Friends::BHasEquippedProfileItem\n");
+    return false;
+}
+
+const char *GetProfileItemPropertyString( CSteamID steamID, ECommunityProfileItemType itemType, ECommunityProfileItemProperty prop )
+{
+    PRINT_DEBUG("Steam_Friends::GetProfileItemPropertyString\n");
+    return "";
+}
+
+uint32 GetProfileItemPropertyUint( CSteamID steamID, ECommunityProfileItemType itemType, ECommunityProfileItemProperty prop )
+{
+    PRINT_DEBUG("Steam_Friends::GetProfileItemPropertyUint\n");
+    return 0;
+}
+
 void RunCallbacks()
 {
 	PRINT_DEBUG("Steam_Friends::RunCallbacks\n");
     if (settings->get_lobby() != lobby_id) {
         lobby_id = settings->get_lobby();
-        modified = true;
+        resend_friend_data();
     }
 
     if (modified) {

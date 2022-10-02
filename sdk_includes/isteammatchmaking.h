@@ -891,7 +891,21 @@ struct LobbyCreated_t
 
 // used by now obsolete RequestFriendsLobbiesResponse_t
 // enum { k_iCallback = k_iSteamMatchmakingCallbacks + 14 };
+//-----------------------------------------------------------------------------
+// Purpose: Response to a RequestFriendsLobbies() call
+//			One of these callbacks will be received per friend who is in a lobby
+//			if no friends are in a lobby, then one of these will be called with 0 values
+//-----------------------------------------------------------------------------
+struct RequestFriendsLobbiesResponse_t
+{
+	enum { k_iCallback = k_iSteamMatchmakingCallbacks + 14 };
+	
+	uint64 m_ulSteamIDFriend;	// friend who is in a lobby; 0 if no friends in lobbies are found
+	uint64 m_ulSteamIDLobby;	// lobby that the friend is in; 0 if no friends in lobbies are found
 
+	int m_cResultIndex;			// result #, [1, m_cResultsTotal] if any are found; 0 if no friends in lobbies are found
+	int m_cResultsTotal;		// total number of results; 0 if no friends in lobbies are found
+};
 
 //-----------------------------------------------------------------------------
 // Purpose: Result of CheckForPSNGameBootInvite
