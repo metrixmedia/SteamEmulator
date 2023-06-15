@@ -37,6 +37,7 @@ public ISteamGameServer010,
 public ISteamGameServer011,
 public ISteamGameServer012,
 public ISteamGameServer013,
+public ISteamGameServer014,
 public ISteamGameServer
 {
     class Settings *settings;
@@ -253,6 +254,9 @@ public:
 	// Retrieve ticket to be sent to the entity who wishes to authenticate you ( using BeginAuthSession API ). 
 	// pcbTicket retrieves the length of the actual ticket.
 	HAuthTicket GetAuthSessionTicket( void *pTicket, int cbMaxTicket, uint32 *pcbTicket );
+	// SteamNetworkingIdentity is an optional parameter to hold the public IP address of the entity you are connecting to
+	// if an IP address is passed Steam will only allow the ticket to be used by an entity with that IP address
+	HAuthTicket GetAuthSessionTicket( void *pTicket, int cbMaxTicket, uint32 *pcbTicket, const SteamNetworkingIdentity *pSnid );
 
 	// Authenticate ticket ( from GetAuthSessionTicket ) from entity steamID to be sure it is valid and isnt reused
 	// Registers for callbacks if the entity goes offline or cancels the ticket ( see ValidateAuthTicketResponse_t callback and EAuthSessionResponse )

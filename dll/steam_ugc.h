@@ -40,6 +40,7 @@ public ISteamUGC012,
 public ISteamUGC013,
 public ISteamUGC014,
 public ISteamUGC015,
+public ISteamUGC016,
 public ISteamUGC
 {
     class Settings *settings;
@@ -273,6 +274,11 @@ bool GetQueryUGCKeyValueTag( UGCQueryHandle_t handle, uint32 index, const char *
     return false;
 }
 
+uint32 GetQueryUGCContentDescriptors( UGCQueryHandle_t handle, uint32 index, EUGCContentDescriptorID *pvecDescriptors, uint32 cMaxEntries )
+{
+    PRINT_DEBUG("Steam_UGC::GetQueryUGCContentDescriptors\n");
+    return 0;
+}
 
 // Release the request to free up memory, after retrieving results
 bool ReleaseQueryUGCRequest( UGCQueryHandle_t handle )
@@ -592,6 +598,17 @@ bool RemoveItemPreview( UGCUpdateHandle_t handle, uint32 index )
 }
  // remove a preview by index starting at 0 (previews are sorted)
 
+bool AddContentDescriptor( UGCUpdateHandle_t handle, EUGCContentDescriptorID descid )
+{
+    PRINT_DEBUG("Steam_UGC::AddContentDescriptor %llu %u\n", handle, index);
+    return false;
+}
+
+bool RemoveContentDescriptor( UGCUpdateHandle_t handle, EUGCContentDescriptorID descid )
+{
+    PRINT_DEBUG("Steam_UGC::RemoveContentDescriptor %llu %u\n", handle, index);
+    return false;
+}
 
 STEAM_CALL_RESULT( SubmitItemUpdateResult_t )
 SteamAPICall_t SubmitItemUpdate( UGCUpdateHandle_t handle, const char *pchChangeNote )

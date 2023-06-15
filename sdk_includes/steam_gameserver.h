@@ -12,6 +12,7 @@
 
 #include "steam_api.h"
 #include "isteamgameserver.h"
+#include "isteamgameserver014.h"
 #include "isteamgameserver013.h"
 #include "isteamgameserver012.h"
 #include "isteamgameserver011.h"

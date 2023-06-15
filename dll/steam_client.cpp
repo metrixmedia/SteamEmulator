@@ -334,6 +334,10 @@ ISteamUser *Steam_Client::GetISteamUser( HSteamUser hSteamUser, HSteamPipe hStea
         return (ISteamUser *)(void *)(ISteamUser019 *)steam_user;
     } else if (strcmp(pchVersion, "SteamUser020") == 0) {
         return (ISteamUser *)(void *)(ISteamUser020 *)steam_user;
+    } else if (strcmp(pchVersion, "SteamUser021") == 0) {
+        return (ISteamUser *)(void *)(ISteamUser021 *)steam_user;
+    } else if (strcmp(pchVersion, "SteamUser022") == 0) {
+        return (ISteamUser *)(void *)(ISteamUser022 *)steam_user;
     } else if (strcmp(pchVersion, STEAMUSER_INTERFACE_VERSION) == 0) {
         return (ISteamUser *)(void *)(ISteamUser *)steam_user;
     } else {
@@ -370,6 +374,9 @@ ISteamGameServer *Steam_Client::GetISteamGameServer( HSteamUser hSteamUser, HSte
     } else if (strcmp(pchVersion, "SteamGameServer013") == 0) {
         gameserver_has_ipv6_functions = true;
         return (ISteamGameServer *)(void *)(ISteamGameServer013 *)steam_gameserver;
+    } else if (strcmp(pchVersion, "SteamGameServer014") == 0) {
+        gameserver_has_ipv6_functions = true;
+        return (ISteamGameServer *)(void *)(ISteamGameServer014 *)steam_gameserver;
     } else if (strcmp(pchVersion, STEAMGAMESERVER_INTERFACE_VERSION) == 0) {
         gameserver_has_ipv6_functions = true;
         return (ISteamGameServer *)(void *)(ISteamGameServer *)steam_gameserver;
@@ -1020,6 +1027,8 @@ ISteamUGC *Steam_Client::GetISteamUGC( HSteamUser hSteamUser, HSteamPipe hSteamP
         return (ISteamUGC *)(void *)(ISteamUGC014 *)steam_ugc_temp;
     } else if (strcmp(pchVersion, "STEAMUGC_INTERFACE_VERSION015") == 0) {
         return (ISteamUGC *)(void *)(ISteamUGC015 *)steam_ugc_temp;
+    } else if (strcmp(pchVersion, "STEAMUGC_INTERFACE_VERSION016") == 0) {
+        return (ISteamUGC *)(void *)(ISteamUGC016 *)steam_ugc_temp;
     } else if (strcmp(pchVersion, STEAMUGC_INTERFACE_VERSION) == 0) {
         return (ISteamUGC *)(void *)(ISteamUGC *)steam_ugc_temp;
     } else {

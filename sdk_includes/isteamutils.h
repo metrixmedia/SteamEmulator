@@ -319,6 +319,7 @@ struct GamepadTextInputDismissed_t
 	enum { k_iCallback = k_iSteamUtilsCallbacks + 14 };
 	bool m_bSubmitted;										// true if user entered & accepted text (Call ISteamUtils::GetEnteredGamepadTextInput() for text), false if canceled input
 	uint32 m_unSubmittedText;
+	AppId_t m_unAppID;
 };
 
 // k_iSteamUtilsCallbacks + 15 through 35 are taken
@@ -334,6 +335,15 @@ STEAM_CALLBACK_END(0)
 struct FloatingGamepadTextInputDismissed_t
 {
 	enum { k_iCallback = k_iSteamUtilsCallbacks + 38 };
+};
+
+//-----------------------------------------------------------------------------
+// The text filtering dictionary has changed
+//-----------------------------------------------------------------------------
+struct FilterTextDictionaryChanged_t
+{
+	enum { k_iCallback = k_iSteamUtilsCallbacks + 39 };
+	int m_eLanguage;	// One of ELanguage, or k_LegallyRequiredFiltering
 };
 
 #pragma pack( pop )

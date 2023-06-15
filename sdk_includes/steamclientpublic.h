@@ -91,7 +91,7 @@ enum EResult
 	k_EResultAccountLogonDenied = 63,			// account login denied due to 2nd factor authentication failure
 	k_EResultCannotUseOldPassword = 64,			// The requested new password is not legal
 	k_EResultInvalidLoginAuthCode = 65,			// account login denied due to auth code invalid
-	k_EResultAccountLogonDeniedNoMail = 66,		// account login denied due to 2nd factor auth failure - and no mail has been sent
+	k_EResultAccountLogonDeniedNoMail = 66,		// account login denied due to 2nd factor auth failure - and no mail has been sent - partner site specific
 	k_EResultHardwareNotCapableOfIPT = 67,		// 
 	k_EResultIPTInitError = 68,					// 
 	k_EResultParentalControlRestricted = 69,	// operation failed due to parental control restrictions for current user
@@ -152,7 +152,7 @@ enum EResult
 	k_EResultInsufficientBattery = 124,			// user device doesn't have enough battery charge currently to complete the action
 	k_EResultChargerRequired = 125,				// The operation requires a charger to be plugged in, which wasn't present
 	k_EResultCachedCredentialInvalid = 126,		// Cached credential was invalid - user must reauthenticate
-	K_EResultPhoneNumberIsVOIP = 127,                       // The phone number provided is a Voice Over IP number
+	K_EResultPhoneNumberIsVOIP = 127,			// The phone number provided is a Voice Over IP number
 };
 
 // Error codes for use with the voice functions
@@ -220,6 +220,7 @@ enum EAuthSessionResponse
 	k_EAuthSessionResponseAuthTicketInvalidAlreadyUsed = 7,	// This ticket has already been used, it is not valid.
 	k_EAuthSessionResponseAuthTicketInvalid = 8,			// This ticket is not from a user instance currently connected to steam.
 	k_EAuthSessionResponsePublisherIssuedBan = 9,			// The user is banned for this game. The ban came via the web api and not VAC
+	k_EAuthSessionResponseAuthTicketNetworkIdentityFailure = 10,	// The network identity in the ticket does not match the server authenticating the ticket
 };
 
 // results from UserHasLicenseForApp
@@ -439,6 +440,7 @@ enum EMarketingMessageFlags
 //-----------------------------------------------------------------------------
 enum ENotificationPosition
 {
+	k_EPositionInvalid = -1,
 	k_EPositionTopLeft = 0,
 	k_EPositionTopRight = 1,
 	k_EPositionBottomLeft = 2,
@@ -1214,6 +1216,14 @@ class CGameID
 {
 public:
 
+	enum EGameIDType
+	{
+		k_EGameIDTypeApp		= 0,
+		k_EGameIDTypeGameMod	= 1,
+		k_EGameIDTypeShortcut	= 2,
+		k_EGameIDTypeP2P		= 3,
+	};
+
 	CGameID()
 	{
 		m_gameID.m_nType = k_EGameIDTypeApp;
@@ -1244,12 +1254,12 @@ public:
 		m_gameID.m_nAppID = nAppID;
 	}
 
-	CGameID( uint32 nAppID, uint32 nModID )
+	// Not validating anything .. use IsValid()
+	explicit CGameID( uint32 nAppID, uint32 nModID, CGameID::EGameIDType nType )
 	{
-		m_ulGameID = 0;
 		m_gameID.m_nAppID = nAppID;
 		m_gameID.m_nModID = nModID;
-		m_gameID.m_nType = k_EGameIDTypeGameMod;
+		m_gameID.m_nType = nType;
 	}
 
 	CGameID( const CGameID &that )
@@ -1374,10 +1384,14 @@ public:
 		return m_gameID.m_nModID;
 	}
 
-	uint32 AppID() const
+#if !defined(VALVE_SHORTCUT_DEBUG)
+	uint32 AppID( bool = false ) const
 	{
 		return m_gameID.m_nAppID;
 	}
+#else
+	uint32 AppID( bool bShortcutOK = false ) const;
+#endif
 
 	bool operator == ( const CGameID &rhs ) const
 	{
@@ -1403,13 +1417,15 @@ public:
 			return m_gameID.m_nAppID != k_uAppIdInvalid;
 
 		case k_EGameIDTypeGameMod:
-			return m_gameID.m_nAppID != k_uAppIdInvalid && m_gameID.m_nModID & 0x80000000;
+			return m_gameID.m_nAppID != k_uAppIdInvalid && (m_gameID.m_nModID & 0x80000000);
 
 		case k_EGameIDTypeShortcut:
-			return (m_gameID.m_nModID & 0x80000000) != 0;
+			return m_gameID.m_nAppID == k_uAppIdInvalid
+				&& (m_gameID.m_nModID & 0x80000000)
+				&& m_gameID.m_nModID >= (5000 | 0x80000000); // k_unMaxExpectedLocalAppId - shortcuts are pushed beyond that range
 
 		case k_EGameIDTypeP2P:
-			return m_gameID.m_nAppID == k_uAppIdInvalid && m_gameID.m_nModID & 0x80000000;
+			return m_gameID.m_nAppID == k_uAppIdInvalid && (m_gameID.m_nModID & 0x80000000);
 
 		default:
 			return false;
@@ -1422,17 +1438,9 @@ public:
 		m_ulGameID = 0;
 	}
 
-
-
-private:
-
-	enum EGameIDType
-	{
-		k_EGameIDTypeApp		= 0,
-		k_EGameIDTypeGameMod	= 1,
-		k_EGameIDTypeShortcut	= 2,
-		k_EGameIDTypeP2P		= 3,
-	};
+//
+// Internal stuff.  Use the accessors above if possible
+//
 
 	struct GameID_t
 	{
@@ -1452,6 +1460,8 @@ private:
 		uint64 m_ulGameID;
 		GameID_t m_gameID;
 	};
+
+	friend CGameID GameIDFromAppAndModPath( uint32 nAppID, const char *pchModPath );
 };
 
 #pragma pack( pop )
@@ -1521,7 +1531,7 @@ enum ESteamIPv6ConnectivityState
 // Define compile time assert macros to let us validate the structure sizes.
 #define VALVE_COMPILE_TIME_ASSERT( pred ) typedef char compile_time_assert_type[(pred) ? 1 : -1];
 
-#if defined(__linux__) || defined(__APPLE__) 
+#if defined(__linux__) || defined(__APPLE__) || defined(__FreeBSD__)
 // The 32-bit version of gcc has the alignment requirement for uint64 and double set to
 // 4 meaning that even with #pragma pack(8) these types will only be four-byte aligned.
 // The 64-bit version of gcc has the alignment requirement for these types set to

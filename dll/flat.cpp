@@ -207,6 +207,16 @@ STEAMAPI_API ISteamRemotePlay * SteamAPI_ISteamClient_GetISteamRemotePlay( IStea
     return get_steam_client()->GetISteamRemotePlay(hSteamUser, hSteamPipe, pchVersion);
 }
 
+STEAMAPI_API ISteamUser *SteamAPI_SteamUser_v023()
+{
+    return get_steam_client()->GetISteamUser(flat_hsteamuser(), flat_hsteampipe(), "SteamUser023");
+}
+
+STEAMAPI_API ISteamUser *SteamAPI_SteamUser_v022()
+{
+    return get_steam_client()->GetISteamUser(flat_hsteamuser(), flat_hsteampipe(), "SteamUser022");
+}
+
 STEAMAPI_API ISteamUser *SteamAPI_SteamUser_v021()
 {
     return get_steam_client()->GetISteamUser(flat_hsteamuser(), flat_hsteampipe(), "SteamUser021");
@@ -292,9 +302,14 @@ STEAMAPI_API uint32 SteamAPI_ISteamUser_GetVoiceOptimalSampleRate( ISteamUser* s
     return (get_steam_client()->steam_user)->GetVoiceOptimalSampleRate();
 }
 
-STEAMAPI_API HAuthTicket SteamAPI_ISteamUser_GetAuthSessionTicket( ISteamUser* self, void * pTicket, int cbMaxTicket, uint32 * pcbTicket )
+STEAMAPI_API HAuthTicket SteamAPI_ISteamUser_GetAuthSessionTicket( ISteamUser* self, void * pTicket, int cbMaxTicket, uint32 * pcbTicket, const SteamNetworkingIdentity * pSteamNetworkingIdentity)
 {
     return (get_steam_client()->steam_user)->GetAuthSessionTicket(pTicket, cbMaxTicket, pcbTicket);
+}
+
+STEAMAPI_API HAuthTicket SteamAPI_ISteamUser_GetAuthTicketForWebApi( ISteamUser* self, const char * pchIdentity )
+{
+    return (get_steam_client()->steam_user)->GetAuthTicketForWebApi(pchIdentity);
 }
 
 STEAMAPI_API EBeginAuthSessionResult SteamAPI_ISteamUser_BeginAuthSession( ISteamUser* self, const void * pAuthTicket, int cbAuthTicket, uint64_steamid steamID )
@@ -3493,6 +3508,11 @@ STEAMAPI_API ISteamUGC *SteamAPI_SteamUGC_v016()
     return get_steam_client()->GetISteamUGC(flat_hsteamuser(), flat_hsteampipe(), "STEAMUGC_INTERFACE_VERSION016");
 }
 
+STEAMAPI_API ISteamUGC *SteamAPI_SteamUGC_v017()
+{
+    return get_steam_client()->GetISteamUGC(flat_hsteamuser(), flat_hsteampipe(), "STEAMUGC_INTERFACE_VERSION017");
+}
+
 STEAMAPI_API ISteamUGC *SteamAPI_SteamGameServerUGC_v014()
 {
     return get_steam_client()->GetISteamUGC(flat_gs_hsteamuser(), flat_gs_hsteampipe(), "STEAMUGC_INTERFACE_VERSION014");
@@ -3506,6 +3526,11 @@ STEAMAPI_API ISteamUGC *SteamAPI_SteamGameServerUGC_v015()
 STEAMAPI_API ISteamUGC *SteamAPI_SteamGameServerUGC_v016()
 {
     return get_steam_client()->GetISteamUGC(flat_gs_hsteamuser(), flat_gs_hsteampipe(), "STEAMUGC_INTERFACE_VERSION016");
+}
+
+STEAMAPI_API ISteamUGC *SteamAPI_SteamGameServerUGC_v017()
+{
+    return get_steam_client()->GetISteamUGC(flat_gs_hsteamuser(), flat_gs_hsteampipe(), "STEAMUGC_INTERFACE_VERSION017");
 }
 
 STEAMAPI_API UGCQueryHandle_t SteamAPI_ISteamUGC_CreateQueryUserUGCRequest( ISteamUGC* self, AccountID_t unAccountID, EUserUGCList eListType, EUGCMatchingUGCType eMatchingUGCType, EUserUGCListSortOrder eSortOrder, AppId_t nCreatorAppID, AppId_t nConsumerAppID, uint32 unPage )
@@ -3758,6 +3783,18 @@ STEAMAPI_API steam_bool SteamAPI_ISteamUGC_GetQueryFirstUGCKeyValueTag( ISteamUG
     }
 
     return (ptr)->GetQueryUGCKeyValueTag(handle, index, pchKey, pchValue, cchValueSize);
+}
+
+STEAMAPI_API uint32 SteamAPI_ISteamUGC_GetQueryUGCContentDescriptors( ISteamUGC* self, UGCQueryHandle_t handle, uint32 index, EUGCContentDescriptorID * pvecDescriptors, uint32 cMaxEntries )
+{
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    auto ptr = get_steam_client()->steam_gameserver_ugc;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_ugc;
+    }
+
+    return (ptr)->GetQueryUGCContentDescriptors(handle, index, pvecDescriptors, cMaxEntries);
 }
 
 STEAMAPI_API steam_bool SteamAPI_ISteamUGC_ReleaseQueryUGCRequest( ISteamUGC* self, UGCQueryHandle_t handle )
@@ -4250,6 +4287,30 @@ STEAMAPI_API steam_bool SteamAPI_ISteamUGC_RemoveItemPreview( ISteamUGC* self, U
     }
 
     return (ptr)->RemoveItemPreview(handle, index);
+}
+
+STEAMAPI_API steam_bool SteamAPI_ISteamUGC_AddContentDescriptor( ISteamUGC* self, UGCUpdateHandle_t handle, EUGCContentDescriptorID descid )
+{
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    auto ptr = get_steam_client()->steam_gameserver_ugc;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_ugc;
+    }
+
+    return (ptr)->AddContentDescriptor(handle, descid);
+}
+
+STEAMAPI_API steam_bool SteamAPI_ISteamUGC_RemoveContentDescriptor( ISteamUGC* self, UGCUpdateHandle_t handle, EUGCContentDescriptorID descid )
+{
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    auto ptr = get_steam_client()->steam_gameserver_ugc;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_ugc;
+    }
+
+    return (ptr)->RemoveContentDescriptor(handle, descid);
 }
 
 STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_SubmitItemUpdate( ISteamUGC* self, UGCUpdateHandle_t handle, const char * pchChangeNote )
@@ -6393,6 +6454,11 @@ STEAMAPI_API ISteamGameServer *SteamAPI_SteamGameServer_v014()
     return get_steam_client()->GetISteamGameServer(flat_gs_hsteamuser(), flat_gs_hsteampipe(), "SteamGameServer014");
 }
 
+STEAMAPI_API ISteamGameServer *SteamAPI_SteamGameServer_v015()
+{
+    return get_steam_client()->GetISteamGameServer(flat_gs_hsteamuser(), flat_gs_hsteampipe(), "SteamGameServer015");
+}
+
 STEAMAPI_API steam_bool SteamAPI_ISteamGameServer_InitGameServer(intptr_t instancePtr, uint32 unIP, uint16 usGamePort, uint16 usQueryPort, uint32 unFlags, AppId_t nGameAppId, const char * pchVersionString)
 {
     return ((ISteamGameServer *)instancePtr)->InitGameServer(unIP, usGamePort, usQueryPort, unFlags, nGameAppId, pchVersionString);
@@ -6548,7 +6614,7 @@ STEAMAPI_API void SteamAPI_ISteamGameServer_SetAdvertiseServerActive( ISteamGame
     return get_steam_client()->steam_gameserver->SetAdvertiseServerActive(bActive);
 }
 
-STEAMAPI_API HAuthTicket SteamAPI_ISteamGameServer_GetAuthSessionTicket( ISteamGameServer* self, void * pTicket, int cbMaxTicket, uint32 * pcbTicket )
+STEAMAPI_API HAuthTicket SteamAPI_ISteamGameServer_GetAuthSessionTicket( ISteamGameServer* self, void * pTicket, int cbMaxTicket, uint32 * pcbTicket, const SteamNetworkingIdentity * pSnid )
 {
     return get_steam_client()->steam_gameserver->GetAuthSessionTicket(pTicket, cbMaxTicket, pcbTicket);
 }

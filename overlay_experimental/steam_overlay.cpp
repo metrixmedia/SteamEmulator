@@ -1059,6 +1059,8 @@ void Steam_Overlay::RunCallbacks()
     {
         GameOverlayActivated_t data = { 0 };
         data.m_bActive = show_overlay;
+        data.m_bUserInitiated = true;
+        data.m_nAppID = settings->get_local_game_id().AppID();
         callbacks->addCBResult(data.k_iCallback, &data, sizeof(data));
 
         overlay_state_changed = false;

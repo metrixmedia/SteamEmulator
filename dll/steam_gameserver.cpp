@@ -482,6 +482,13 @@ bool Steam_GameServer::BGetUserAchievementStatus( CSteamID steamID, const char *
 // pcbTicket retrieves the length of the actual ticket.
 HAuthTicket Steam_GameServer::GetAuthSessionTicket( void *pTicket, int cbMaxTicket, uint32 *pcbTicket )
 {
+    return GetAuthSessionTicket(pTicket, cbMaxTicket, pcbTicket, NULL);
+}
+
+// SteamNetworkingIdentity is an optional parameter to hold the public IP address of the entity you are connecting to
+// if an IP address is passed Steam will only allow the ticket to be used by an entity with that IP address
+HAuthTicket Steam_GameServer::GetAuthSessionTicket( void *pTicket, int cbMaxTicket, uint32 *pcbTicket, const SteamNetworkingIdentity *pSnid )
+{
     PRINT_DEBUG("Steam_GameServer::GetAuthSessionTicket\n");
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
 

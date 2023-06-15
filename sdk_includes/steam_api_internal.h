@@ -245,6 +245,9 @@ class ISteamParties;
 class ISteamTV;
 class ISteamRemotePlay;
 
+// Forward declare types
+struct SteamNetworkingIdentity;
+
 //-----------------------------------------------------------------------------
 // Purpose: Base values for callback identifiers, each callback must
 //			have a unique ID.

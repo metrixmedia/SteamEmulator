@@ -32,6 +32,7 @@ public ISteamUser017,
 public ISteamUser018,
 public ISteamUser019,
 public ISteamUser020,
+public ISteamUser021,
 public ISteamUser
 {
     Settings *settings;
@@ -300,10 +301,26 @@ uint32 GetVoiceOptimalSampleRate()
 // pcbTicket retrieves the length of the actual ticket.
 HAuthTicket GetAuthSessionTicket( void *pTicket, int cbMaxTicket, uint32 *pcbTicket )
 {
+    return GetAuthSessionTicket(pTicket, cbMaxTicket, pcbTicket, NULL);
+}
+// SteamNetworkingIdentity is an optional input parameter to hold the public IP address or SteamID of the entity you are connecting to
+// if an IP address is passed Steam will only allow the ticket to be used by an entity with that IP address
+// if a Steam ID is passed Steam will only allow the ticket to be used by that Steam ID
+HAuthTicket GetAuthSessionTicket( void *pTicket, int cbMaxTicket, uint32 *pcbTicket, const SteamNetworkingIdentity *pSteamNetworkingIdentity )
+{
     PRINT_DEBUG("Steam_User::GetAuthSessionTicket %i\n", cbMaxTicket);
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
 
     return ticket_manager->getTicket(pTicket, cbMaxTicket, pcbTicket);
+}
+
+// Request a ticket which will be used for webapi "ISteamUserAuth\AuthenticateUserTicket"
+// pchIdentity is an optional input parameter to identify the service the ticket will be sent to
+// the ticket will be returned in callback GetTicketForWebApiResponse_t
+HAuthTicket GetAuthTicketForWebApi( const char *pchIdentity )
+{
+    PRINT_DEBUG("TODO: Steam_User::GetAuthTicketForWebApi %s\n", pchIdentity);
+    return 0;
 }
 
 // Authenticate ticket from entity steamID to be sure it is valid and isnt reused
